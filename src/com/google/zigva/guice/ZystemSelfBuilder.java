@@ -38,11 +38,6 @@ public final class ZystemSelfBuilder implements Zystem {
   }
 
   @Override
-  public void setCurrentDir(FilePath newCurrentDir) {
-    zystem.setCurrentDir(newCurrentDir);
-  }
-
-  @Override
   public Propertiez properties() {
     return zystem.properties();
   }

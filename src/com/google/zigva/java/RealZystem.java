@@ -48,11 +48,6 @@ public class RealZystem implements Zystem {
   }
 
   @Override
-  public void setCurrentDir(FilePath currentDir) {
-    this.currentDir = currentDir;
-  }
-
-  @Override
   public FilePath getHomeDir() {
     return homeDir;
   }

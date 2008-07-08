@@ -15,14 +15,9 @@ public interface Zystem {
   
   FilePath getCurrentDir();
   
-  //TODO(zorzella): make this class immutable again
-  void setCurrentDir(FilePath newCurrentDir);
-
   FilePath getHomeDir();
   
   Executor executor();
-
-//  Appendable out();
 
   Reader in();
   

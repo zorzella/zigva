@@ -19,10 +19,6 @@ public class StubZystem implements Zystem {
   }
 
   @Override
-  public void setCurrentDir(FilePath newCurrentDir) {
-  }
-
-  @Override
   public FilePath getHomeDir() {
     return null;
   }
