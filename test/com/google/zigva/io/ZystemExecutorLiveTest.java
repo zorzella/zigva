@@ -20,12 +20,10 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
 
   @Inject
   private Zystem zystem;
-  private int threadCount;
   
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    threadCount = Thread.activeCount();
 //    TearDown tearDown = new TearDown() {
 //      @Override
 //      public void tearDown() throws Exception {
@@ -35,6 +33,13 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
 //    addTearDown(tearDown);
   }
 
+  @Override
+  protected void runTest() throws Throwable {
+    int threadCount = Thread.activeCount();
+    super.runTest();
+    assertEquals(threadCount, Thread.activeCount());
+  }
+  
   public void testSystemInReady() throws Exception {
     InputStreamReader foo = new InputStreamReader(System.in);
     assertFalse(foo.ready());
@@ -57,14 +62,9 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     Waitable process = localZystem.executor().command("printenv", envName).execute();
     process.waitFor();
     assertEquals(expected, out.toString().trim());
-    checkThreads();
   }
 
   
-  private void checkThreads() {
-    assertEquals(threadCount, Thread.activeCount());
-  }
-
   public void testIn() throws Exception {
     StringBuilder out = new StringBuilder();
     String expected = "ziva rules";
@@ -77,7 +77,6 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     Waitable process = localZystem.executor().command("cat").execute();
     process.waitFor();
     assertEquals(expected, out.toString().trim());
-    checkThreads();
   }
 
   public void testNonShell() throws Exception {
@@ -89,7 +88,6 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     ZivaTask task = localZystem.executor().command(myCommand).execute();
     task.waitFor();
     assertEquals("z", actual.toString());
-    checkThreads();
   }
   
   
@@ -109,7 +107,6 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     System.out.println(out);
     process.waitFor();
     assertEquals(expected, out.toString().trim());
-    checkThreads();
   }
 
   // ls | cat > bar.txt
