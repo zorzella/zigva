@@ -5,6 +5,7 @@ package com.google.zigva.guice;
 import com.google.inject.Inject;
 import com.google.zigva.io.Executor;
 import com.google.zigva.io.FilePath;
+import com.google.zigva.io.Source;
 import com.google.zigva.io.Zystem;
 import com.google.zigva.java.Propertiez;
 import com.google.zigva.java.RealZystem;
@@ -55,6 +56,7 @@ public final class ZystemSelfBuilder implements Zystem {
   public ZystemSelfBuilder withOut(Appendable otherOut) {
     return new ZystemSelfBuilder(
         new RealZystem(
+            zystem.inAsSource(), 
             zystem.in(), 
             otherOut, 
             err(), 
@@ -64,6 +66,7 @@ public final class ZystemSelfBuilder implements Zystem {
   public ZystemSelfBuilder withErr(Appendable otherErr) {
     return new ZystemSelfBuilder(
         new RealZystem(
+            zystem.inAsSource(), 
             zystem.in(), 
             out(), 
             otherErr, 
@@ -83,6 +86,7 @@ public final class ZystemSelfBuilder implements Zystem {
   public ZystemSelfBuilder withEnv(Map<String, String> otherEnv) {
     return new ZystemSelfBuilder(
         new RealZystem(
+            zystem.inAsSource(), 
             zystem.in(), 
             out(), 
             err(), 
@@ -93,6 +97,7 @@ public final class ZystemSelfBuilder implements Zystem {
   public ZystemSelfBuilder withIn(Reader otherIn) {
     return new ZystemSelfBuilder(
         new RealZystem(
+            zystem.inAsSource(), 
             otherIn, 
             out(), 
             err(), 
@@ -104,6 +109,11 @@ public final class ZystemSelfBuilder implements Zystem {
   @Override
   public Reader in() {
     return zystem.in();
+  }
+
+  @Override
+  public Source inAsSource() {
+    return zystem.inAsSource();
   }
 
 //  @Override

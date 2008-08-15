@@ -53,6 +53,12 @@ public class StubZystem implements Zystem {
     return null;
   }
 
+  @Override
+  public Source inAsSource() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 //  @Override
 //  public Appendable getAppendable() {
 //    // TODO Auto-generated method stub

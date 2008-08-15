@@ -3,6 +3,7 @@ package com.google.zigva.java;
 import com.google.zigva.io.Executor;
 import com.google.zigva.io.FilePath;
 import com.google.zigva.io.Readers;
+import com.google.zigva.io.Source;
 import com.google.zigva.io.Writers;
 import com.google.zigva.io.Zystem;
 
@@ -12,6 +13,7 @@ import java.util.Map;
 
 public class RealZystem implements Zystem {
 
+  private final Source inAsSource;
   private final Reader in;
   private final Appendable out;
   private final Appendable err;
@@ -20,10 +22,12 @@ public class RealZystem implements Zystem {
   private final Map<String, String> env;
   
   public RealZystem(
+      Source inAsSource,
       Reader in,
       Appendable out,
       Appendable err,
       FilePath currentDir, FilePath homeDir, Map<String, String> env) {
+    this.inAsSource = inAsSource;
     this.in = in;
     this.out = out;
     this.err = err;
@@ -80,6 +84,11 @@ public class RealZystem implements Zystem {
   @Override
   public Reader in() {
     return in;
+  }
+
+  @Override
+  public Source inAsSource() {
+    return inAsSource;
   }
 
 //  @Override

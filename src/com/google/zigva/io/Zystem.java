@@ -20,6 +20,9 @@ public interface Zystem {
   Executor executor();
 
   Reader in();
+
+  //TODO: rename to "in"
+  Source inAsSource();
   
   Appendable out();
   
