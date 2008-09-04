@@ -31,13 +31,10 @@ public interface Source {
    * 
    * <p>This method assumes you know there's data available.
    * 
-   * @throws DataNotReadyException if you read a Source where {@link #isEndOfStream()}
-   *   returns true
-   *
    * @throws DataSourceClosedException if this {@link Source} has been closed. 
    * This is also thrown... TODO
    */
-  boolean isEndOfStream() throws DataNotReadyException, DataSourceClosedException;
+  boolean isEndOfStream() throws DataSourceClosedException;
   
   /**
    * Reads the next character from the stream. 

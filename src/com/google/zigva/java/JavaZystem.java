@@ -5,6 +5,7 @@ package com.google.zigva.java;
 import com.google.zigva.io.FilePath;
 import com.google.zigva.io.Readers;
 import com.google.zigva.io.RealFileSpec;
+import com.google.zigva.io.Source;
 import com.google.zigva.io.Zystem;
 
 import java.io.File;
@@ -13,14 +14,17 @@ public final class JavaZystem {
 
   public static Zystem get() {
     return new RealZystem(
-        //TODO
-        null, 
+        createIn(), 
         Readers.from(System.in), 
         System.out, 
         System.out,
         getCurrentDir(), 
         getHomeDir(), System.getenv()
         );
+  }
+
+  private static Source createIn() {
+    return new InputStreamSource(System.in);
   }
 
   private static RealFileSpec getCurrentDir() {
