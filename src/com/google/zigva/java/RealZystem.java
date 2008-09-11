@@ -2,9 +2,7 @@ package com.google.zigva.java;
 
 import com.google.zigva.io.Executor;
 import com.google.zigva.io.FilePath;
-import com.google.zigva.io.Readers;
 import com.google.zigva.io.Source;
-import com.google.zigva.io.Writers;
 import com.google.zigva.io.Zystem;
 
 import java.io.Reader;

@@ -34,10 +34,22 @@ final class InputStreamSource implements Source {
     this(in, DEFAULT_CAPACITY);
   }
   
+  /*
+   * There are 2 possible ways for the Producer to end:
+   * 
+   * 1) Sunnycase: on  "} while (dataPoint != -1);"
+   * 2) If te Source is closed. In this case, there are 4 distinct states:
+   *   a) Close rigth before "dataPoint = in.read();"
+   *   b) Close while "dataPoint = in.read();" is blocking
+   *   c) Close right before "queue.put(dataPoint);"
+   *   d) Close while "queue.put(dataPoint);" is blocking
+   * 
+   * There should be tests for each.
+   */
   public InputStreamSource(final InputStream in, int capacity) {
     this.in = in;
     this.queue = new ArrayBlockingQueue<Integer>(capacity);
-    this.producer = new Thread(new Runnable(){
+    this.producer = new Thread (new Runnable() {
       @Override
       public void run() {
         try {
@@ -45,7 +57,7 @@ final class InputStreamSource implements Source {
           do  {
             dataPoint = in.read();
             queue.put(dataPoint);
-          } while (dataPoint != -1);
+          } while (dataPoint != -1 && !isClosed);
           //TODO: think!!!!
         } catch (InterruptedException e) {
           throw new RuntimeException(e);
@@ -59,11 +71,25 @@ final class InputStreamSource implements Source {
   
   @Override
   public void close() {
+    if (isClosed) {
+      throw new DataSourceClosedException();
+    }
     isClosed = true;
+    queue.clear();
     try {
       in.close();
     } catch (IOException e) {
       throw new RuntimeException(e);
+    } finally {
+      try {
+        // TODO: I don't know if I can rely on "in.close()" always causing the
+        // blocked read on the producer thread to get an exception. If so, this
+        // is fine. Otherwise, we need to defensively code here...
+        this.producer.join();
+      } catch (InterruptedException ex) {
+        // TODO: multiplex this exception with "e"
+        throw new RuntimeException(ex);
+      }
     }
   }
 

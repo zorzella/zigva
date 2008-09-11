@@ -7,10 +7,21 @@ import com.google.zigva.io.Source;
 
 import junit.framework.TestCase;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.StringBufferInputStream;
 
 public class InputStreamSourceTest extends TestCase {
 
+  @Override
+  protected void runTest() throws Throwable {
+    int threadCount = Thread.activeCount();
+    super.runTest();
+    // We need to make sure we are not leaking threads
+    assertEquals(threadCount, Thread.activeCount());
+  }
+  
   public void testSunnycase() {
     String data = "znjt";
     StringBufferInputStream is = new StringBufferInputStream(data);
@@ -92,4 +103,81 @@ public class InputStreamSourceTest extends TestCase {
     source.close();
     assertEquals("znjt", result.toString());
   }
+  
+  public void testCloseTwiceThrows() {
+    String data = "znjt";
+    StringBufferInputStream is = new StringBufferInputStream(data);
+    Source source = new InputStreamSource(is);
+    source.close();
+    try {
+      source.close();
+      fail();
+    } catch (DataSourceClosedException expected) {
+    }
+  }
+
+  
+  // UNIX-ism
+  //TODO: this relies on the assumption that we won't read the 5000 chars from
+  // /dev/zero before we close the source. Make it deterministic
+  public void testCloseCaseA() throws FileNotFoundException {
+    FileInputStream is = new FileInputStream("/dev/zero");
+    Source source = new InputStreamSource(is, 5000);
+    waitUntilReady(source);
+    // Make sure /dev/zero is ok before doing the real test
+    assertEquals(0, source.read());
+    source.close();
+    // The thing *really* being tested here is the thread count
+  }
+
+  // UNIX-ism
+  //TODO: make this really deterministic
+  public void testCloseCaseD() throws FileNotFoundException {
+    FileInputStream is = new FileInputStream("/dev/zero");
+    Source source = new InputStreamSource(is, 1);
+    waitUntilReady(source);
+    // Make sure /dev/zero is ok before doing the real test
+    assertEquals(0, source.read());
+    Thread.yield();
+    source.close();
+    // The thing *really* being tested here is the thread count
+  }
+  
+  //TODO: case "C" is not all that interesting, and it's hard to test
+
+  // UNIX-ism
+  //TODO: make this really deterministic
+  public void _testCloseCaseB() {
+    InputStream is = System.in;
+    Source source = new InputStreamSource(is, 1);
+    waitUntilReady(source);
+    Thread.yield();
+    source.close();
+    // The thing *really* being tested here is the thread count
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
