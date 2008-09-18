@@ -3,6 +3,7 @@ package com.google.zigva.java;
 
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
+import com.google.zigva.io.FailedToCloseException;
 import com.google.zigva.io.Source;
 
 import junit.framework.TestCase;
@@ -147,12 +148,18 @@ public class InputStreamSourceTest extends TestCase {
 
   // UNIX-ism
   //TODO: make this really deterministic
-  public void _testCloseCaseB() {
+  //TODO: this is all very ugly, but I don't think I have much of a choice here
+  // I'll leave this test suppressed, since it's a thread leak...
+  public void suppresstestCloseCase() {
     InputStream is = System.in;
     Source source = new InputStreamSource(is, 1);
-    waitUntilReady(source);
+//    waitUntilReady(source);
     Thread.yield();
-    source.close();
+    try {
+      source.close();
+      fail();
+    } catch (FailedToCloseException expected) {
+    }
     // The thing *really* being tested here is the thread count
   }
 }

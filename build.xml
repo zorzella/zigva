@@ -15,6 +15,7 @@
          destdir="${build.dir}/classes">
       <classpath>
         <pathelement location="${build.dir}/classes"/>
+        <pathelement location="${lib.dir}/easymock.jar"/>
         <pathelement location="${lib.dir}/google-collect-snapshot-20071022.jar"/>
         <pathelement location="${lib.dir}/guice-1.0.jar"/>
         <pathelement location="${lib.dir}/guice-commands-snapshot-20080305.jar"/>
@@ -38,6 +39,7 @@
          destdir="${build.dir}/testing">
       <classpath>
         <pathelement location="${build.dir}/classes"/>
+        <pathelement location="${lib.dir}/easymock.jar"/>
         <pathelement location="${lib.dir}/junit3.8.1.jar"/>
         <pathelement location="${lib.dir}/guice-1.0.jar"/>
         <pathelement location="${lib.dir}/guiceberry-1.1.5.jar"/>

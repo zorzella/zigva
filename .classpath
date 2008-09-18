@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="lib/guiceberry-1.1.5.jar"/>
 	<classpathentry kind="lib" path="lib/tl4j-1.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/junit3.8.1.jar"/>
+	<classpathentry kind="lib" path="lib/easymock.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

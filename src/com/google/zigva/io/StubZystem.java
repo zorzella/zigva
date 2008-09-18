@@ -1,5 +1,6 @@
 package com.google.zigva.io;
 
+import com.google.inject.Provider;
 import com.google.zigva.java.Propertiez;
 
 import java.io.Reader;
@@ -56,6 +57,11 @@ public class StubZystem implements Zystem {
   @Override
   public Source inAsSource() {
     // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Provider<Source> inProvider() {
     return null;
   }
 

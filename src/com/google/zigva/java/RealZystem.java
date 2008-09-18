@@ -1,5 +1,6 @@
 package com.google.zigva.java;
 
+import com.google.inject.Provider;
 import com.google.zigva.io.Executor;
 import com.google.zigva.io.FilePath;
 import com.google.zigva.io.Source;
@@ -11,7 +12,7 @@ import java.util.Map;
 
 public class RealZystem implements Zystem {
 
-  private final Source inAsSource;
+  private final Provider<Source> inAsSource;
   private final Reader in;
   private final Appendable out;
   private final Appendable err;
@@ -20,11 +21,13 @@ public class RealZystem implements Zystem {
   private final Map<String, String> env;
   
   public RealZystem(
-      Source inAsSource,
+      Provider<Source> inAsSource,
       Reader in,
       Appendable out,
       Appendable err,
-      FilePath currentDir, FilePath homeDir, Map<String, String> env) {
+      FilePath currentDir, 
+      FilePath homeDir, 
+      Map<String, String> env) {
     this.inAsSource = inAsSource;
     this.in = in;
     this.out = out;
@@ -34,6 +37,32 @@ public class RealZystem implements Zystem {
     this.env = env;
   }
   
+  public RealZystem(
+      Source inAsSource,
+      Reader in,
+      Appendable out,
+      Appendable err,
+      FilePath currentDir, 
+      FilePath homeDir, 
+      Map<String, String> env) {
+    this.inAsSource = getProvider(inAsSource);
+    this.in = in;
+    this.out = out;
+    this.err = err;
+    this.currentDir = currentDir;
+    this.homeDir = homeDir;
+    this.env = env;
+  }
+
+  private static Provider<Source> getProvider(final Source inAsSource2) {
+    return new Provider<Source> () {
+      @Override
+      public Source get() {
+        return inAsSource2;
+      }
+    };
+  }
+
   @Override
   public String getHostname() {
     String temp = null;
@@ -86,10 +115,15 @@ public class RealZystem implements Zystem {
 
   @Override
   public Source inAsSource() {
+    return inAsSource.get();
+  }
+
+  @Override
+  public Provider<Source> inProvider() {
     return inAsSource;
   }
 
-//  @Override
+  //  @Override
 //  public Appendable getAppendable() {
 //    return Writers.buffered(out());
 //  }

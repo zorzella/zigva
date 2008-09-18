@@ -2,6 +2,7 @@
 
 package com.google.zigva.java;
 
+import com.google.inject.Provider;
 import com.google.zigva.io.FilePath;
 import com.google.zigva.io.Readers;
 import com.google.zigva.io.RealFileSpec;
@@ -23,8 +24,16 @@ public final class JavaZystem {
         );
   }
 
-  private static Source createIn() {
-    return new InputStreamSource(System.in);
+  private static final InputStreamSource INPUT_STREAM_SOURCE = 
+    new InputStreamSource(System.in);
+  
+  private static Provider<Source> createIn() {
+    return new Provider<Source>() {
+      @Override
+      public Source get() {
+        return new SourceSource(INPUT_STREAM_SOURCE, true);
+      }
+    };
   }
 
   private static RealFileSpec getCurrentDir() {
@@ -34,5 +43,4 @@ public final class JavaZystem {
   private static FilePath getHomeDir() {
     return new RealFileSpec(new File(System.getProperty("user.home")));
   }
-  
 }

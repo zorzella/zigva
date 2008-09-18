@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.nio.channels.ClosedByInterruptException;
 
 /**
  * Bad name for now -- contrary to a regular pipe, which _is_ both a Reader and

@@ -1,5 +1,6 @@
 package com.google.zigva.io;
 
+import com.google.inject.Provider;
 import com.google.zigva.java.Propertiez;
 
 import java.io.Reader;
@@ -21,8 +22,11 @@ public interface Zystem {
 
   Reader in();
 
+  //TODO: maybe we want to do away with this method
   //TODO: rename to "in"
   Source inAsSource();
+
+  Provider<Source> inProvider();
   
   Appendable out();
   

@@ -1,7 +1,5 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
-// Copyright 2008 Google Inc. All Rights Reserved.
-
-package com.google.zigva.java;
+package com.google.zigva.sh;
 
 import com.google.zigva.io.DataNotReadyException;
 import com.google.zigva.io.DataSourceClosedException;
@@ -10,49 +8,31 @@ import com.google.zigva.io.FailedToCloseException;
 import com.google.zigva.io.Source;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.Reader;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
-/**
- * Implementation of {@link Source} backed by an {@link InputStream}.
- * 
- * @author Luiz-Otavio Zorzella
- * @author John Thomas
- */
-public final class InputStreamSource implements Source {
+public class ReaderSource implements Source {
 
   private static final int DEFAULT_CAPACITY = 100;
   private static final int DEFAULT_CLOSE_TIMEOUT = 500;
-  
-  private final InputStream in;
+
+  private final Reader in;
+  private final int closeTimeout;
+  private final ArrayBlockingQueue<Integer> queue;
+  private final Thread producer;
+
   private boolean isClosed;
   private Integer nextDataPoint;
-  private final Thread producer;
-  private final BlockingQueue<Integer> queue;
-  private final int closeTimeout;
 
-  public InputStreamSource(InputStream in) {
-    this(in, DEFAULT_CAPACITY);
-  }
-
-  public InputStreamSource(final InputStream in, int capacity) {
+  public ReaderSource(Reader in) {
     this(in, DEFAULT_CAPACITY, DEFAULT_CLOSE_TIMEOUT);
   }
+
+  public ReaderSource(Reader in, int capacity) {
+    this(in, capacity, DEFAULT_CLOSE_TIMEOUT);
+  }
   
-  /*
-   * There are 2 possible ways for the Producer to end:
-   * 
-   * 1) Sunnycase: on  "} while (dataPoint != -1);"
-   * 2) If te Source is closed. In this case, there are 4 distinct states:
-   *   a) Close rigth before "dataPoint = in.read();"
-   *   b) Close while "dataPoint = in.read();" is blocking
-   *   c) Close right before "queue.put(dataPoint);"
-   *   d) Close while "queue.put(dataPoint);" is blocking
-   * 
-   * There should be tests for each.
-   */
-  public InputStreamSource(final InputStream in, int capacity, int closeTimeout) {
+  public ReaderSource(final Reader in, int capacity, int closeTimeout) {
     this.in = in;
     this.closeTimeout = closeTimeout;
     this.queue = new ArrayBlockingQueue<Integer>(capacity);
@@ -62,6 +42,7 @@ public final class InputStreamSource implements Source {
         try {
           int dataPoint;
           do  {
+            //TODO: might make better use of "isReady"
             dataPoint = in.read();
             queue.put(dataPoint);
           } while (dataPoint != -1 && !isClosed);
@@ -75,7 +56,7 @@ public final class InputStreamSource implements Source {
     });
     this.producer.start();
   }
-  
+
   @Override
   public void close() {
     if (isClosed) {
@@ -96,7 +77,7 @@ public final class InputStreamSource implements Source {
         this.producer.join(closeTimeout);
         if (this.producer.isAlive()) {
           throw new FailedToCloseException("Underlying stream is blocked. " +
-          		"Until it unblocks, there will be a thread TODO...");
+                "Until it unblocks, there will be a thread TODO...");
         }
         
       } catch (InterruptedException ex) {

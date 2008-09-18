@@ -61,6 +61,9 @@ public interface Source {
    * {@link DataSourceClosedException}.
    *
    * @throws DataSourceClosedException if this {@link Source} has been closed
+   * 
+   * @throws FailedToCloseException if there were problems closing this 
+   * {@link Source}.
    */
   void close();
   
