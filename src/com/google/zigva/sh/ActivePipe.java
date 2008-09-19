@@ -1,6 +1,5 @@
 package com.google.zigva.sh;
 
-import com.google.zigva.io.Readers;
 import com.google.zigva.io.Source;
 import com.google.zigva.io.Writers;
 import com.google.zigva.java.InputStreamSource;
@@ -20,43 +19,36 @@ import java.io.Writer;
  */
 public class ActivePipe implements Runnable {
 
-  private final BufferedReader in;
   private final BufferedWriter out;
-  private final Source inAsSource;
-  
-  public ActivePipe(BufferedReader in, BufferedWriter out) {
-    this.inAsSource = new ReaderSource(in);
+  private final Source in;
+
+  public ActivePipe(Source in, BufferedWriter out) {
     this.in = in;
     this.out = out;
   }
   
   public ActivePipe(InputStream in, OutputStream out) { 
-    this.inAsSource = new InputStreamSource(in);
-    this.in = Readers.buffered(in);
+    this.in = new InputStreamSource(in);
     this.out = Writers.buffered(out);
   }
   
   public ActivePipe(Reader in, OutputStream out) { 
-    this.inAsSource = new ReaderSource(in);
-    this.in = Readers.buffered(in);
+    this.in = new ReaderSource(in);
     this.out = Writers.buffered(out);
   }
 
   public ActivePipe(Reader in, Writer out) { 
-    this.inAsSource = new ReaderSource(in);
-    this.in = Readers.buffered(in);
+    this.in = new ReaderSource(in);
     this.out = Writers.buffered(out);
   }
 
   public ActivePipe(Reader in, Appendable out) {
-    this.inAsSource = new ReaderSource(in);
-    this.in = Readers.buffered(in);
+    this.in = new ReaderSource(in);
     this.out = Writers.buffered(out);
   }
 
   public ActivePipe(InputStream in, Appendable out) {
-    this.inAsSource = new InputStreamSource(in);
-    this.in = Readers.buffered(in);
+    this.in = new InputStreamSource(in);
     this.out = Writers.buffered(out);
   }
 
@@ -69,8 +61,8 @@ public class ActivePipe implements Runnable {
 //      while (in.read(cbuf) != -1){
 //        out.append(cbuf[0]);
 //      }
-      while(!inAsSource.isEndOfStream()) {
-        out.append((char)inAsSource.read());
+      while(!in.isEndOfStream()) {
+        out.append((char)in.read());
       }
       out.flush();
       out.close();
@@ -82,7 +74,7 @@ public class ActivePipe implements Runnable {
     }
   }
   
-  public ActivePipe copyWith(BufferedReader in) {
+  public ActivePipe copyWith(Source in) {
     return new ActivePipe(in, this.out);
   }
 

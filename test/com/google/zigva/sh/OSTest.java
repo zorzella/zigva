@@ -116,7 +116,7 @@ public class OSTest extends TestCase {
     assertTrue(out.toString().equals(MYCONTENTS));
   }
 
-  public void testKill() throws Exception {
+  public void SUPPRESS_testKill() throws Exception {
     CountingAppendable out = new CountingAppendable();
     Appendable err = THROWS;
     assertTrue (out.count == 0);
