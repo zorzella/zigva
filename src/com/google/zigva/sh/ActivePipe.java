@@ -1,7 +1,9 @@
 package com.google.zigva.sh;
 
 import com.google.zigva.io.Readers;
+import com.google.zigva.io.Source;
 import com.google.zigva.io.Writers;
+import com.google.zigva.java.InputStreamSource;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -20,33 +22,40 @@ public class ActivePipe implements Runnable {
 
   private final BufferedReader in;
   private final BufferedWriter out;
+  private final Source inAsSource;
   
   public ActivePipe(BufferedReader in, BufferedWriter out) {
+    this.inAsSource = new ReaderSource(in);
     this.in = in;
     this.out = out;
   }
   
   public ActivePipe(InputStream in, OutputStream out) { 
+    this.inAsSource = new InputStreamSource(in);
     this.in = Readers.buffered(in);
     this.out = Writers.buffered(out);
   }
   
   public ActivePipe(Reader in, OutputStream out) { 
+    this.inAsSource = new ReaderSource(in);
     this.in = Readers.buffered(in);
     this.out = Writers.buffered(out);
   }
 
   public ActivePipe(Reader in, Writer out) { 
+    this.inAsSource = new ReaderSource(in);
     this.in = Readers.buffered(in);
     this.out = Writers.buffered(out);
   }
 
   public ActivePipe(Reader in, Appendable out) {
+    this.inAsSource = new ReaderSource(in);
     this.in = Readers.buffered(in);
     this.out = Writers.buffered(out);
   }
 
   public ActivePipe(InputStream in, Appendable out) {
+    this.inAsSource = new InputStreamSource(in);
     this.in = Readers.buffered(in);
     this.out = Writers.buffered(out);
   }
@@ -57,8 +66,11 @@ public class ActivePipe implements Runnable {
 //      while (!in.ready()) {
 //        Thread.sleep(500);
 //      }
-      while (in.read(cbuf) != -1){
-        out.append(cbuf[0]);
+//      while (in.read(cbuf) != -1){
+//        out.append(cbuf[0]);
+//      }
+      while(!inAsSource.isEndOfStream()) {
+        out.append((char)inAsSource.read());
       }
       out.flush();
       out.close();
