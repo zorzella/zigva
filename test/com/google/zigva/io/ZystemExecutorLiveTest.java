@@ -73,7 +73,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     
     Zystem localZystem = 
       new ZystemSelfBuilder(zystem)
-        .withIn(Readers.from(expected))
+//        .withIn(Readers.from(expected))
         .withOut(out);
 
     Waitable process = localZystem.executor().command("cat").execute();

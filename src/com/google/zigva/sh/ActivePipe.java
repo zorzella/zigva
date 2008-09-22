@@ -27,22 +27,17 @@ public class ActivePipe implements Runnable {
     this.out = out;
   }
   
+  public ActivePipe(Source in, OutputStream out) {
+    this.in = in;
+    this.out = Writers.buffered(out);
+  }
+
   public ActivePipe(InputStream in, OutputStream out) { 
     this.in = new InputStreamSource(in);
     this.out = Writers.buffered(out);
   }
   
   public ActivePipe(Reader in, OutputStream out) { 
-    this.in = new ReaderSource(in);
-    this.out = Writers.buffered(out);
-  }
-
-  public ActivePipe(Reader in, Writer out) { 
-    this.in = new ReaderSource(in);
-    this.out = Writers.buffered(out);
-  }
-
-  public ActivePipe(Reader in, Appendable out) {
     this.in = new ReaderSource(in);
     this.out = Writers.buffered(out);
   }

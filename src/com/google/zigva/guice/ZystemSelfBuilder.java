@@ -95,11 +95,11 @@ public final class ZystemSelfBuilder implements Zystem {
             getHomeDir(), otherEnv));
   }
 
-  public ZystemSelfBuilder withIn(Reader otherIn) {
+  public ZystemSelfBuilder withIn(Source otherIn) {
     return new ZystemSelfBuilder(
         new RealZystem(
-            zystem.inProvider(), 
-            otherIn, 
+            otherIn,
+            null, 
             out(), 
             err(), 
             getCurrentDir(), 

@@ -59,7 +59,7 @@ public class Executor {
 
     @Override
     public ZivaTask execute() {
-      Reader nextIn = zystem.in();
+      Source nextIn = zystem.inAsSource();
       Appendable nextOut;// = zystem.out();
       
       List<ZivaTask> allTasksExecuted = Lists.newArrayList();
@@ -119,14 +119,14 @@ public class Executor {
       }
     });
     
-    private final Reader reader = 
-      Readers.fromQueue(new ArrayBlockingQueue<Character>(5));
+    private final Source reader = null;
+//      Readers.fromQueue(new ArrayBlockingQueue<Character>(5));
 
     public Appendable in() {
       return appendable;
     }
     
-    public Reader out() {
+    public Source out() {
       return reader;
     }
   }

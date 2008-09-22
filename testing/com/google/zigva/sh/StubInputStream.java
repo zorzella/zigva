@@ -6,6 +6,6 @@ public class StubInputStream extends InputStream {
 
   @Override
   public int read() {
-    return 0;
+    return -1;
   }
 }

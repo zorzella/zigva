@@ -54,7 +54,7 @@ public class ShellCommand implements Command {
       } else {
         errS = null;
       }
-      Thread inS = new ActivePipe(zystem.in(), process.getOutputStream()).start();
+      Thread inS = new ActivePipe(zystem.inAsSource(), process.getOutputStream()).start();
       ZivaProcess temp = new ZivaProcess(process, inS, outS, errS);
       return temp;
     } catch (IOException e) {
