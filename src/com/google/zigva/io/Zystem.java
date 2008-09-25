@@ -24,9 +24,9 @@ public interface Zystem {
 
   //TODO: maybe we want to do away with this method
   //TODO: rename to "in"
-  Source inAsSource();
+  Source<Character> inAsSource();
 
-  Provider<Source> inProvider();
+  Provider<Source<Character>> inProvider();
   
   Appendable out();
   

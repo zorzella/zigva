@@ -1,13 +1,13 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
 package com.google.zigva.io;
 
-public class StringSource implements Source {
+public class CharacterSource implements Source<Character> {
 
-  private final String string;
+  private final CharSequence string;
   private int pos = 0;
   private boolean isClosed;
 
-  public StringSource(String string) {
+  public CharacterSource(CharSequence string) {
     this.string = string;
   }
   
@@ -39,7 +39,7 @@ public class StringSource implements Source {
   }
 
   @Override
-  public int read() throws DataNotReadyException, DataSourceClosedException, EndOfDataException {
+  public Character read() throws DataNotReadyException, DataSourceClosedException, EndOfDataException {
     return string.charAt(pos++);
   }
 

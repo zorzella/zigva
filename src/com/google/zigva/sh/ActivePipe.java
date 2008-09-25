@@ -1,16 +1,14 @@
 package com.google.zigva.sh;
 
+import com.google.zigva.io.Readers;
 import com.google.zigva.io.Source;
 import com.google.zigva.io.Writers;
-import com.google.zigva.java.InputStreamSource;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.io.Writer;
 
 /**
  * Bad name for now -- contrary to a regular pipe, which _is_ both a Reader and
@@ -20,20 +18,20 @@ import java.io.Writer;
 public class ActivePipe implements Runnable {
 
   private final BufferedWriter out;
-  private final Source in;
+  private final Source<Character> in;
 
-  public ActivePipe(Source in, BufferedWriter out) {
+  public ActivePipe(Source<Character> in, BufferedWriter out) {
     this.in = in;
     this.out = out;
   }
   
-  public ActivePipe(Source in, OutputStream out) {
+  public ActivePipe(Source<Character> in, OutputStream out) {
     this.in = in;
     this.out = Writers.buffered(out);
   }
 
   public ActivePipe(InputStream in, OutputStream out) { 
-    this.in = new InputStreamSource(in);
+    this.in = new ReaderSource(Readers.buffered(in));
     this.out = Writers.buffered(out);
   }
   
@@ -43,7 +41,7 @@ public class ActivePipe implements Runnable {
   }
 
   public ActivePipe(InputStream in, Appendable out) {
-    this.in = new InputStreamSource(in);
+    this.in = new ReaderSource(Readers.buffered(in));
     this.out = Writers.buffered(out);
   }
 
@@ -57,7 +55,7 @@ public class ActivePipe implements Runnable {
 //        out.append(cbuf[0]);
 //      }
       while(!in.isEndOfStream()) {
-        out.append((char)in.read());
+        out.append(in.read());
       }
       out.flush();
       out.close();
@@ -69,7 +67,7 @@ public class ActivePipe implements Runnable {
     }
   }
   
-  public ActivePipe copyWith(Source in) {
+  public ActivePipe copyWith(Source<Character> in) {
     return new ActivePipe(in, this.out);
   }
 
@@ -88,6 +86,7 @@ public class ActivePipe implements Runnable {
     private final ActivePipe activePipe;
 
     public ActivePipeThread(ActivePipe activePipe) {
+      super("ActivePipeThread");
       this.activePipe = activePipe;
     }
     

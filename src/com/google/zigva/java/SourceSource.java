@@ -6,16 +6,16 @@ import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.Source;
 
-public class SourceSource implements Source {
+public class SourceSource<T> implements Source<T> {
 
-  private final Source source;
+  private final Source<T> source;
   private final boolean stopClose;
 
-  public SourceSource(Source source) {
+  public SourceSource(Source<T> source) {
     this(source, false);
   }
 
-  public SourceSource(Source source, boolean stopClose) {
+  public SourceSource(Source<T> source, boolean stopClose) {
     this.source = source;
     this.stopClose = stopClose;
   }
@@ -38,7 +38,7 @@ public class SourceSource implements Source {
   }
 
   @Override
-  public int read() throws DataNotReadyException, DataSourceClosedException, EndOfDataException {
+  public T read() throws DataNotReadyException, DataSourceClosedException, EndOfDataException {
     return source.read();
   }
   

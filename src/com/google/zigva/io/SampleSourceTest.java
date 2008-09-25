@@ -6,7 +6,7 @@ public class SampleSourceTest extends TestCase {
 
   public void testFoo() throws Exception {
       
-     Source source = null;
+     Source<Integer> source = null;
      Sink sink = null;
      while (!source.isEndOfStream()) {
        sink.write(source.read());

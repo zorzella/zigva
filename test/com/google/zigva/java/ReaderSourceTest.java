@@ -29,7 +29,7 @@ public class ReaderSourceTest extends TestCase {
   public void testSunnycase() {
     String data = "znjt";
     Reader is = new InputStreamReader(new StringBufferInputStream(data));
-    Source source = new ReaderSource(is);
+    Source<Character> source = new ReaderSource(is);
     StringBuilder result = new StringBuilder();
     while (!source.isEndOfStream()) {
       result.append(Character.toChars(source.read()));
@@ -41,7 +41,7 @@ public class ReaderSourceTest extends TestCase {
   public void testEmptyString() {
     String data = "";
     InputStreamReader is = new InputStreamReader(new StringBufferInputStream(data));
-    Source source = new ReaderSource(is);
+    Source<Character> source = new ReaderSource(is);
     StringBuilder result = new StringBuilder();
     waitUntilReady(source);
     while (!source.isEndOfStream()) {
@@ -54,7 +54,7 @@ public class ReaderSourceTest extends TestCase {
   public void testCloseForIsReady() {
     String data = "zrules";
     InputStreamReader is = new InputStreamReader(new StringBufferInputStream(data));
-    Source source = new ReaderSource(is);
+    Source<Character> source = new ReaderSource(is);
     StringBuilder result = new StringBuilder();
     waitUntilReady(source);
     result.append(Character.toChars(source.read()));
@@ -66,7 +66,7 @@ public class ReaderSourceTest extends TestCase {
     }
   }
 
-  private void waitUntilReady(Source source) {
+  private void waitUntilReady(Source<Character> source) {
     while (!source.isReady()) {
       Thread.yield();
     }
@@ -75,7 +75,7 @@ public class ReaderSourceTest extends TestCase {
   public void testCloseForReadWhileNotBlocked() {
     String data = "zrules";
     InputStreamReader is = new InputStreamReader(new StringBufferInputStream(data));
-    Source source = new ReaderSource(is);
+    Source<Character> source = new ReaderSource(is);
     StringBuilder result = new StringBuilder();
     waitUntilReady(source);
     result.append(Character.toChars(source.read()));
@@ -94,7 +94,7 @@ public class ReaderSourceTest extends TestCase {
   public void testReadBeyondEndOfStream() {
     String data = "znjt";
     InputStreamReader is = new InputStreamReader(new StringBufferInputStream(data));
-    Source source = new ReaderSource(is);
+    Source<Character> source = new ReaderSource(is);
     StringBuilder result = new StringBuilder();
     while (!source.isEndOfStream()) {
       result.append(Character.toChars(source.read()));
@@ -111,7 +111,7 @@ public class ReaderSourceTest extends TestCase {
   public void testCloseTwiceThrows() {
     String data = "znjt";
     InputStreamReader is = new InputStreamReader(new StringBufferInputStream(data));
-    Source source = new ReaderSource(is, 500, 50000);
+    Source<Character> source = new ReaderSource(is, 500, 50000);
     source.close();
     try {
       source.close();
@@ -126,10 +126,10 @@ public class ReaderSourceTest extends TestCase {
   // /dev/zero before we close the source. Make it deterministic
   public void testCloseCaseA() throws FileNotFoundException {
     Reader is = new InputStreamReader(new FileInputStream("/dev/zero"));
-    Source source = new ReaderSource(is, 5000);
+    Source<Character> source = new ReaderSource(is, 5000);
     waitUntilReady(source);
     // Make sure /dev/zero is ok before doing the real test
-    assertEquals(0, source.read());
+    assertEquals("0", source.read());
     source.close();
     // The thing *really* being tested here is the thread count
   }
@@ -138,10 +138,10 @@ public class ReaderSourceTest extends TestCase {
   //TODO: make this really deterministic
   public void testCloseCaseD() throws FileNotFoundException {
     Reader is = new InputStreamReader(new FileInputStream("/dev/zero"));
-    Source source = new ReaderSource(is, 1);
+    Source<Character> source = new ReaderSource(is, 1);
     waitUntilReady(source);
     // Make sure /dev/zero is ok before doing the real test
-    assertEquals(0, source.read());
+    assertEquals("0", source.read());
     Thread.yield();
     source.close();
     // The thing *really* being tested here is the thread count
@@ -154,7 +154,7 @@ public class ReaderSourceTest extends TestCase {
   //TODO: think!
   public void suppresstestCloseCase() {
     Reader is = new InputStreamReader(System.in);
-    Source source = new ReaderSource(is, 1);
+    Source<Character> source = new ReaderSource(is, 1);
 //    waitUntilReady(source);
     Thread.yield();
     try {

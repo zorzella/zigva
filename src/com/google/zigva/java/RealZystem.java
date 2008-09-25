@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class RealZystem implements Zystem {
 
-  private final Provider<Source> inAsSource;
+  private final Provider<Source<Character>> inAsSource;
   private final Reader in;
   private final Appendable out;
   private final Appendable err;
@@ -21,7 +21,7 @@ public class RealZystem implements Zystem {
   private final Map<String, String> env;
   
   public RealZystem(
-      Provider<Source> inAsSource,
+      Provider<Source<Character>> inAsSource,
       Reader in,
       Appendable out,
       Appendable err,
@@ -38,7 +38,7 @@ public class RealZystem implements Zystem {
   }
   
   public RealZystem(
-      Source inAsSource,
+      Source<Character> inAsSource,
       Reader in,
       Appendable out,
       Appendable err,
@@ -54,10 +54,10 @@ public class RealZystem implements Zystem {
     this.env = env;
   }
 
-  private static Provider<Source> getProvider(final Source inAsSource2) {
-    return new Provider<Source> () {
+  private static Provider<Source<Character>> getProvider(final Source<Character> inAsSource2) {
+    return new Provider<Source<Character>> () {
       @Override
-      public Source get() {
+      public Source<Character> get() {
         return inAsSource2;
       }
     };
@@ -114,12 +114,12 @@ public class RealZystem implements Zystem {
   }
 
   @Override
-  public Source inAsSource() {
+  public Source<Character> inAsSource() {
     return inAsSource.get();
   }
 
   @Override
-  public Provider<Source> inProvider() {
+  public Provider<Source<Character>> inProvider() {
     return inAsSource;
   }
 

@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 public class StringSourceTest extends TestCase {
 
   public void testFoo() {
-    StringSource source = new StringSource("foo");
+    CharacterSource source = new CharacterSource("foo");
     StringBuilder builder = new StringBuilder();
     while(!source.isEndOfStream()) {
       builder.append((char)source.read());

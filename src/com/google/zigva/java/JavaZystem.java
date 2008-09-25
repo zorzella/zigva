@@ -8,6 +8,7 @@ import com.google.zigva.io.Readers;
 import com.google.zigva.io.RealFileSpec;
 import com.google.zigva.io.Source;
 import com.google.zigva.io.Zystem;
+import com.google.zigva.sh.ReaderSource;
 
 import java.io.File;
 
@@ -24,14 +25,14 @@ public final class JavaZystem {
         );
   }
 
-  private static final InputStreamSource INPUT_STREAM_SOURCE = 
-    new InputStreamSource(System.in);
+  private static final ReaderSource READER_SOURCE = 
+    new ReaderSource(Readers.buffered(System.in));
   
-  private static Provider<Source> createIn() {
-    return new Provider<Source>() {
+  private static Provider<Source<Character>> createIn() {
+    return new Provider<Source<Character>>() {
       @Override
-      public Source get() {
-        return new SourceSource(INPUT_STREAM_SOURCE, true);
+      public Source<Character> get() {
+        return new SourceSource<Character>(READER_SOURCE, true);
       }
     };
   }

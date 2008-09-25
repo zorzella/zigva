@@ -95,7 +95,7 @@ public final class ZystemSelfBuilder implements Zystem {
             getHomeDir(), otherEnv));
   }
 
-  public ZystemSelfBuilder withIn(Source otherIn) {
+  public ZystemSelfBuilder withIn(Source<Character> otherIn) {
     return new ZystemSelfBuilder(
         new RealZystem(
             otherIn,
@@ -113,12 +113,12 @@ public final class ZystemSelfBuilder implements Zystem {
   }
 
   @Override
-  public Source inAsSource() {
+  public Source<Character> inAsSource() {
     return zystem.inAsSource();
   }
   @Override
 
-  public Provider<Source> inProvider() {
+  public Provider<Source<Character>> inProvider() {
     return zystem.inProvider();
   }
 

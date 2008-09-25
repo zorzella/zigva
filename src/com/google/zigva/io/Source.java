@@ -13,9 +13,11 @@ package com.google.zigva.io;
  *
  * </pre>
  * 
+ * @literal T the type of object returned by {@link #read()}
+ * 
  * @author Luiz-Otavio Zorzella, John Thomas
  */
-public interface Source {
+public interface Source<T> {
 
   /**
    * Returns true if this Source has more data to be read, or has encountered 
@@ -49,7 +51,7 @@ public interface Source {
 
    * @throws DataSourceClosedException if this {@link Source} has been closed
    */
-  int read() throws DataNotReadyException, DataSourceClosedException, EndOfDataException;
+  T read() throws DataNotReadyException, DataSourceClosedException, EndOfDataException;
 
   /**
    * Closes this source, and releases all resources it holds.

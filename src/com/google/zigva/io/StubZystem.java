@@ -55,13 +55,13 @@ public class StubZystem implements Zystem {
   }
 
   @Override
-  public Source inAsSource() {
+  public Source<Character> inAsSource() {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public Provider<Source> inProvider() {
+  public Provider<Source<Character>> inProvider() {
     return null;
   }
 

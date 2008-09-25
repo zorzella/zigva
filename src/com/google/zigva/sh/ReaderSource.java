@@ -10,15 +10,17 @@ import com.google.zigva.io.Source;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
-public class ReaderSource implements Source {
+public class ReaderSource implements Source<Character> {
 
   private static final int DEFAULT_CAPACITY = 100;
   private static final int DEFAULT_CLOSE_TIMEOUT = 500;
 
   private final Reader in;
   private final int closeTimeout;
-  private final ArrayBlockingQueue<Integer> queue;
+  //TODO: can't have BlockingQueue<Character> because of "-1". Think 
+  private final BlockingQueue<Integer> queue;
   private final Thread producer;
 
   private boolean isClosed;
@@ -43,6 +45,7 @@ public class ReaderSource implements Source {
           int dataPoint;
           do  {
             //TODO: might make better use of "isReady"
+            // TODO: simply use read(char[]) to avoid the cast
             dataPoint = in.read();
             queue.put(dataPoint);
           } while (dataPoint != -1 && !isClosed);
@@ -108,7 +111,7 @@ public class ReaderSource implements Source {
   }
 
   @Override
-  public int read() throws DataNotReadyException, DataSourceClosedException, EndOfDataException {
+  public Character read() throws DataNotReadyException, DataSourceClosedException, EndOfDataException {
     throwIfClosed();
     if (!isReady()) {
       throw new DataNotReadyException();
@@ -116,7 +119,8 @@ public class ReaderSource implements Source {
     if (isEndOfStream()) {
       throw new EndOfDataException();
     }
-    Integer result = nextDataPoint;
+    //TODO: ugly
+    Character result = Character.toChars(nextDataPoint)[0];
     nextDataPoint = null;
     return result;
   }

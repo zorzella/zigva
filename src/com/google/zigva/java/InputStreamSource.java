@@ -20,7 +20,7 @@ import java.util.concurrent.BlockingQueue;
  * @author Luiz-Otavio Zorzella
  * @author John Thomas
  */
-public final class InputStreamSource implements Source {
+public final class InputStreamSource implements Source<Integer> {
 
   private static final int DEFAULT_CAPACITY = 100;
   private static final int DEFAULT_CLOSE_TIMEOUT = 500;
@@ -127,7 +127,7 @@ public final class InputStreamSource implements Source {
   }
 
   @Override
-  public int read() throws DataNotReadyException, DataSourceClosedException, EndOfDataException {
+  public Integer read() throws DataNotReadyException, DataSourceClosedException, EndOfDataException {
     throwIfClosed();
     if (!isReady()) {
       throw new DataNotReadyException();
