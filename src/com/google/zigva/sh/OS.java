@@ -1,6 +1,8 @@
 package com.google.zigva.sh;
 
 
+import com.google.zigva.io.Readers;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,15 +41,14 @@ public class OS {
         .directory(dirToRun)
         .redirectErrorStream(err == null)
         .start();
-      Thread outS = new Thread(new ActivePipe(p.getInputStream(), out));
-      outS.start();
-      Thread errS = new Thread(new ActivePipe(p.getErrorStream(), err));
-      errS.start();
+      Thread outS  = new ActivePipe("OS - sysout", p.getInputStream(), out).start();
+      Thread errS = new ActivePipe("OS - syserr", p.getErrorStream(), err).start();
       if (in == null) {
         p.getOutputStream().close();
       } else {
-        Thread inS = new Thread(new ActivePipe(in, p.getOutputStream()));
-        inS.start();
+        Thread inS = new ActivePipe("OS - sysin",
+            new ReaderSource(Readers.buffered(in)), 
+            p.getOutputStream()).start();
       }
       return new ZivaProcess(p, outS, errS);
     } catch (IOException e) {

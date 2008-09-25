@@ -1,15 +1,13 @@
 package com.google.zigva.io;
 
 import com.google.zigva.lang.RegexReplacement;
-import com.google.zigva.sh.ActivePipe;
-
+import com.google.zigva.sh.ReaderSource;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -117,17 +115,14 @@ public class ZFile {
     try {
       in = new FileInputStream(toRead);
       StringBuilder builder = new StringBuilder();
-      Thread t = new Thread(new ActivePipe(in, builder));
-      t.start();
-      t.join();
-      in.close();
+      Source<Character> s = new ReaderSource(Readers.buffered(in));
+      while (!s.isEndOfStream()) {
+        builder.append(s.read());
+      }
+      s.close();
       return builder.toString();
     } catch (FileNotFoundException e) {
       return null;
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
     }
   }
   

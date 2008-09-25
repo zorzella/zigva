@@ -47,14 +47,14 @@ public class ShellCommand implements Command {
 
       Process process = processBuilder.start();
 
-      Thread outS = new ActivePipe(process.getInputStream(), zystem.out()).start();
+      Thread outS = new ActivePipe("ShellCommand - out", process.getInputStream(), zystem.out()).start();
       Thread errS;
       if (!processBuilder.redirectErrorStream()) {
-        errS = new ActivePipe(process.getErrorStream(), zystem.err()).start();
+        errS = new ActivePipe("ShellCommand - err", process.getErrorStream(), zystem.err()).start();
       } else {
         errS = null;
       }
-      Thread inS = new ActivePipe(zystem.inAsSource(), process.getOutputStream()).start();
+      Thread inS = new ActivePipe("ShellCommand - in", zystem.in().get(), process.getOutputStream()).start();
       ZivaProcess temp = new ZivaProcess(process, inS, outS, errS);
       return temp;
     } catch (IOException e) {

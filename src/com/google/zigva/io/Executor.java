@@ -5,8 +5,6 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.zigva.guice.ZystemSelfBuilder;
 
-
-import java.io.Reader;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -59,7 +57,7 @@ public class Executor {
 
     @Override
     public ZivaTask execute() {
-      Source nextIn = zystem.inAsSource();
+      Source<Character> nextIn = zystem.in().get();
       Appendable nextOut;// = zystem.out();
       
       List<ZivaTask> allTasksExecuted = Lists.newArrayList();
@@ -119,14 +117,14 @@ public class Executor {
       }
     });
     
-    private final Source reader = null;
+    private final Source<Character> reader = null;
 //      Readers.fromQueue(new ArrayBlockingQueue<Character>(5));
 
     public Appendable in() {
       return appendable;
     }
     
-    public Source out() {
+    public Source<Character> out() {
       return reader;
     }
   }

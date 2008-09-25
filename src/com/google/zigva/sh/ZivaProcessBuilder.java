@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.google.zigva.io.FilePath;
 import com.google.zigva.io.FileRepository;
+import com.google.zigva.io.Readers;
 import com.google.zigva.io.Zystem;
 
 
@@ -100,15 +101,17 @@ public class ZivaProcessBuilder {
     
     try {
       Process process = javaProcessExecutor.start(getProcessBuilder());
-      Thread outS = new Thread(new ActivePipe(process.getInputStream(), localOut));
-      outS.start();
-      Thread errS = new Thread(new ActivePipe(process.getErrorStream(), localErr));
-      errS.start();
+      Thread outS = new ActivePipe("ZivaProcessBuilder - out", 
+          process.getInputStream(), localOut).start();
+      Thread errS = new ActivePipe("ZivaProcessBuilder - err", 
+          process.getErrorStream(), localErr).start();
       if (in == null) {
         process.getOutputStream().close();
       } else {
-        Thread inS = new Thread(new ActivePipe(in, process.getOutputStream()));
-        inS.start();
+        Thread inS = new ActivePipe(
+            "ZivaProcessBuilder - in", 
+            new ReaderSource(Readers.buffered(in)), 
+            process.getOutputStream()).start();
       }
       return new ZivaProcess(process, outS, errS);
     } catch (IOException e) {

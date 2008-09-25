@@ -3,9 +3,7 @@ package com.google.zigva.io;
 import com.google.inject.Provider;
 import com.google.zigva.java.Propertiez;
 
-import java.io.Reader;
 import java.util.Map;
-
 
 public class StubZystem implements Zystem {
 
@@ -50,18 +48,7 @@ public class StubZystem implements Zystem {
   }
 
   @Override
-  public Reader in() {
-    return null;
-  }
-
-  @Override
-  public Source<Character> inAsSource() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public Provider<Source<Character>> inProvider() {
+  public Provider<Source<Character>> in() {
     return null;
   }
 

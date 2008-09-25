@@ -11,8 +11,6 @@ import com.google.zigva.io.Zystem;
 import com.google.zigva.java.Propertiez;
 import com.google.zigva.java.RealZystem;
 
-
-import java.io.Reader;
 import java.util.Map;
 
 public final class ZystemSelfBuilder implements Zystem {
@@ -57,7 +55,6 @@ public final class ZystemSelfBuilder implements Zystem {
   public ZystemSelfBuilder withOut(Appendable otherOut) {
     return new ZystemSelfBuilder(
         new RealZystem(
-            zystem.inProvider(), 
             zystem.in(), 
             otherOut, 
             err(), 
@@ -67,7 +64,6 @@ public final class ZystemSelfBuilder implements Zystem {
   public ZystemSelfBuilder withErr(Appendable otherErr) {
     return new ZystemSelfBuilder(
         new RealZystem(
-            zystem.inProvider(), 
             zystem.in(), 
             out(), 
             otherErr, 
@@ -87,7 +83,6 @@ public final class ZystemSelfBuilder implements Zystem {
   public ZystemSelfBuilder withEnv(Map<String, String> otherEnv) {
     return new ZystemSelfBuilder(
         new RealZystem(
-            zystem.inProvider(), 
             zystem.in(), 
             out(), 
             err(), 
@@ -108,18 +103,8 @@ public final class ZystemSelfBuilder implements Zystem {
   }
 
   @Override
-  public Reader in() {
+  public Provider<Source<Character>> in() {
     return zystem.in();
-  }
-
-  @Override
-  public Source<Character> inAsSource() {
-    return zystem.inAsSource();
-  }
-  @Override
-
-  public Provider<Source<Character>> inProvider() {
-    return zystem.inProvider();
   }
 
 //  @Override

@@ -3,7 +3,6 @@ package com.google.zigva.io;
 import com.google.inject.Provider;
 import com.google.zigva.java.Propertiez;
 
-import java.io.Reader;
 import java.util.Map;
 
 public interface Zystem {
@@ -20,13 +19,7 @@ public interface Zystem {
   
   Executor executor();
 
-  Reader in();
-
-  //TODO: maybe we want to do away with this method
-  //TODO: rename to "in"
-  Source<Character> inAsSource();
-
-  Provider<Source<Character>> inProvider();
+  Provider<Source<Character>> in();
   
   Appendable out();
   

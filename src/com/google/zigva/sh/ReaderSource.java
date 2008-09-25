@@ -56,7 +56,7 @@ public class ReaderSource implements Source<Character> {
           throw new RuntimeException(e);
         }
       }
-    });
+    }, "ReaderSource Thread");
     this.producer.start();
   }
 

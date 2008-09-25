@@ -129,7 +129,8 @@ public class ReaderSourceTest extends TestCase {
     Source<Character> source = new ReaderSource(is, 5000);
     waitUntilReady(source);
     // Make sure /dev/zero is ok before doing the real test
-    assertEquals("0", source.read());
+    Character result = source.read();
+    assertEquals(new Character('\0'), result);
     source.close();
     // The thing *really* being tested here is the thread count
   }
@@ -141,7 +142,7 @@ public class ReaderSourceTest extends TestCase {
     Source<Character> source = new ReaderSource(is, 1);
     waitUntilReady(source);
     // Make sure /dev/zero is ok before doing the real test
-    assertEquals("0", source.read());
+    assertEquals(new Character('\0'), source.read());
     Thread.yield();
     source.close();
     // The thing *really* being tested here is the thread count

@@ -12,8 +12,7 @@ import java.util.Map;
 
 public class RealZystem implements Zystem {
 
-  private final Provider<Source<Character>> inAsSource;
-  private final Reader in;
+  private final Provider<Source<Character>> in;
   private final Appendable out;
   private final Appendable err;
   private FilePath currentDir;
@@ -21,14 +20,12 @@ public class RealZystem implements Zystem {
   private final Map<String, String> env;
   
   public RealZystem(
-      Provider<Source<Character>> inAsSource,
-      Reader in,
+      Provider<Source<Character>> in,
       Appendable out,
       Appendable err,
       FilePath currentDir, 
       FilePath homeDir, 
       Map<String, String> env) {
-    this.inAsSource = inAsSource;
     this.in = in;
     this.out = out;
     this.err = err;
@@ -45,8 +42,7 @@ public class RealZystem implements Zystem {
       FilePath currentDir, 
       FilePath homeDir, 
       Map<String, String> env) {
-    this.inAsSource = getProvider(inAsSource);
-    this.in = in;
+    this.in = getProvider(inAsSource);
     this.out = out;
     this.err = err;
     this.currentDir = currentDir;
@@ -109,18 +105,8 @@ public class RealZystem implements Zystem {
   }
 
   @Override
-  public Reader in() {
+  public Provider<Source<Character>> in() {
     return in;
-  }
-
-  @Override
-  public Source<Character> inAsSource() {
-    return inAsSource.get();
-  }
-
-  @Override
-  public Provider<Source<Character>> inProvider() {
-    return inAsSource;
   }
 
   //  @Override

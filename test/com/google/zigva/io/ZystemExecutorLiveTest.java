@@ -6,14 +6,10 @@ import com.google.inject.testing.guiceberry.GuiceBerryEnv;
 import com.google.inject.testing.guiceberry.junit3.GuiceBerryJunit3TestCase;
 import com.google.zigva.ZivaEnvs;
 import com.google.zigva.guice.ZystemSelfBuilder;
-import com.google.zigva.io.Readers;
-import com.google.zigva.io.ZivaTask;
-import com.google.zigva.io.Zystem;
 import com.google.zigva.io.Executor.Command;
 import com.google.zigva.lang.Waitable;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Map;
 
 @GuiceBerryEnv(ZivaEnvs.REGULAR)
@@ -39,7 +35,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     int threadCount = Thread.activeCount();
     super.runTest();
     //TODO: assert thread count!
-//    assertEquals(threadCount, Thread.activeCount());
+    assertEquals(threadCount, Thread.activeCount());
   }
   
 //  public void testSystemInReady() throws Exception {

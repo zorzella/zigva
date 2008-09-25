@@ -17,30 +17,24 @@ import java.io.Reader;
  */
 public class ActivePipe implements Runnable {
 
+  private final String name;
   private final BufferedWriter out;
   private final Source<Character> in;
 
-  public ActivePipe(Source<Character> in, BufferedWriter out) {
+  public ActivePipe(String name, Source<Character> in, BufferedWriter out) {
+    this.name = name;
     this.in = in;
     this.out = out;
   }
   
-  public ActivePipe(Source<Character> in, OutputStream out) {
+  public ActivePipe(String name, Source<Character> in, OutputStream out) {
+    this.name = name;
     this.in = in;
     this.out = Writers.buffered(out);
   }
 
-  public ActivePipe(InputStream in, OutputStream out) { 
-    this.in = new ReaderSource(Readers.buffered(in));
-    this.out = Writers.buffered(out);
-  }
-  
-  public ActivePipe(Reader in, OutputStream out) { 
-    this.in = new ReaderSource(in);
-    this.out = Writers.buffered(out);
-  }
-
-  public ActivePipe(InputStream in, Appendable out) {
+  public ActivePipe(String name, InputStream in, Appendable out) {
+    this.name = name;
     this.in = new ReaderSource(Readers.buffered(in));
     this.out = Writers.buffered(out);
   }
@@ -68,15 +62,15 @@ public class ActivePipe implements Runnable {
   }
   
   public ActivePipe copyWith(Source<Character> in) {
-    return new ActivePipe(in, this.out);
+    return new ActivePipe(name + " copy with in", in, this.out);
   }
 
   public ActivePipe copyWith(BufferedWriter out) {
-    return new ActivePipe(this.in, out);
+    return new ActivePipe(name + " copy with out", this.in, out);
   }
   
   public ActivePipeThread start() {
-    ActivePipeThread result = new ActivePipeThread(this);
+    ActivePipeThread result = new ActivePipeThread(name, this);
     result.start();
     return result;
   }
@@ -85,8 +79,8 @@ public class ActivePipe implements Runnable {
 
     private final ActivePipe activePipe;
 
-    public ActivePipeThread(ActivePipe activePipe) {
-      super("ActivePipeThread");
+    public ActivePipeThread(String name, ActivePipe activePipe) {
+      super("ActivePipeThread: " + name);
       this.activePipe = activePipe;
     }
     
