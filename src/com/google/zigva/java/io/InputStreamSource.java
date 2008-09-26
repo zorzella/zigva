@@ -93,35 +93,22 @@ public final class InputStreamSource implements Source<Integer> {
       throw new DataSourceClosedException();
     }
     isClosed = true;
-//    queue.clear();
-//    Thread.yield();
-//    if (this.producer.isAlive()) {
-      this.producer.interrupt();
-      if (consumer != null) {
-        consumer.interrupt();
+    this.producer.interrupt();
+    //TODO: use Circ Buffer instead
+    if (consumer != null) {
+      consumer.interrupt();
+    }
+    try {
+      this.producer.join(closeTimeout);
+      if (this.producer.isAlive()) {
+        throw new FailedToCloseException("Underlying stream is blocked. " +
+            "Until it unblocks, there will be a thread TODO... " +
+        "Suggest to use Interruptible");
       }
-//    }
-//    try {
-//      in.close();
-//    } catch (IOException e) {
-//      throw new RuntimeException(e);
-//    } finally {
-      try {
-        // TODO: I don't know if I can rely on "in.close()" always causing the
-        // blocked read on the producer thread to get an exception. If so, this
-        // is fine. Otherwise, we need to defensively code here...
-//        this.producer.join();
-        this.producer.join(closeTimeout);
-        if (this.producer.isAlive()) {
-          throw new FailedToCloseException("Underlying stream is blocked. " +
-          		"Until it unblocks, there will be a thread TODO... " +
-          		"Suggest to use Interruptible");
-        }
-        
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
-//    }
+
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
