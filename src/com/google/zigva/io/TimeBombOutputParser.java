@@ -2,8 +2,7 @@ package com.google.zigva.io;
 
 import java.io.IOException;
 
-
-public class TimeBombOutputParser implements Appendable{
+public class TimeBombOutputParser implements Appendable {
 
   public interface TimeBombCallBack {
 
