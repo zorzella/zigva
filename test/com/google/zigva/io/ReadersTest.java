@@ -1,6 +1,6 @@
 package com.google.zigva.io;
 
-import com.google.zigva.io.Readers;
+import com.google.zigva.java.io.Readers;
 
 import junit.framework.TestCase;
 

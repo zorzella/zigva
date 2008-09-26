@@ -4,11 +4,11 @@ package com.google.zigva.java;
 
 import com.google.inject.Provider;
 import com.google.zigva.io.FilePath;
-import com.google.zigva.io.Readers;
 import com.google.zigva.io.RealFileSpec;
 import com.google.zigva.io.Source;
 import com.google.zigva.io.Zystem;
-import com.google.zigva.sh.ReaderSource;
+import com.google.zigva.java.io.ReaderSource;
+import com.google.zigva.java.io.Readers;
 
 import java.io.File;
 import java.io.FileDescriptor;

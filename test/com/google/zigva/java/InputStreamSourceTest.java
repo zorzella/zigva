@@ -6,6 +6,7 @@ import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.FailedToCloseException;
 import com.google.zigva.io.Source;
+import com.google.zigva.java.io.InputStreamSource;
 
 import junit.framework.TestCase;
 

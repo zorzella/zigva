@@ -1,7 +1,8 @@
 package com.google.zigva.sh;
 
 
-import com.google.zigva.io.Readers;
+import com.google.zigva.java.io.ReaderSource;
+import com.google.zigva.java.io.Readers;
 
 import java.io.File;
 import java.io.IOException;
