@@ -1,4 +1,4 @@
-package com.google.zigva.io;
+package com.google.zigva.io.util;
 
 public interface AppendableLite {
 

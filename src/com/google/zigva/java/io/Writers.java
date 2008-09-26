@@ -1,6 +1,5 @@
 package com.google.zigva.java.io;
 
-import com.google.zigva.io.AppendableWriter;
 
 import java.io.BufferedWriter;
 import java.io.OutputStream;

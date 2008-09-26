@@ -6,9 +6,9 @@ import com.google.inject.Provider;
 import com.google.zigva.io.FilePath;
 import com.google.zigva.io.RealFileSpec;
 import com.google.zigva.io.Source;
-import com.google.zigva.io.Zystem;
 import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
+import com.google.zigva.lang.Zystem;
 
 import java.io.File;
 import java.io.FileDescriptor;

@@ -1,4 +1,5 @@
-package com.google.zigva.io;
+package com.google.zigva.io.util;
+
 
 public class AppendableFromLite implements Appendable {
 

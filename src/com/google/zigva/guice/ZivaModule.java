@@ -5,9 +5,9 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Scopes;
 import com.google.zigva.io.FileRepository;
-import com.google.zigva.io.Zystem;
 import com.google.zigva.java.JavaZystem;
 import com.google.zigva.java.RealFileRepository;
+import com.google.zigva.lang.Zystem;
 import com.google.zigva.sh.JavaProcessExecutor;
 import com.google.zigva.sh.RealJavaProcessExecutor;
 

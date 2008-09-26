@@ -1,4 +1,4 @@
-package com.google.zigva.io;
+package com.google.zigva.java.io;
 
 import java.io.File;
 import java.io.IOException;

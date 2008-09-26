@@ -1,6 +1,6 @@
 package com.google.zigva.io;
 
-import com.google.zigva.io.AppendableWriter;
+import com.google.zigva.java.io.AppendableWriter;
 
 import junit.framework.TestCase;
 

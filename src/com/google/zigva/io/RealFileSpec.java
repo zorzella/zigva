@@ -1,5 +1,7 @@
 package com.google.zigva.io;
 
+import com.google.zigva.java.io.JavaFileUtil;
+
 import java.io.File;
 import java.io.IOException;
 

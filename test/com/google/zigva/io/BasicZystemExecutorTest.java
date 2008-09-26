@@ -7,9 +7,9 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.zigva.guice.ZivaModule;
 import com.google.zigva.guice.ZystemSelfBuilder;
-import com.google.zigva.io.Zystem;
 import com.google.zigva.java.JavaZystem;
 import com.google.zigva.lang.Waitable;
+import com.google.zigva.lang.Zystem;
 
 
 import java.io.ByteArrayOutputStream;

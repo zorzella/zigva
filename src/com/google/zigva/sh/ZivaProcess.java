@@ -1,6 +1,6 @@
 package com.google.zigva.sh;
 
-import com.google.zigva.io.ZivaTask;
+import com.google.zigva.exec.ZivaTask;
 
 import java.io.IOException;
 

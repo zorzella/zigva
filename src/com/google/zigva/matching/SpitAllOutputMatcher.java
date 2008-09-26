@@ -1,4 +1,6 @@
-package com.google.zigva.io;
+package com.google.zigva.matching;
+
+import com.google.zigva.io.LineGrepperCallBack;
 
 import java.io.IOException;
 
