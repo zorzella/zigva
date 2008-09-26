@@ -31,6 +31,7 @@ public final class InputStreamSource implements Source<Integer> {
   private final Thread producer;
   private final BlockingQueue<Integer> queue;
   private final int closeTimeout;
+  private Thread consumer;
 
   public InputStreamSource(InputStream in) {
     this(in, DEFAULT_CAPACITY);
@@ -67,12 +68,22 @@ public final class InputStreamSource implements Source<Integer> {
           } while (dataPoint != -1 && !isClosed);
           //TODO: think!!!!
         } catch (InterruptedException e) {
-          throw new RuntimeException(e);
+          if (!isClosed) {
+            throw new RuntimeException(e);
+          }
+          // "Normal" code path -- we have either interrupted a blocked read or 
+          // put by closing this Source (cases "b" and "d" above).
         } catch (IOException e) {
           throw new RuntimeException(e);
+        } finally {
+          try {
+            in.close();
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
         }
       }
-    });
+    }, "InputStreamSource Producer");
     this.producer.start();
   }
   
@@ -82,12 +93,19 @@ public final class InputStreamSource implements Source<Integer> {
       throw new DataSourceClosedException();
     }
     isClosed = true;
-    queue.clear();
-    try {
-      in.close();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    } finally {
+//    queue.clear();
+//    Thread.yield();
+//    if (this.producer.isAlive()) {
+      this.producer.interrupt();
+      if (consumer != null) {
+        consumer.interrupt();
+      }
+//    }
+//    try {
+//      in.close();
+//    } catch (IOException e) {
+//      throw new RuntimeException(e);
+//    } finally {
       try {
         // TODO: I don't know if I can rely on "in.close()" always causing the
         // blocked read on the producer thread to get an exception. If so, this
@@ -96,14 +114,14 @@ public final class InputStreamSource implements Source<Integer> {
         this.producer.join(closeTimeout);
         if (this.producer.isAlive()) {
           throw new FailedToCloseException("Underlying stream is blocked. " +
-          		"Until it unblocks, there will be a thread TODO...");
+          		"Until it unblocks, there will be a thread TODO... " +
+          		"Suggest to use Interruptible");
         }
         
-      } catch (InterruptedException ex) {
-        // TODO: multiplex this exception with "e"
-        throw new RuntimeException(ex);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
       }
-    }
+//    }
   }
 
   @Override
@@ -113,9 +131,18 @@ public final class InputStreamSource implements Source<Integer> {
       return nextDataPoint == -1;
     }
     try {
+      //TODO: this is insanely inneficient, and not strictly correct -- since
+      // there could be more than one thread reading from a Source. I need my
+      // own take on blocking queues to solve this
+      consumer = Thread.currentThread();
       nextDataPoint = queue.take();
+      consumer = null;
     } catch (InterruptedException e) {
-      throw new RuntimeException(e);
+      if (!isClosed) {
+        throw new RuntimeException(e);
+      }
+      // We have closed this Source while a thread was blocked on "take"
+      throw new DataSourceClosedException();
     }
     return nextDataPoint == -1;
   }

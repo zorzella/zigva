@@ -11,6 +11,7 @@ import com.google.zigva.io.Zystem;
 import com.google.zigva.sh.ReaderSource;
 
 import java.io.File;
+import java.io.FileDescriptor;
 
 public final class JavaZystem {
 
@@ -25,7 +26,7 @@ public final class JavaZystem {
   }
 
   private static final ReaderSource READER_SOURCE = 
-    new ReaderSource(Readers.buffered(System.in));
+    new ReaderSource(Readers.buffered(FileDescriptor.in));
   
   private static Provider<Source<Character>> createIn() {
     return new Provider<Source<Character>>() {

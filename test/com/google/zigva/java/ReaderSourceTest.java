@@ -165,6 +165,9 @@ public class ReaderSourceTest extends TestCase {
     }
     // The thing *really* being tested here is the thread count
   }
+  
+//  ZeroStre
+  
 }
 
 
