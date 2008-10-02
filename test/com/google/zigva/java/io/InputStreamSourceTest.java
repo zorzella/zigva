@@ -1,5 +1,5 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
-package com.google.zigva.java;
+package com.google.zigva.java.io;
 
 import com.google.common.collect.Lists;
 import com.google.zigva.io.DataSourceClosedException;
