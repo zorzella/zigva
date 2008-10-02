@@ -12,16 +12,21 @@ import java.io.Reader;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+/**
+ * Implementation of {@link Source} backed by a {@link Reader}.
+ * 
+ * @author Luiz-Otavio Zorzella
+ */
 public class ReaderSource implements Source<Character> {
 
   private static final int DEFAULT_CAPACITY = 100;
   private static final int DEFAULT_CLOSE_TIMEOUT = 500;
 
-  private final Reader in;
-  private final int closeTimeout;
+  private final Thread producer;
   //TODO: can't have BlockingQueue<Character> because of "-1". Think 
   private final BlockingQueue<Integer> queue;
-  private final Thread producer;
+  private final int closeTimeout;
+  private final Reader in;
 
   private boolean isClosed;
   private Integer nextDataPoint;
@@ -51,7 +56,11 @@ public class ReaderSource implements Source<Character> {
           } while (dataPoint != -1 && !isClosed);
           //TODO: think!!!!
         } catch (InterruptedException e) {
-          throw new RuntimeException(e);
+          if (!isClosed) {
+            throw new RuntimeException(e);
+          }
+          // "Normal" code path -- we have either interrupted a blocked read or 
+          // put by closing this Source (cases "b" and "d" above).
         } catch (IOException e) {
           throw new RuntimeException(e);
         }

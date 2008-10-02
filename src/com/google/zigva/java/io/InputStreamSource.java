@@ -1,4 +1,3 @@
-// Copyright 2008 Google Inc.  All Rights Reserved.
 // Copyright 2008 Google Inc. All Rights Reserved.
 
 package com.google.zigva.java.io;
@@ -20,21 +19,21 @@ import java.util.concurrent.BlockingQueue;
  * @author Luiz-Otavio Zorzella
  * @author John Thomas
  */
-public final class InputStreamSource implements Source<Integer> {
+public class InputStreamSource implements Source<Integer> {
 
   private static final int DEFAULT_CAPACITY = 100;
   private static final int DEFAULT_CLOSE_TIMEOUT = 500;
   
-  private final InputStream in;
-  private boolean isClosed;
-  private Integer nextDataPoint;
   private final Thread producer;
   private final BlockingQueue<Integer> queue;
   private final int closeTimeout;
+
   private Thread consumer;
+  private boolean isClosed;
+  private Integer nextDataPoint;
 
   public InputStreamSource(InputStream in) {
-    this(in, DEFAULT_CAPACITY);
+    this(in, DEFAULT_CAPACITY, DEFAULT_CLOSE_TIMEOUT);
   }
 
   public InputStreamSource(final InputStream in, int capacity) {
@@ -50,11 +49,11 @@ public final class InputStreamSource implements Source<Integer> {
    *   b) Close while "dataPoint = in.read();" is blocking
    *   c) Close right before "queue.put(dataPoint);"
    *   d) Close while "queue.put(dataPoint);" is blocking
+   *   e) Close right after "queue.put(dataPoint);"
    * 
    * There should be tests for each.
    */
   public InputStreamSource(final InputStream in, int capacity, int closeTimeout) {
-    this.in = in;
     this.closeTimeout = closeTimeout;
     this.queue = new ArrayBlockingQueue<Integer>(capacity);
     this.producer = new Thread (new Runnable() {
@@ -63,10 +62,10 @@ public final class InputStreamSource implements Source<Integer> {
         try {
           int dataPoint;
           do  {
+            // There's a race condition here with "close". Use a sync block with Circ Buffer?
             dataPoint = in.read();
             queue.put(dataPoint);
           } while (dataPoint != -1 && !isClosed);
-          //TODO: think!!!!
         } catch (InterruptedException e) {
           if (!isClosed) {
             throw new RuntimeException(e);
@@ -86,7 +85,7 @@ public final class InputStreamSource implements Source<Integer> {
     }, "InputStreamSource Producer");
     this.producer.start();
   }
-  
+
   @Override
   public void close() {
     if (isClosed) {
