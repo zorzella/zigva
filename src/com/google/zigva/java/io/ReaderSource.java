@@ -1,6 +1,7 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
 package com.google.zigva.java.io;
 
+import com.google.zigva.collections.CircularBuffer;
 import com.google.zigva.io.DataNotReadyException;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
@@ -9,8 +10,6 @@ import com.google.zigva.io.Source;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * Implementation of {@link Source} backed by a {@link Reader}.
@@ -21,13 +20,11 @@ public class ReaderSource implements Source<Character> {
 
   private static final int DEFAULT_CAPACITY = 100;
   private static final int DEFAULT_CLOSE_TIMEOUT = 500;
-
+  
   private final Thread producer;
-  //TODO: can't have BlockingQueue<Character> because of "-1". Think 
-  private final BlockingQueue<Integer> queue;
-  //  private final CircularBuffer<Integer> queue;
+  //TODO: can't have CircularBuffer<Character> because of "-1". Think 
+  private final CircularBuffer<Integer> queue;
   private final int closeTimeout;
-  private final Reader in;
 
   private boolean isClosed;
   private Integer nextDataPoint;
@@ -54,20 +51,20 @@ public class ReaderSource implements Source<Character> {
    * There should be tests for each.
    */
   public ReaderSource(final Reader in, int capacity, int closeTimeout) {
-    this.in = in;
     this.closeTimeout = closeTimeout;
-    this.queue = new ArrayBlockingQueue<Integer>(capacity);
-    //    this.queue = new CircularBuffer<Integer>(capacity);
+    this.queue = new CircularBuffer<Integer>(capacity);
     this.producer = new Thread (new Runnable() {
       @Override
       public void run() {
         try {
           int dataPoint;
           do  {
-            //TODO: might make better use of "isReady"
             // TODO: simply use read(char[]) to avoid the cast
             dataPoint = in.read();
-            queue.put(dataPoint);
+            Object lock = queue.lock();
+              synchronized(lock) {
+              queue.enq(dataPoint);
+            }
           } while (dataPoint != -1 && !isClosed);
         } catch (InterruptedException e) {
           if (!isClosed) {
@@ -77,6 +74,12 @@ public class ReaderSource implements Source<Character> {
           // put by closing this Source (cases "b" and "d" above).
         } catch (IOException e) {
           throw new RuntimeException(e);
+        } finally {
+          try {
+            in.close();
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
         }
       }
     }, "ReaderSource Thread");
@@ -89,27 +92,22 @@ public class ReaderSource implements Source<Character> {
       throw new DataSourceClosedException();
     }
     isClosed = true;
-    queue.clear();
+    this.producer.interrupt();
+    Object lock = this.queue.lock();
+    queue.interrupt();
+    synchronized(lock) {
+      lock.notifyAll();
+    }
     try {
-      in.close();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    } finally {
-      try {
-        // TODO: I don't know if I can rely on "in.close()" always causing the
-        // blocked read on the producer thread to get an exception. If so, this
-        // is fine. Otherwise, we need to defensively code here...
-//        this.producer.join();
-        this.producer.join(closeTimeout);
-        if (this.producer.isAlive()) {
-          throw new FailedToCloseException("Underlying stream is blocked. " +
-                "Until it unblocks, there will be a thread TODO...");
-        }
-        
-      } catch (InterruptedException ex) {
-        // TODO: multiplex this exception with "e"
-        throw new RuntimeException(ex);
+      this.producer.join(closeTimeout);
+      if (this.producer.isAlive()) {
+        throw new FailedToCloseException("Underlying stream is blocked. " +
+            "Until it unblocks, there will be a thread TODO... " +
+        "Suggest to use Interruptible");
       }
+
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -120,9 +118,13 @@ public class ReaderSource implements Source<Character> {
       return nextDataPoint == -1;
     }
     try {
-      nextDataPoint = queue.take();
+        nextDataPoint = queue.deq();
     } catch (InterruptedException e) {
-      throw new RuntimeException(e);
+      if (!isClosed) {
+        throw new RuntimeException(e);
+      }
+      // We have closed this Source while a thread was blocked on "take"
+      throw new DataSourceClosedException();
     }
     return nextDataPoint == -1;
   }
