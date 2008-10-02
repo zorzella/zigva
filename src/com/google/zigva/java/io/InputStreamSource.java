@@ -2,6 +2,7 @@
 
 package com.google.zigva.java.io;
 
+import com.google.zigva.collections.CircularBuffer;
 import com.google.zigva.io.DataNotReadyException;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
@@ -10,8 +11,6 @@ import com.google.zigva.io.Source;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * Implementation of {@link Source} backed by an {@link InputStream}.
@@ -25,10 +24,9 @@ public class InputStreamSource implements Source<Integer> {
   private static final int DEFAULT_CLOSE_TIMEOUT = 500;
   
   private final Thread producer;
-  private final BlockingQueue<Integer> queue;
+  private final CircularBuffer<Integer> queue;
   private final int closeTimeout;
 
-  private Thread consumer;
   private boolean isClosed;
   private Integer nextDataPoint;
 
@@ -55,16 +53,18 @@ public class InputStreamSource implements Source<Integer> {
    */
   public InputStreamSource(final InputStream in, int capacity, int closeTimeout) {
     this.closeTimeout = closeTimeout;
-    this.queue = new ArrayBlockingQueue<Integer>(capacity);
+    this.queue = new CircularBuffer<Integer>(capacity);
     this.producer = new Thread (new Runnable() {
       @Override
       public void run() {
         try {
           int dataPoint;
           do  {
-            // There's a race condition here with "close". Use a sync block with Circ Buffer?
             dataPoint = in.read();
-            queue.put(dataPoint);
+            Object lock = queue.lock();
+              synchronized(lock) {
+              queue.enq(dataPoint);
+            }
           } while (dataPoint != -1 && !isClosed);
         } catch (InterruptedException e) {
           if (!isClosed) {
@@ -93,9 +93,10 @@ public class InputStreamSource implements Source<Integer> {
     }
     isClosed = true;
     this.producer.interrupt();
-    //TODO: use Circ Buffer instead
-    if (consumer != null) {
-      consumer.interrupt();
+    Object lock = this.queue.lock();
+    queue.interrupt();
+    synchronized(lock) {
+      lock.notifyAll();
     }
     try {
       this.producer.join(closeTimeout);
@@ -117,12 +118,7 @@ public class InputStreamSource implements Source<Integer> {
       return nextDataPoint == -1;
     }
     try {
-      //TODO: this is insanely inneficient, and not strictly correct -- since
-      // there could be more than one thread reading from a Source. I need my
-      // own take on blocking queues to solve this
-      consumer = Thread.currentThread();
-      nextDataPoint = queue.take();
-      consumer = null;
+        nextDataPoint = queue.deq();
     } catch (InterruptedException e) {
       if (!isClosed) {
         throw new RuntimeException(e);
