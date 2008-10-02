@@ -62,7 +62,7 @@ public class ReaderSource implements Source<Character> {
             // TODO: simply use read(char[]) to avoid the cast
             dataPoint = in.read();
             Object lock = queue.lock();
-              synchronized(lock) {
+            synchronized(lock) {
               queue.enq(dataPoint);
             }
           } while (dataPoint != -1 && !isClosed);

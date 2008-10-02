@@ -62,7 +62,7 @@ public class InputStreamSource implements Source<Integer> {
           do  {
             dataPoint = in.read();
             Object lock = queue.lock();
-              synchronized(lock) {
+            synchronized(lock) {
               queue.enq(dataPoint);
             }
           } while (dataPoint != -1 && !isClosed);
