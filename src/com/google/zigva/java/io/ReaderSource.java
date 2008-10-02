@@ -25,6 +25,7 @@ public class ReaderSource implements Source<Character> {
   //TODO: can't have CircularBuffer<Character> because of "-1". Think 
   private final CircularBuffer<Integer> queue;
   private final int closeTimeout;
+  private final Object lock;
 
   private boolean isClosed;
   private Integer nextDataPoint;
@@ -52,7 +53,8 @@ public class ReaderSource implements Source<Character> {
    */
   public ReaderSource(final Reader in, int capacity, int closeTimeout) {
     this.closeTimeout = closeTimeout;
-    this.queue = new CircularBuffer<Integer>(capacity);
+    this.lock = "LOCK";
+    this.queue = new CircularBuffer<Integer>(capacity, lock);
     this.producer = new Thread (new Runnable() {
       @Override
       public void run() {
@@ -61,7 +63,6 @@ public class ReaderSource implements Source<Character> {
           do  {
             // TODO: simply use read(char[]) to avoid the cast
             dataPoint = in.read();
-            Object lock = queue.lock();
             synchronized(lock) {
               queue.enq(dataPoint);
             }
@@ -93,7 +94,6 @@ public class ReaderSource implements Source<Character> {
     }
     isClosed = true;
     this.producer.interrupt();
-    Object lock = this.queue.lock();
     queue.interrupt();
     synchronized(lock) {
       lock.notifyAll();

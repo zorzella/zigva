@@ -26,6 +26,7 @@ public class InputStreamSource implements Source<Integer> {
   private final Thread producer;
   private final CircularBuffer<Integer> queue;
   private final int closeTimeout;
+  private final Object lock;
 
   private boolean isClosed;
   private Integer nextDataPoint;
@@ -53,7 +54,8 @@ public class InputStreamSource implements Source<Integer> {
    */
   public InputStreamSource(final InputStream in, int capacity, int closeTimeout) {
     this.closeTimeout = closeTimeout;
-    this.queue = new CircularBuffer<Integer>(capacity);
+    this.lock = "LOCK";
+    this.queue = new CircularBuffer<Integer>(capacity, lock);
     this.producer = new Thread (new Runnable() {
       @Override
       public void run() {
@@ -61,7 +63,6 @@ public class InputStreamSource implements Source<Integer> {
           int dataPoint;
           do  {
             dataPoint = in.read();
-            Object lock = queue.lock();
             synchronized(lock) {
               queue.enq(dataPoint);
             }
@@ -93,7 +94,6 @@ public class InputStreamSource implements Source<Integer> {
     }
     isClosed = true;
     this.producer.interrupt();
-    Object lock = this.queue.lock();
     queue.interrupt();
     synchronized(lock) {
       lock.notifyAll();

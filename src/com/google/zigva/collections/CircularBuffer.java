@@ -5,15 +5,21 @@ public class CircularBuffer<T> {
 
   private final T[] buffer;
   private final int capacity;
+  private final Object lock;
 
   private int nextReadPos = 0;
   private int amountOfData = 0;
   private boolean interrupted;
 
-  @SuppressWarnings("unchecked")
   public CircularBuffer(int capacity) {
+    this(capacity, "LOCK");
+  }
+  
+  @SuppressWarnings("unchecked")
+  public CircularBuffer(int capacity, Object lock) {
     this.buffer = (T[]) new Object[capacity];
     this.capacity = capacity;
+    this.lock = lock;
   }
 
   /**
@@ -24,31 +30,31 @@ public class CircularBuffer<T> {
    * the {@link InterruptedException}.
    */
   public void interrupt() {
-    synchronized(buffer) {
+    synchronized(lock) {
       interrupted = true;
-      buffer.notifyAll();
+      lock.notifyAll();
     }
   }
   
   public CircularBuffer<T> enq(T c) throws InterruptedException {
-    synchronized(buffer) {
+    synchronized(lock) {
       while (amountOfData == capacity) {
-        buffer.wait();
+        lock.wait();
         if (interrupted) {
           throw new InterruptedException();
         }
       }
       buffer[((nextReadPos + amountOfData) % capacity)] = c;
       amountOfData++;
-      buffer.notifyAll();
+      lock.notifyAll();
       return this;
     }
   }
 
   public T deq() throws InterruptedException {
-    synchronized(buffer) {
+    synchronized(lock) {
       while (amountOfData == 0) {
-        buffer.wait();
+        lock.wait();
         if (interrupted) {
           throw new InterruptedException();
         }
@@ -56,16 +62,12 @@ public class CircularBuffer<T> {
       T result = buffer[nextReadPos];
       nextReadPos = (nextReadPos + 1) % capacity;
       amountOfData--;
-      buffer.notifyAll();
+      lock.notifyAll();
       return result;
     }
   }
   
   public int size() {
     return amountOfData;
-  }
-  
-  public Object lock() {
-    return buffer;
   }
 }
