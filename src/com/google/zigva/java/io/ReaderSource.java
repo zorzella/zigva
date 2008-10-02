@@ -25,6 +25,7 @@ public class ReaderSource implements Source<Character> {
   private final Thread producer;
   //TODO: can't have BlockingQueue<Character> because of "-1". Think 
   private final BlockingQueue<Integer> queue;
+  //  private final CircularBuffer<Integer> queue;
   private final int closeTimeout;
   private final Reader in;
 
@@ -39,10 +40,24 @@ public class ReaderSource implements Source<Character> {
     this(in, capacity, DEFAULT_CLOSE_TIMEOUT);
   }
   
+  /*
+   * There are 2 possible ways for the Producer to end:
+   * 
+   * 1) Sunnycase: on  "} while (dataPoint != -1);"
+   * 2) If te Source is closed. In this case, there are 4 distinct states:
+   *   a) Close rigth before "dataPoint = in.read();"
+   *   b) Close while "dataPoint = in.read();" is blocking
+   *   c) Close right before "queue.put(dataPoint);"
+   *   d) Close while "queue.put(dataPoint);" is blocking
+   *   e) Close right after "queue.put(dataPoint);"
+   * 
+   * There should be tests for each.
+   */
   public ReaderSource(final Reader in, int capacity, int closeTimeout) {
     this.in = in;
     this.closeTimeout = closeTimeout;
     this.queue = new ArrayBlockingQueue<Integer>(capacity);
+    //    this.queue = new CircularBuffer<Integer>(capacity);
     this.producer = new Thread (new Runnable() {
       @Override
       public void run() {
@@ -54,7 +69,6 @@ public class ReaderSource implements Source<Character> {
             dataPoint = in.read();
             queue.put(dataPoint);
           } while (dataPoint != -1 && !isClosed);
-          //TODO: think!!!!
         } catch (InterruptedException e) {
           if (!isClosed) {
             throw new RuntimeException(e);

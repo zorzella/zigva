@@ -35,7 +35,7 @@ public class InputStreamSource implements Source<Integer> {
   }
 
   public InputStreamSource(final InputStream in, int capacity) {
-    this(in, DEFAULT_CAPACITY, DEFAULT_CLOSE_TIMEOUT);
+    this(in, capacity, DEFAULT_CLOSE_TIMEOUT);
   }
   
   /*
