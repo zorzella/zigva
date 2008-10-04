@@ -38,9 +38,11 @@ public class ZivaProcess implements ZivaTask {
       if (err != null) {
         err.join();
       }
-//      if (in != null) {
-//        in.interrupt();
-//      }
+      if (in != null) {
+        if (in.getState() != Thread.State.TERMINATED) {
+          in.interrupt();
+        }
+      }
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }

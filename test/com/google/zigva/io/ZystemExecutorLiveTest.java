@@ -37,6 +37,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     int threadCount = Thread.activeCount();
     super.runTest();
     //TODO: assert thread count!
+    Thread.sleep(100);
     assertEquals(threadCount, Thread.activeCount());
   }
   

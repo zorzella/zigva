@@ -6,22 +6,41 @@ import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.Source;
 
-public class SourceSource<T> implements Source<T> {
+public class SpecialSourceSource<T> implements Source<T> {
 
   private final Source<T> source;
+  private final Object lock;
+  
+  private boolean isClosed;
 
-  public SourceSource(Source<T> source) {
+  public SpecialSourceSource(Source<T> source, Object lock) {
     this.source = source;
+    this.lock = lock;
   }
-
+  
   @Override
   public void close() {
-    source.close();
+    synchronized (lock) {
+      isClosed = true;
+      lock.notifyAll();
+    }
   }
 
   @Override
   public boolean isEndOfStream() throws DataSourceClosedException {
-    return source.isEndOfStream();
+    synchronized (lock) {
+      while (!source.isReady()) {
+        try {
+          lock.wait();
+        } catch (InterruptedException e) {
+          if (!isClosed) {
+            throw new RuntimeException(e);
+          }
+          throw new DataSourceClosedException();
+        }
+      }
+      return source.isEndOfStream();
+    }
   }
 
   @Override

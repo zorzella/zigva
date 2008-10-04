@@ -38,6 +38,10 @@ public class ReaderSource implements Source<Character> {
     this(in, capacity, DEFAULT_CLOSE_TIMEOUT);
   }
   
+  public ReaderSource(final Reader in, int capacity, int closeTimeout) {
+    this(in, capacity, closeTimeout, "LOCK");
+  }
+  
   /*
    * There are 2 possible ways for the Producer to end:
    * 
@@ -51,9 +55,9 @@ public class ReaderSource implements Source<Character> {
    * 
    * There should be tests for each.
    */
-  public ReaderSource(final Reader in, int capacity, int closeTimeout) {
+  public ReaderSource(final Reader in, int capacity, int closeTimeout, Object lock) {
     this.closeTimeout = closeTimeout;
-    this.lock = "LOCK";
+    this.lock = lock;
     this.queue = new CircularBuffer<Integer>(capacity, lock);
     this.producer = new Thread (new Runnable() {
       @Override
@@ -63,7 +67,7 @@ public class ReaderSource implements Source<Character> {
           do  {
             // TODO: simply use read(char[]) to avoid the cast
             dataPoint = in.read();
-            synchronized(lock) {
+            synchronized(ReaderSource.this.lock) {
               queue.enq(dataPoint);
             }
           } while (dataPoint != -1 && !isClosed);

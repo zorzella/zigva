@@ -15,6 +15,11 @@ import java.io.FileDescriptor;
 
 public final class JavaZystem {
 
+  private static final Object LOCK = "System in lock";
+
+  private static final ReaderSource READER_SOURCE = 
+    new ReaderSource(Readers.buffered(FileDescriptor.in), 100, 500, LOCK);
+  
   public static Zystem get() {
     return new RealZystem(
         createIn(), 
@@ -25,14 +30,11 @@ public final class JavaZystem {
         );
   }
 
-  private static final ReaderSource READER_SOURCE = 
-    new ReaderSource(Readers.buffered(FileDescriptor.in));
-  
   private static Provider<Source<Character>> createIn() {
     return new Provider<Source<Character>>() {
       @Override
       public Source<Character> get() {
-        return new SourceSource<Character>(READER_SOURCE, true);
+        return new SpecialSourceSource<Character>(READER_SOURCE, LOCK);
       }
     };
   }

@@ -42,7 +42,7 @@ public class ActivePipe implements Runnable {
 
   public void run(){
     try {
-      char[] cbuf = new char[1];
+//      char[] cbuf = new char[1];
 //      while (!in.ready()) {
 //        Thread.sleep(500);
 //      }
@@ -93,5 +93,12 @@ public class ActivePipe implements Runnable {
     public void run() {
       activePipe.run();
     }
+    
+    @Override
+    public void interrupt() {
+      activePipe.in.close();
+      super.interrupt();
+    }
+    
   }
 }
