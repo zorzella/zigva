@@ -13,11 +13,11 @@ import java.io.Closeable;
  * @author Luiz-Otavio Zorzella, John Thomas
  *
  */
-public interface Sink extends Closeable {
+public interface Sink<T> extends Closeable {
 
   /**
    * Returns true if this {@link Sink} is ready to receive more data -- i.e., 
-   * calling {@link #write(int)} will not block.
+   * calling {@link #write(Object)} will not block.
    *
    * @throws DataSourceClosedException if this {@link Sink} has been closed
    */
@@ -29,12 +29,12 @@ public interface Sink extends Closeable {
    * 
    * @throws DataSourceClosedException if this {@link Sink} has been closed
    */
-  void write(int data) throws DataSourceClosedException;
+  void write(T data) throws DataSourceClosedException;
 
   /**
    * Closes this {@link Sink}, and releases all resources it holds.
    * 
-   * <p>If a thread is currently blocked on {@link #write(int)} it gets 
+   * <p>If a thread is currently blocked on {@link #write(Object)} it gets 
    * a {@link DataSourceClosedException}.
    * 
    * <p>Any further attempt to call any method in this class will get a 

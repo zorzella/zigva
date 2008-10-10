@@ -61,6 +61,11 @@ public class Executor {
     }
 
     @Override
+    public String toString() {
+      return String.format("[%s:%s]", zystem.toString(), commands.toString());
+    }
+    
+    @Override
     public ZivaTask execute() {
       Source<Character> nextIn = zystem.in().get();
       Appendable nextOut;// = zystem.out();

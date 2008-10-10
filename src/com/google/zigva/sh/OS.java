@@ -44,14 +44,15 @@ public class OS {
         .start();
       Thread outS  = new ActivePipe("OS - sysout", p.getInputStream(), out).start();
       Thread errS = new ActivePipe("OS - syserr", p.getErrorStream(), err).start();
+      Thread inS = null;
       if (in == null) {
         p.getOutputStream().close();
       } else {
-        Thread inS = new ActivePipe("OS - sysin",
+        inS = new ActivePipe("OS - sysin",
             new ReaderSource(Readers.buffered(in)), 
             p.getOutputStream()).start();
       }
-      return new ZivaProcess(p, outS, errS);
+      return new ZivaProcess(p, inS, outS, errS);
     } catch (IOException e) {
       // TODO 
       throw new RuntimeException(e);

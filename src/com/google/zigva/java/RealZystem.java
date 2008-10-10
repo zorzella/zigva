@@ -60,6 +60,11 @@ public class RealZystem implements Zystem {
   }
 
   @Override
+  public String toString() {
+    return String.format("[%s]", currentDir);
+  }
+
+  @Override
   public String getHostname() {
     String temp = null;
     try {
@@ -118,4 +123,5 @@ public class RealZystem implements Zystem {
 //  public Reader getReader() {
 //    return Readers.buffered(in());
 //  }
+  
 }

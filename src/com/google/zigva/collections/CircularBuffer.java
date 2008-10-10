@@ -70,4 +70,12 @@ public class CircularBuffer<T> {
   public int size() {
     return amountOfData;
   }
+  
+  public boolean isEmpty() {
+    return amountOfData == 0;
+  }
+
+  public boolean isFull() {
+    return amountOfData == capacity;
+  }
 }

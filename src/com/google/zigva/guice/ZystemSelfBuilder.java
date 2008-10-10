@@ -116,4 +116,8 @@ public final class ZystemSelfBuilder implements Zystem {
 //  public Reader getReader() {
 //    return zystem.in();
 //  }      
+  @Override
+  public String toString() {
+    return zystem.toString();
+  }
 }

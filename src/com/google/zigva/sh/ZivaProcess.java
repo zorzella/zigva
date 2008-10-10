@@ -18,22 +18,9 @@ public class ZivaProcess implements ZivaTask {
     this.err = err;
   }
     
-  @Deprecated
-  public ZivaProcess(Process process, Thread out, Thread err) {
-    this.process = process;
-    this.in = null;
-    this.out = out;
-    this.err = err;
-  }
-
   public void waitFor() {
     try {
       process.waitFor();
-      // TODO: think about this
-//      if (in != null) {
-//        in.join();
-//      } // TODO: This is in the wrong place -- should be done even if "waitFor" is never called! 
-      //TODO(zorzella): do not allow for null!
       out.join();
       if (err != null) {
         err.join();
@@ -42,6 +29,7 @@ public class ZivaProcess implements ZivaTask {
         if (in.getState() != Thread.State.TERMINATED) {
           in.interrupt();
         }
+        in.join();
       }
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
@@ -55,9 +43,11 @@ public class ZivaProcess implements ZivaTask {
   public Process process() {
     return this.process;
   }
-  
+
+  //TODO: Close input stream also?
   public void kill() {
     try {
+      //TODO: why do we need to do this?
       this.process.getErrorStream().close();
       this.process.getOutputStream().close();
     } catch (IOException e) {

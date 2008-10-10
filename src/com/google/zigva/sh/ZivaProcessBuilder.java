@@ -106,15 +106,16 @@ public class ZivaProcessBuilder {
           process.getInputStream(), localOut).start();
       Thread errS = new ActivePipe("ZivaProcessBuilder - err", 
           process.getErrorStream(), localErr).start();
+      Thread inS = null;
       if (in == null) {
         process.getOutputStream().close();
       } else {
-        Thread inS = new ActivePipe(
+        inS = new ActivePipe(
             "ZivaProcessBuilder - in", 
             new ReaderSource(Readers.buffered(in)), 
             process.getOutputStream()).start();
       }
-      return new ZivaProcess(process, outS, errS);
+      return new ZivaProcess(process, inS, outS, errS);
     } catch (IOException e) {
       // TODO 
       throw new RuntimeException(e);
