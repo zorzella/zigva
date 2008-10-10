@@ -1,10 +1,12 @@
 package com.google.zigva.java.io;
 
-
 import java.io.BufferedWriter;
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.channels.Channels;
 
 public class Writers {
 
@@ -23,4 +25,13 @@ public class Writers {
       }
     }
   }
+  
+  public static BufferedWriter buffered(FileDescriptor out) {
+    BufferedWriter result = new BufferedWriter(
+        new OutputStreamWriter(
+            Channels.newOutputStream(
+                new FileOutputStream(out).getChannel())));
+    return result;
+  }
+
 }

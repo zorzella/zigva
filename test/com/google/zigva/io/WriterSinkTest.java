@@ -26,4 +26,10 @@ public class WriterSinkTest extends TestCase {
     
   }
   
+  public void testBar() {
+    System.out.println("foo");
+    System.out.close();
+    System.out.println("bar");
+  }
+  
 }

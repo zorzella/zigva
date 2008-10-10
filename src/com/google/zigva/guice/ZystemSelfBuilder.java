@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.zigva.exec.Executor;
 import com.google.zigva.io.FilePath;
+import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
 import com.google.zigva.java.Propertiez;
 import com.google.zigva.java.RealZystem;
@@ -56,6 +57,7 @@ public final class ZystemSelfBuilder implements Zystem {
     return new ZystemSelfBuilder(
         new RealZystem(
             zystem.in(), 
+            null,
             otherOut, 
             err(), 
             getCurrentDir(), getHomeDir(), zystem.env()));
@@ -64,7 +66,8 @@ public final class ZystemSelfBuilder implements Zystem {
   public ZystemSelfBuilder withErr(Appendable otherErr) {
     return new ZystemSelfBuilder(
         new RealZystem(
-            zystem.in(), 
+            zystem.in(),
+            zystem.outAsSink(), 
             out(), 
             otherErr, 
             getCurrentDir(), getHomeDir(), zystem.env()));
@@ -83,18 +86,41 @@ public final class ZystemSelfBuilder implements Zystem {
   public ZystemSelfBuilder withEnv(Map<String, String> otherEnv) {
     return new ZystemSelfBuilder(
         new RealZystem(
-            zystem.in(), 
+            zystem.in(),
+            zystem.outAsSink(),
             out(), 
             err(), 
             getCurrentDir(), 
             getHomeDir(), otherEnv));
   }
 
+  //TODO: use Providers
+  private static <T> Provider<T> getProvider(final T provided) {
+    return new Provider<T> () {
+      @Override
+      public T get() {
+        return provided;
+      }
+    };
+  }
+
   public ZystemSelfBuilder withIn(Source<Character> otherIn) {
     return new ZystemSelfBuilder(
         new RealZystem(
-            otherIn,
-            null, 
+            getProvider(otherIn),
+            zystem.outAsSink(), 
+            out(), 
+            err(), 
+            getCurrentDir(), 
+            getHomeDir(), 
+            zystem.env()));
+  }
+
+  public ZystemSelfBuilder withOut(Sink<Character> otherOut) {
+    return new ZystemSelfBuilder(
+        new RealZystem(
+            zystem.in(),
+            getProvider(otherOut), 
             out(), 
             err(), 
             getCurrentDir(), 
@@ -119,5 +145,10 @@ public final class ZystemSelfBuilder implements Zystem {
   @Override
   public String toString() {
     return zystem.toString();
+  }
+
+  @Override
+  public Provider<Sink<Character>> outAsSink() {
+    return zystem.outAsSink();
   }
 }

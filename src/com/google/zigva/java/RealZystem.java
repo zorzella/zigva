@@ -3,61 +3,65 @@ package com.google.zigva.java;
 import com.google.inject.Provider;
 import com.google.zigva.exec.Executor;
 import com.google.zigva.io.FilePath;
+import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.Zystem;
 
-import java.io.Reader;
 import java.net.UnknownHostException;
 import java.util.Map;
 
 public class RealZystem implements Zystem {
 
-  private final Provider<Source<Character>> in;
+  private final Provider<Source<Character>> inProvider;
   private final Appendable out;
   private final Appendable err;
   private FilePath currentDir;
   private final FilePath homeDir;
   private final Map<String, String> env;
+  private final Provider<Sink<Character>> outAsSinkProvider;
   
   public RealZystem(
-      Provider<Source<Character>> in,
+      Provider<Source<Character>> inProvider,
+      Provider<Sink<Character>> outAsSinkProvider,
       Appendable out,
       Appendable err,
       FilePath currentDir, 
       FilePath homeDir, 
       Map<String, String> env) {
-    this.in = in;
+    this.inProvider = inProvider;
     this.out = out;
+    this.outAsSinkProvider = outAsSinkProvider;
     this.err = err;
     this.currentDir = currentDir;
     this.homeDir = homeDir;
     this.env = env;
   }
   
-  public RealZystem(
-      Source<Character> inAsSource,
-      Reader in,
-      Appendable out,
-      Appendable err,
-      FilePath currentDir, 
-      FilePath homeDir, 
-      Map<String, String> env) {
-    this.in = getProvider(inAsSource);
-    this.out = out;
-    this.err = err;
-    this.currentDir = currentDir;
-    this.homeDir = homeDir;
-    this.env = env;
-  }
-
-  private static Provider<Source<Character>> getProvider(final Source<Character> inAsSource2) {
-    return new Provider<Source<Character>> () {
-      @Override
-      public Source<Character> get() {
-        return inAsSource2;
-      }
-    };
-  }
+//  public RealZystem(
+//      Source<Character> inAsSource,
+//      Sink<Character> outAsSink,
+//      Appendable out,
+//      Appendable err,
+//      FilePath currentDir, 
+//      FilePath homeDir, 
+//      Map<String, String> env) {
+//    this.inProvider = getProvider(inAsSource);
+//    this.out = out;
+//    this.outAsSinkProvider = getProvider(outAsSink);
+//    this.err = err;
+//    this.currentDir = currentDir;
+//    this.homeDir = homeDir;
+//    this.env = env;
+//  }
+//
+//  private static <T> Provider<T> getProvider(final T inAsSource2) {
+//    return new Provider<T> () {
+//      @Override
+//      public T get() {
+//        return inAsSource2;
+//      }
+//    };
+//  }
 
   @Override
   public String toString() {
@@ -111,7 +115,12 @@ public class RealZystem implements Zystem {
 
   @Override
   public Provider<Source<Character>> in() {
-    return in;
+    return inProvider;
+  }
+
+  @Override
+  public Provider<Sink<Character>> outAsSink() {
+    return outAsSinkProvider;
   }
 
   //  @Override

@@ -3,6 +3,7 @@ package com.google.lang;
 import com.google.inject.Provider;
 import com.google.zigva.exec.Executor;
 import com.google.zigva.io.FilePath;
+import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
 import com.google.zigva.java.Propertiez;
 import com.google.zigva.lang.Zystem;
@@ -53,6 +54,11 @@ public class StubZystem implements Zystem {
 
   @Override
   public Provider<Source<Character>> in() {
+    return null;
+  }
+
+  @Override
+  public Provider<Sink<Character>> outAsSink() {
     return null;
   }
 
