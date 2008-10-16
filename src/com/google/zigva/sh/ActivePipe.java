@@ -9,7 +9,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Reader;
 
 /**
  * Bad name for now -- contrary to a regular pipe, which _is_ both a Reader and

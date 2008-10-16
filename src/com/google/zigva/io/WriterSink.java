@@ -81,6 +81,10 @@ public class WriterSink implements Sink<Character> {
   
   @Override
   public void close() {
+    /* TODO
+     * out.flush
+     * out.close
+     */
     this.isClosed = true;
   }
 
