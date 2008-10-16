@@ -121,7 +121,7 @@
 	 </jar>
   </target>
 	
-  <target name="dist" depends="jar, jarsrc, tutorialsrc, javadoc"
+  <target name="dist" depends="jar, jarsrc, javadoc"
        description="Build entire distribution.">
     <copy toDir="${build.dir}/dist/zigva-${version}" file="COPYING"/>
     <copy toDir="${build.dir}/dist/zigva-${version}">
