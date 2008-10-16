@@ -23,6 +23,7 @@ public class InputStreamSourceTest extends TestCase {
     int threadCount = Thread.activeCount();
     super.runTest();
     // We need to make sure we are not leaking threads
+    Thread.sleep(100);
     assertEquals(threadCount, Thread.activeCount());
   }
   

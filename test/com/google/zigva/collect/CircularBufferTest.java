@@ -52,7 +52,7 @@ public class CircularBufferTest extends TearDownTestCase {
     assertEquals(new Character('c'), buffer.deq());
     assertEquals(new Character('d'), buffer.deq());
     
-    Thread.yield();
+    Thread.sleep(100);
     assertEquals(State.TERMINATED, t.getState());
   }
   

@@ -6,14 +6,12 @@ import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.FailedToCloseException;
 import com.google.zigva.io.Source;
-import com.google.zigva.java.io.ReaderSource;
 
 import junit.framework.TestCase;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringBufferInputStream;
@@ -26,6 +24,8 @@ public class ReaderSourceTest extends TestCase {
     int threadCount = Thread.activeCount();
     super.runTest();
     // We need to make sure we are not leaking threads
+    // TODO
+    Thread.sleep(100);
     assertEquals(threadCount, Thread.activeCount());
   }
   

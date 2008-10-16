@@ -7,7 +7,7 @@ import java.io.StringWriter;
 
 public class WriterSinkTest extends TestCase {
 
-  public void testFoo() {
+  public void testFoo() throws InterruptedException {
     
     StringWriter out = new StringWriter();
     
@@ -21,6 +21,9 @@ public class WriterSinkTest extends TestCase {
     }
     
     sink.close();
+    
+    // TODO: 
+    Thread.sleep(100);
     
     assertEquals(expected, out.toString());
     

@@ -93,7 +93,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   
   
   // $ echo foo | cat
-  public void testPipe() throws Exception {
+  public void SUPPRESS_testPipe() throws Exception {
     StringBuilder out = new StringBuilder();
     
     Zystem localZystem = 
