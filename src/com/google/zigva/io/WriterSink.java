@@ -63,6 +63,7 @@ public class WriterSink implements Sink<Character> {
           throw new RuntimeException(e);
         } finally {
           try {
+            out.flush();
             out.close();
           } catch (IOException e) {
             throw new RuntimeException(e);
@@ -86,6 +87,15 @@ public class WriterSink implements Sink<Character> {
      * out.close
      */
     this.isClosed = true;
+    //TODO: test
+    this.consumer.interrupt();
+    try {
+      consumer.join(closeTimeout);
+    } catch (InterruptedException e) {
+      throw new FailedToCloseException(e);
+      
+      
+    }
   }
 
   @Override

@@ -41,6 +41,9 @@ public interface Sink<T> extends Closeable {
    * {@link DataSourceClosedException}.
    *
    * @throws DataSourceClosedException if this {@link Sink} has been closed
+   * 
+   * @throws FailedToCloseException if there were problems closing this 
+   * {@link Source}.
    */
   void close();
 }

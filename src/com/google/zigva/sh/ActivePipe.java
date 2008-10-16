@@ -1,6 +1,8 @@
 package com.google.zigva.sh;
 
+import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
+import com.google.zigva.io.WriterSink;
 import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
 import com.google.zigva.java.io.Writers;
@@ -18,29 +20,29 @@ import java.io.OutputStream;
 public class ActivePipe implements Runnable {
 
   private final String name;
-  private final BufferedWriter out;
+  private final Sink<Character> out;
   private final Source<Character> in;
 
-  public ActivePipe(String name, Source<Character> in, BufferedWriter out) {
+  public ActivePipe(String name, Source<Character> in, Sink<Character> out) {
     this.name = name;
     this.in = in;
     this.out = out;
   }
   
+  public ActivePipe(String name, Source<Character> in, BufferedWriter out) {
+    this(name, in, new WriterSink(out));
+  }
+  
   public ActivePipe(String name, Source<Character> in, OutputStream out) {
-    this.name = name;
-    this.in = in;
-    this.out = Writers.buffered(out);
+    this(name, in, Writers.buffered(out));
   }
 
   public ActivePipe(String name, InputStream in, Appendable out) {
-    this.name = name;
-    this.in = new ReaderSource(Readers.buffered(in));
-    this.out = Writers.buffered(out);
+    this(name, new ReaderSource(Readers.buffered(in)), Writers.buffered(out));
   }
 
   public void run(){
-    try {
+//    try {
 //      char[] cbuf = new char[1];
 //      while (!in.ready()) {
 //        Thread.sleep(500);
@@ -49,16 +51,16 @@ public class ActivePipe implements Runnable {
 //        out.append(cbuf[0]);
 //      }
       while(!in.isEndOfStream()) {
-        out.append(in.read());
+        out.write(in.read());
       }
-      out.flush();
+//      out.flush();
       out.close();
 //    } catch (InterruptedException e) {
 //      System.out.println("foo");
 //      //ok, this was interrupted
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+//    } catch (IOException e) {
+//      throw new RuntimeException(e);
+//    }
   }
   
   public ActivePipe copyWith(Source<Character> in) {

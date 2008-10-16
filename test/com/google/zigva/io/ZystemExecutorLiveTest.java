@@ -1,5 +1,6 @@
 package com.google.zigva.io;
 
+import com.google.common.base.Join;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.testing.guiceberry.GuiceBerryEnv;
@@ -32,13 +33,55 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
 //    addTearDown(tearDown);
   }
 
+  public static final class ThreadCountAsserter {
+    
+    private final Map<Thread, StackTraceElement[]>  allOriginalStackTraces;
+    private final int expectedNoThreads;
+
+    public ThreadCountAsserter() {
+      this.allOriginalStackTraces = Thread.getAllStackTraces();
+      this.expectedNoThreads = allOriginalStackTraces.keySet().size();
+    }
+
+    public void assertThreadCount() throws InterruptedException {
+      long failAt = System.currentTimeMillis() + 100;
+      int activeCount;
+      while ((activeCount = Thread.activeCount()) != expectedNoThreads) {
+        if (failAt < System.currentTimeMillis()) {
+          Map<Thread, StackTraceElement[]> allStackTraces = Thread.getAllStackTraces();
+          System.out.println(String.format(
+              "**********BEFORE (%d) **************", expectedNoThreads));
+          printStackTraces(allOriginalStackTraces);
+          System.out.println(String.format(
+              "**********AFTER (%d) **************", activeCount));
+          printStackTraces(allStackTraces);
+          System.out.println("**********END**************");
+          throw new AssertionError(String.format(
+              "Thread leak (%d threads leaked). " +
+          		"See system out for details", activeCount - expectedNoThreads));
+        }
+        Thread.sleep(10);
+      }
+    }
+
+    private void printStackTraces(Map<Thread, StackTraceElement[]> allStackTraces) {
+      for (Thread thread: allStackTraces.keySet()) {
+        System.out.println(String.format(
+            "*** Thread '%s': \n %s", thread.getName(), 
+            Join.join("\n", allStackTraces.get(thread))));
+      }
+    }
+  }
+  
   @Override
   protected void runTest() throws Throwable {
+    ThreadCountAsserter asserter = new ThreadCountAsserter();
     int threadCount = Thread.activeCount();
     super.runTest();
-    //TODO: assert thread count!
-    Thread.sleep(100);
-    assertEquals(threadCount, Thread.activeCount());
+    asserter.assertThreadCount();
+//    //TODO: assert thread count!
+//    Thread.sleep(100);
+//    assertEquals(threadCount, Thread.activeCount());
   }
   
 //  public void testSystemInReady() throws Exception {
