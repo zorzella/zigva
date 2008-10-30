@@ -18,7 +18,7 @@ public final class ThreadCountAsserter {
   }
 
   public void assertThreadCount() throws InterruptedException {
-    long failAt = System.currentTimeMillis() + 100;
+    long failAt = System.currentTimeMillis() + 500;
     while(true) {
       Map<Thread, StackTraceElement[]> allStackTraces = 
         Thread.getAllStackTraces();
@@ -37,7 +37,7 @@ public final class ThreadCountAsserter {
         printStackTraces(allStackTraces);
         System.out.println("**********END**************");
         throw new AssertionError(String.format(
-            "Thread leak (%d != %d threads leaked). " +
+            "Thread leak (%d != %d # threads). " +
         		"See system out for details", currentCount, expectedNoThreads));
       }
       Thread.sleep(10);
