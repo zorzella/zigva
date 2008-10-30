@@ -19,10 +19,12 @@ public class RealZystem implements Zystem {
   private final FilePath homeDir;
   private final Map<String, String> env;
   private final Provider<Sink<Character>> outAsSinkProvider;
+  private final Provider<Sink<Character>> errAsSinkProvider;
   
   public RealZystem(
       Provider<Source<Character>> inProvider,
       Provider<Sink<Character>> outAsSinkProvider,
+      Provider<Sink<Character>> errAsSinkProvider,
       Appendable out,
       Appendable err,
       FilePath currentDir, 
@@ -31,6 +33,7 @@ public class RealZystem implements Zystem {
     this.inProvider = inProvider;
     this.out = out;
     this.outAsSinkProvider = outAsSinkProvider;
+    this.errAsSinkProvider = errAsSinkProvider;
     this.err = err;
     this.currentDir = currentDir;
     this.homeDir = homeDir;
@@ -121,6 +124,11 @@ public class RealZystem implements Zystem {
   @Override
   public Provider<Sink<Character>> outAsSink() {
     return outAsSinkProvider;
+  }
+
+  @Override
+  public Provider<Sink<Character>> errAsSink() {
+    return errAsSinkProvider;
   }
 
   //  @Override

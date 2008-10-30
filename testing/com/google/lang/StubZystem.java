@@ -62,6 +62,11 @@ public class StubZystem implements Zystem {
     return null;
   }
 
+  @Override
+  public Provider<Sink<Character>> errAsSink() {
+    return null;
+  }
+
 //  @Override
 //  public Appendable getAppendable() {
 //    // TODO Auto-generated method stub

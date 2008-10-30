@@ -20,17 +20,22 @@ public final class JavaZystem {
 
   private static final Object IN_LOCK = "System in lock";
   private static final Object OUT_LOCK = "System out lock";
+  private static final Object ERR_LOCK = "System err lock";
 
-  private static final ReaderSource READER_SOURCE = 
+  private static final ReaderSource IN_READER_SOURCE = 
     new ReaderSource(Readers.buffered(FileDescriptor.in), 100, 500, IN_LOCK);
 
-  private static final WriterSink WRITER_SINK = 
+  private static final WriterSink OUT_WRITER_SINK = 
     new WriterSink(Writers.buffered(FileDescriptor.out), 100, 500, OUT_LOCK);
+
+  private static final WriterSink ERR_WRITER_SINK = 
+    new WriterSink(Writers.buffered(FileDescriptor.out), 100, 500, ERR_LOCK);
   
   public static Zystem get() {
     return new RealZystem(
         createIn(), 
         createOut(),
+        createErr(), 
         System.out, 
         System.err,
         getCurrentDir(), 
@@ -42,7 +47,16 @@ public final class JavaZystem {
     return new Provider<Sink<Character>>() {
       @Override
       public Sink<Character> get() {
-        return new SpecialSinkSink<Character>(WRITER_SINK);//, OUT_LOCK);
+        return new SpecialSinkSink<Character>(OUT_WRITER_SINK);//, OUT_LOCK);
+      }
+    };
+  }
+
+  private static Provider<Sink<Character>> createErr() {
+    return new Provider<Sink<Character>>() {
+      @Override
+      public Sink<Character> get() {
+        return new SpecialSinkSink<Character>(ERR_WRITER_SINK);//, ERR_LOCK);
       }
     };
   }
@@ -51,7 +65,7 @@ public final class JavaZystem {
     return new Provider<Source<Character>>() {
       @Override
       public Source<Character> get() {
-        return new SpecialSourceSource<Character>(READER_SOURCE, IN_LOCK);
+        return new SpecialSourceSource<Character>(IN_READER_SOURCE, IN_LOCK);
       }
     };
   }

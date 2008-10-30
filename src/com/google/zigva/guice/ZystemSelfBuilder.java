@@ -57,7 +57,8 @@ public final class ZystemSelfBuilder implements Zystem {
     return new ZystemSelfBuilder(
         new RealZystem(
             zystem.in(), 
-            null,
+            zystem.outAsSink(),
+            zystem.errAsSink(), 
             otherOut, 
             err(), 
             getCurrentDir(), getHomeDir(), zystem.env()));
@@ -68,6 +69,7 @@ public final class ZystemSelfBuilder implements Zystem {
         new RealZystem(
             zystem.in(),
             zystem.outAsSink(), 
+            zystem.errAsSink(), 
             out(), 
             otherErr, 
             getCurrentDir(), getHomeDir(), zystem.env()));
@@ -88,6 +90,7 @@ public final class ZystemSelfBuilder implements Zystem {
         new RealZystem(
             zystem.in(),
             zystem.outAsSink(),
+            zystem.errAsSink(),
             out(), 
             err(), 
             getCurrentDir(), 
@@ -109,6 +112,7 @@ public final class ZystemSelfBuilder implements Zystem {
         new RealZystem(
             getProvider(otherIn),
             zystem.outAsSink(), 
+            zystem.errAsSink(), 
             out(), 
             err(), 
             getCurrentDir(), 
@@ -121,6 +125,7 @@ public final class ZystemSelfBuilder implements Zystem {
         new RealZystem(
             zystem.in(),
             getProvider(otherOut), 
+            zystem.errAsSink(), 
             out(), 
             err(), 
             getCurrentDir(), 
@@ -150,5 +155,10 @@ public final class ZystemSelfBuilder implements Zystem {
   @Override
   public Provider<Sink<Character>> outAsSink() {
     return zystem.outAsSink();
+  }
+
+  @Override
+  public Provider<Sink<Character>> errAsSink() {
+    return zystem.errAsSink();
   }
 }

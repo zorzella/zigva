@@ -30,5 +30,7 @@ public interface Zystem {
   Provider<Sink<Character>> outAsSink();
   
   Appendable err();
+
+  Provider<Sink<Character>> errAsSink();
   
 }

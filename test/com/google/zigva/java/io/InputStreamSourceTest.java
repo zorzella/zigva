@@ -6,7 +6,7 @@ import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.FailedToCloseException;
 import com.google.zigva.io.Source;
-import com.google.zigva.java.io.InputStreamSource;
+import com.google.zigva.io.ThreadCountAsserter;
 
 import junit.framework.TestCase;
 
@@ -20,13 +20,11 @@ public class InputStreamSourceTest extends TestCase {
 
   @Override
   protected void runTest() throws Throwable {
-    int threadCount = Thread.activeCount();
+    ThreadCountAsserter asserter = new ThreadCountAsserter();
     super.runTest();
-    // We need to make sure we are not leaking threads
-    Thread.sleep(100);
-    assertEquals(threadCount, Thread.activeCount());
+    asserter.assertThreadCount();
   }
-  
+
   public void testSunnycase() {
     String data = "znjt";
     FakeInputStream is = new FakeInputStream().withData(data, true);
