@@ -77,7 +77,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   
   
   // $ echo foo | cat
-  public void SUPPRESS_testPipe() throws Exception {
+  public void testPipe() throws Exception {
     SinkToString out = new SinkToString();
     
     Zystem localZystem = 

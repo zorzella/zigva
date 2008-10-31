@@ -3,7 +3,11 @@ package com.google.zigva.exec;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import com.google.zigva.collections.CircularBuffer;
 import com.google.zigva.guice.ZystemSelfBuilder;
+import com.google.zigva.io.DataNotReadyException;
+import com.google.zigva.io.DataSourceClosedException;
+import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
 import com.google.zigva.io.util.AppendableFromLite;
@@ -76,7 +80,7 @@ public class Executor {
       Iterator<? extends Command> iterator = commands.iterator();
       while (iterator.hasNext()) {
         Command command = iterator.next();
-        ZivaPipe zivaPipe = null;
+        ZivaPipe zivaPipe = new ZivaPipe();
         if (iterator.hasNext()) {
           zivaPipe = new ZivaPipe();
           nextOut = zivaPipe.in();
@@ -109,15 +113,76 @@ public class Executor {
   
   public static class ZivaPipe {
    
-    private final ArrayBlockingQueue<Character> buffer;
+    private final class MySink implements Sink<Character> {
+      @Override
+      public void write(Character data) throws DataSourceClosedException {
+        try {
+          buffer.enq(data);
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+        }
+      }
+
+      @Override
+      public boolean isReady() throws DataSourceClosedException {
+        return true;
+      }
+
+      @Override
+      public void close() {
+        reader.isEOS = true;
+        synchronized(lock) {
+          lock.notifyAll();
+        }
+      }
+    }
+
+    private final class MySource implements Source<Character> {
+      
+      boolean isEOS = false;
+      
+      @Override
+      public Character read() throws DataNotReadyException, DataSourceClosedException,
+          EndOfDataException {
+        try {
+          return buffer.deq();
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+        }
+      }
+
+      @Override
+      public boolean isReady() throws DataSourceClosedException {
+        return true;
+      }
+
+      @Override
+      public boolean isEndOfStream() throws DataSourceClosedException {
+        while (!isEOS && buffer.size() == 0) {
+          try {
+            lock.wait();
+          } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+          }
+        }
+        return isEOS && buffer.size() == 0;
+      }
+
+      @Override
+      public void close() {
+      }
+    }
+
+    private final CircularBuffer<Character> buffer;
+    private final String lock;
 
     public ZivaPipe() {
-      this.buffer = new ArrayBlockingQueue<Character>(10);
+      this.lock = "LOCK";
+      this.buffer = new CircularBuffer<Character>(1000, lock);
     }
     
-    private final Source<Character> reader = null;
-//      Readers.fromQueue(new ArrayBlockingQueue<Character>(5));
-    private final Sink<Character> sink = null;
+    private final MySource reader = new MySource();
+    private final Sink<Character> sink = new MySink();
 
     public Sink<Character> in() {
       return sink;
