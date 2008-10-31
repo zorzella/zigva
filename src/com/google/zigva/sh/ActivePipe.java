@@ -8,7 +8,6 @@ import com.google.zigva.java.io.Readers;
 import com.google.zigva.java.io.Writers;
 
 import java.io.BufferedWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -34,11 +33,13 @@ public class ActivePipe implements Runnable {
   }
   
   public ActivePipe(String name, Source<Character> in, OutputStream out) {
-    this(name, in, Writers.buffered(out));
+    this(name, in, new WriterSink(Writers.buffered(out)));
   }
 
   public ActivePipe(String name, InputStream in, Appendable out) {
-    this(name, new ReaderSource(Readers.buffered(in)), Writers.buffered(out));
+    this(name, 
+        new ReaderSource(Readers.buffered(in)), 
+        new WriterSink(Writers.buffered(out)));
   }
 
   public ActivePipe(String name, InputStream in, Sink<Character> out) {
@@ -46,33 +47,10 @@ public class ActivePipe implements Runnable {
   }
 
   public void run(){
-//    try {
-//      char[] cbuf = new char[1];
-//      while (!in.ready()) {
-//        Thread.sleep(500);
-//      }
-//      while (in.read(cbuf) != -1){
-//        out.append(cbuf[0]);
-//      }
-      while(!in.isEndOfStream()) {
-        out.write(in.read());
-      }
-//      out.flush();
-      out.close();
-//    } catch (InterruptedException e) {
-//      System.out.println("foo");
-//      //ok, this was interrupted
-//    } catch (IOException e) {
-//      throw new RuntimeException(e);
-//    }
-  }
-  
-  public ActivePipe copyWith(Source<Character> in) {
-    return new ActivePipe(name + " copy with in", in, this.out);
-  }
-
-  public ActivePipe copyWith(BufferedWriter out) {
-    return new ActivePipe(name + " copy with out", this.in, out);
+    while(!in.isEndOfStream()) {
+      out.write(in.read());
+    }
+    out.close();
   }
   
   public ActivePipeThread start() {
