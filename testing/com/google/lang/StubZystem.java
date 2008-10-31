@@ -43,39 +43,17 @@ public class StubZystem implements Zystem {
   }
 
   @Override
-  public Appendable err() {
-    return null;
-  }
-
-  @Override
-  public Appendable out() {
-    return null;
-  }
-
-  @Override
   public Provider<Source<Character>> in() {
     return null;
   }
 
   @Override
-  public Provider<Sink<Character>> outAsSink() {
+  public Provider<Sink<Character>> out() {
     return null;
   }
 
   @Override
-  public Provider<Sink<Character>> errAsSink() {
+  public Provider<Sink<Character>> err() {
     return null;
   }
-
-//  @Override
-//  public Appendable getAppendable() {
-//    // TODO Auto-generated method stub
-//    return null;
-//  }
-//
-//  @Override
-//  public Reader getReader() {
-//    // TODO Auto-generated method stub
-//    return null;
-//  }
 }

@@ -35,7 +35,8 @@ public class ShellCommand implements Command {
     
     processBuilder.directory(zystem.getCurrentDir().toFile());
     processBuilder.command(shellCommand);
-    if (zystem.out() == zystem.err()) {
+    //TODO: implement a reasonable "equals" method here
+    if (zystem.out().get().equals(zystem.err().get())) {
       processBuilder.redirectErrorStream(true);
     }
     return processBuilder;
@@ -46,14 +47,21 @@ public class ShellCommand implements Command {
 
       Process process = processBuilder.start();
 
-      Thread outS = new ActivePipe("ShellCommand - out", process.getInputStream(), zystem.out()).start();
+      Thread outS = new ActivePipe("ShellCommand - out", 
+          process.getInputStream(), 
+          zystem.out().get())
+            .start();
       Thread errS;
       if (!processBuilder.redirectErrorStream()) {
-        errS = new ActivePipe("ShellCommand - err", process.getErrorStream(), zystem.err()).start();
+        errS = new ActivePipe("ShellCommand - err", 
+            process.getErrorStream(), 
+            zystem.err().get())
+              .start();
       } else {
         errS = null;
       }
-      Thread inS = new ActivePipe("ShellCommand - in", zystem.in().get(), process.getOutputStream()).start();
+      Thread inS = new ActivePipe("ShellCommand - in", 
+          zystem.in().get(), process.getOutputStream()).start();
       ZivaProcess temp = new ZivaProcess(process, inS, outS, errS);
       return temp;
     } catch (IOException e) {

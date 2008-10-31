@@ -13,59 +13,27 @@ import java.util.Map;
 public class RealZystem implements Zystem {
 
   private final Provider<Source<Character>> inProvider;
-  private final Appendable out;
-  private final Appendable err;
+  private final Provider<Sink<Character>> outProvider;
+  private final Provider<Sink<Character>> errProvider;
   private FilePath currentDir;
   private final FilePath homeDir;
   private final Map<String, String> env;
-  private final Provider<Sink<Character>> outAsSinkProvider;
-  private final Provider<Sink<Character>> errAsSinkProvider;
   
   public RealZystem(
       Provider<Source<Character>> inProvider,
-      Provider<Sink<Character>> outAsSinkProvider,
-      Provider<Sink<Character>> errAsSinkProvider,
-      Appendable out,
-      Appendable err,
-      FilePath currentDir, 
-      FilePath homeDir, 
+      Provider<Sink<Character>> outProvider,
+      Provider<Sink<Character>> errProvider,
+      FilePath currentDir,
+      FilePath homeDir,
       Map<String, String> env) {
     this.inProvider = inProvider;
-    this.out = out;
-    this.outAsSinkProvider = outAsSinkProvider;
-    this.errAsSinkProvider = errAsSinkProvider;
-    this.err = err;
+    this.outProvider = outProvider;
+    this.errProvider = errProvider;
     this.currentDir = currentDir;
     this.homeDir = homeDir;
     this.env = env;
   }
   
-//  public RealZystem(
-//      Source<Character> inAsSource,
-//      Sink<Character> outAsSink,
-//      Appendable out,
-//      Appendable err,
-//      FilePath currentDir, 
-//      FilePath homeDir, 
-//      Map<String, String> env) {
-//    this.inProvider = getProvider(inAsSource);
-//    this.out = out;
-//    this.outAsSinkProvider = getProvider(outAsSink);
-//    this.err = err;
-//    this.currentDir = currentDir;
-//    this.homeDir = homeDir;
-//    this.env = env;
-//  }
-//
-//  private static <T> Provider<T> getProvider(final T inAsSource2) {
-//    return new Provider<T> () {
-//      @Override
-//      public T get() {
-//        return inAsSource2;
-//      }
-//    };
-//  }
-
   @Override
   public String toString() {
     return String.format("[%s]", currentDir);
@@ -107,38 +75,17 @@ public class RealZystem implements Zystem {
   }
 
   @Override
-  public Appendable err() {
-    return err;
-  }
-
-  @Override
-  public Appendable out() {
-    return out;
-  }
-
-  @Override
   public Provider<Source<Character>> in() {
     return inProvider;
   }
 
   @Override
-  public Provider<Sink<Character>> outAsSink() {
-    return outAsSinkProvider;
+  public Provider<Sink<Character>> out() {
+    return outProvider;
   }
 
   @Override
-  public Provider<Sink<Character>> errAsSink() {
-    return errAsSinkProvider;
+  public Provider<Sink<Character>> err() {
+    return errProvider;
   }
-
-  //  @Override
-//  public Appendable getAppendable() {
-//    return Writers.buffered(out());
-//  }
-//
-//  @Override
-//  public Reader getReader() {
-//    return Readers.buffered(in());
-//  }
-  
 }

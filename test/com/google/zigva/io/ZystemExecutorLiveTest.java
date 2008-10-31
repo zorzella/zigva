@@ -11,7 +11,6 @@ import com.google.zigva.guice.ZystemSelfBuilder;
 import com.google.zigva.lang.Waitable;
 import com.google.zigva.lang.Zystem;
 
-import java.io.IOException;
 import java.util.Map;
 
 @GuiceBerryEnv(ZivaEnvs.REGULAR)
@@ -34,8 +33,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   
   public void testEnv() throws Exception {
     
-    
-    StringBuilder out = new StringBuilder();
+    SinkToString out = new SinkToString();
     Map<String,String> fooBarBazIsZ = Maps.newHashMap();
     String expected = "z";
     String envName = "FOOBARBAZ";
@@ -53,7 +51,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
 
   
   public void testIn() throws Exception {
-    StringBuilder out = new StringBuilder();
+    SinkToString out = new SinkToString();
     String expected = "ziva rules";
     
     Zystem localZystem = 
@@ -68,7 +66,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
 
   public void testNonShell() throws Exception {
     MyCommand myCommand = new MyCommand();
-    Appendable actual = new StringBuilder();
+    SinkToString actual = new SinkToString();
     Zystem localZystem =
       new ZystemSelfBuilder(zystem)
         .withOut(actual);
@@ -80,7 +78,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   
   // $ echo foo | cat
   public void SUPPRESS_testPipe() throws Exception {
-    StringBuilder out = new StringBuilder();
+    SinkToString out = new SinkToString();
     
     Zystem localZystem = 
       new ZystemSelfBuilder(zystem)
@@ -104,11 +102,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
 
     @Override
     public ZivaTask execute(Zystem zystem) {
-      try {
-        zystem.out().append('z');
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+      zystem.out().get().write('z');
       //TODO: SyncZivaTask?
       return new ZivaTask() {
         @Override

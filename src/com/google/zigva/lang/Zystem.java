@@ -25,12 +25,8 @@ public interface Zystem {
 
   Provider<Source<Character>> in();
   
-  Appendable out();
+  Provider<Sink<Character>> out();
   
-  Provider<Sink<Character>> outAsSink();
-  
-  Appendable err();
-
-  Provider<Sink<Character>> errAsSink();
+  Provider<Sink<Character>> err();
   
 }

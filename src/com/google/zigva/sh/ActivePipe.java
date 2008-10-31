@@ -41,6 +41,10 @@ public class ActivePipe implements Runnable {
     this(name, new ReaderSource(Readers.buffered(in)), Writers.buffered(out));
   }
 
+  public ActivePipe(String name, InputStream in, Sink<Character> out) {
+    this(name, new ReaderSource(Readers.buffered(in)), out);
+  }
+
   public void run(){
 //    try {
 //      char[] cbuf = new char[1];

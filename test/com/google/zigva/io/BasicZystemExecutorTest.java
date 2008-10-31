@@ -1,6 +1,5 @@
 package com.google.zigva.io;
 
-import com.google.common.testing.TearDown;
 import com.google.common.testing.junit3.TearDownTestCase;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -11,10 +10,6 @@ import com.google.zigva.java.JavaZystem;
 import com.google.zigva.lang.Waitable;
 import com.google.zigva.lang.Zystem;
 
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
 public class BasicZystemExecutorTest extends TearDownTestCase {
   
   private static final class EchoFoo implements Runnable {
@@ -22,31 +17,14 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
     private Zystem zystem;
     
     public void run() {
-      Waitable process = zystem.executor().command("echo", "foo").execute();
+      Waitable process = 
+        zystem.executor().command("echo", "foo").execute();
       process.waitFor();
     }
   }
 
-  public void testSystemStdout() throws Exception {
-    final PrintStream oldOut = System.out;
-    TearDown tearDown = new TearDown(){
-      @Override
-      public void tearDown() throws Exception {
-        System.setOut(oldOut);
-      }
-    };
-    addTearDown(tearDown);
-    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-    PrintStream out = new PrintStream(byteArrayOutputStream);
-    System.setOut(out);
-    Injector injector = Guice.createInjector(new ZivaModule());
-    EchoFoo task = injector.getInstance(EchoFoo.class);
-    task.run();
-    assertEquals("foo", byteArrayOutputStream.toString().trim());
-  }
-
   public void testSwappedRootZystem() throws Exception {
-    StringBuilder out = new StringBuilder();
+    SinkToString out = new SinkToString();
     Zystem rootZystem = 
       new ZystemSelfBuilder(JavaZystem.get())
         .withOut(out);
@@ -61,7 +39,7 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
     private Zystem zystem;
     
     public String go() {
-      StringBuilder out = new StringBuilder();
+      SinkToString out = new SinkToString();
       Zystem localZystem = 
         new ZystemSelfBuilder(zystem)
           .withOut(out);

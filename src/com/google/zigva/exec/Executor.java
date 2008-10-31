@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.zigva.guice.ZystemSelfBuilder;
+import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
 import com.google.zigva.io.util.AppendableFromLite;
 import com.google.zigva.io.util.AppendableLite;
@@ -68,7 +69,7 @@ public class Executor {
     @Override
     public ZivaTask execute() {
       Source<Character> nextIn = zystem.in().get();
-      Appendable nextOut;// = zystem.out();
+      Sink<Character> nextOut;// = zystem.out();
       
       List<ZivaTask> allTasksExecuted = Lists.newArrayList();
       
@@ -80,7 +81,7 @@ public class Executor {
           zivaPipe = new ZivaPipe();
           nextOut = zivaPipe.in();
         } else {
-          nextOut = zystem.out();
+          nextOut = zystem.out().get();
         }
         // The last command needs to be special-cased, since it won't have
         // a pipe in front of it
@@ -114,24 +115,12 @@ public class Executor {
       this.buffer = new ArrayBlockingQueue<Character>(10);
     }
     
-    private final Appendable appendable = new AppendableFromLite(new AppendableLite() {
-    
-      @Override
-      public AppendableLite append(char c) {
-        try {
-          buffer.put(c);
-        } catch (InterruptedException e) {
-          throw new RuntimeException(e);
-        }
-        return this;
-      }
-    });
-    
     private final Source<Character> reader = null;
 //      Readers.fromQueue(new ArrayBlockingQueue<Character>(5));
+    private final Sink<Character> sink = null;
 
-    public Appendable in() {
-      return appendable;
+    public Sink<Character> in() {
+      return sink;
     }
     
     public Source<Character> out() {

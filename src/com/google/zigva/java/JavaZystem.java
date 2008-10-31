@@ -36,10 +36,9 @@ public final class JavaZystem {
         createIn(), 
         createOut(),
         createErr(), 
-        System.out, 
-        System.err,
         getCurrentDir(), 
-        getHomeDir(), System.getenv()
+        getHomeDir(),
+        System.getenv()
         );
   }
 
