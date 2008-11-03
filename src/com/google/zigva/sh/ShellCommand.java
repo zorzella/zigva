@@ -3,17 +3,37 @@
 package com.google.zigva.sh;
 
 import com.google.common.base.Join;
+import com.google.inject.Inject;
 import com.google.zigva.exec.ZivaTask;
 import com.google.zigva.exec.Executor.Command;
 import com.google.zigva.lang.Zystem;
+import com.google.zigva.sh.ActivePipe.Builder;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ThreadFactory;
 
 public class ShellCommand implements Command {
   private final String[] shellCommand;
+  private final ActivePipe.Builder activePipeBuilder;
 
-  public ShellCommand(String... shellCommand) {
+  public static class Builder {
+    
+    private final ActivePipe.Builder activePipeBuilder;
+
+    @Inject
+    public Builder (ThreadFactory threadFactory) {
+      this.activePipeBuilder = new ActivePipe.Builder(threadFactory);
+    }
+    
+    public ShellCommand build(String... shellCommand) {
+      return new ShellCommand(activePipeBuilder, shellCommand);
+    }
+    
+  }
+  
+  private ShellCommand(ActivePipe.Builder activePipeBuilder, String... shellCommand) {
+    this.activePipeBuilder = activePipeBuilder;
     this.shellCommand = shellCommand;
   }
 
@@ -21,7 +41,8 @@ public class ShellCommand implements Command {
   public ZivaTask execute(Zystem zystem) {
     return buildZivaTask(zystem, shellCommand);
   }
-  private static ZivaTask buildZivaTask(Zystem zystem, String... shellCommand) {
+  
+  private ZivaTask buildZivaTask(Zystem zystem, String... shellCommand) {
     return buildZivaTask(zystem, buildProcessBuilder(zystem, shellCommand));
   }
 
@@ -42,7 +63,7 @@ public class ShellCommand implements Command {
     return processBuilder;
   }
 
-  private static ZivaTask buildZivaTask(Zystem zystem, ProcessBuilder processBuilder) {
+  private ZivaTask buildZivaTask(Zystem zystem, ProcessBuilder processBuilder) {
     try {
 
       Process process = processBuilder.start();
@@ -60,7 +81,7 @@ public class ShellCommand implements Command {
       } else {
         errS = null;
       }
-      Thread inS = new ActivePipe("ShellCommand - in", 
+      Thread inS = activePipeBuilder.comboCreate("ShellCommand - in", 
           zystem.in().get(), process.getOutputStream()).start();
       ZivaProcess temp = new ZivaProcess(process, inS, outS, errS);
       return temp;

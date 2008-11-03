@@ -13,6 +13,7 @@ import com.google.zigva.java.RealZystem;
 import com.google.zigva.lang.Zystem;
 
 import java.util.Map;
+import java.util.concurrent.ThreadFactory;
 
 public final class ZystemSelfBuilder implements Zystem {
   
@@ -61,7 +62,8 @@ public final class ZystemSelfBuilder implements Zystem {
             zystem.err(),
             getCurrentDir(), 
             getHomeDir(), 
-            otherEnv));
+            otherEnv,
+            zystem.getThreadFactory()));
   }
 
   //TODO: use Providers
@@ -82,7 +84,8 @@ public final class ZystemSelfBuilder implements Zystem {
             zystem.err(), 
             getCurrentDir(), 
             getHomeDir(), 
-            zystem.env()));
+            zystem.env(),
+            zystem.getThreadFactory()));
   }
 
   public ZystemSelfBuilder withOut(Sink<Character> otherOut) {
@@ -93,7 +96,8 @@ public final class ZystemSelfBuilder implements Zystem {
             zystem.err(), 
             getCurrentDir(), 
             getHomeDir(), 
-            zystem.env()));
+            zystem.env(),
+            zystem.getThreadFactory()));
   }
 
   public ZystemSelfBuilder withErr(Sink<Character> otherErr) {
@@ -104,7 +108,8 @@ public final class ZystemSelfBuilder implements Zystem {
             getProvider(otherErr), 
             getCurrentDir(), 
             getHomeDir(), 
-            zystem.env()));
+            zystem.env(),
+            zystem.getThreadFactory()));
   }
 
   @Override
@@ -134,5 +139,10 @@ public final class ZystemSelfBuilder implements Zystem {
   @Override
   public Provider<Sink<Character>> err() {
     return zystem.err();
+  }
+
+  @Override
+  public ThreadFactory getThreadFactory() {
+    return zystem.getThreadFactory();
   }
 }

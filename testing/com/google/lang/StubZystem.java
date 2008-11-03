@@ -9,6 +9,7 @@ import com.google.zigva.java.Propertiez;
 import com.google.zigva.lang.Zystem;
 
 import java.util.Map;
+import java.util.concurrent.ThreadFactory;
 
 public class StubZystem implements Zystem {
 
@@ -54,6 +55,11 @@ public class StubZystem implements Zystem {
 
   @Override
   public Provider<Sink<Character>> err() {
+    return null;
+  }
+
+  @Override
+  public ThreadFactory getThreadFactory() {
     return null;
   }
 }

@@ -8,6 +8,7 @@ import com.google.zigva.io.Source;
 import com.google.zigva.java.Propertiez;
 
 import java.util.Map;
+import java.util.concurrent.ThreadFactory;
 
 public interface Zystem {
 
@@ -28,5 +29,7 @@ public interface Zystem {
   Provider<Sink<Character>> out();
   
   Provider<Sink<Character>> err();
+
+  ThreadFactory getThreadFactory();
   
 }

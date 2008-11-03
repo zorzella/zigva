@@ -10,14 +10,12 @@ import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
-import com.google.zigva.io.util.AppendableFromLite;
-import com.google.zigva.io.util.AppendableLite;
 import com.google.zigva.lang.Zystem;
 import com.google.zigva.sh.ShellCommand;
+import com.google.zigva.sh.ShellCommand.Builder;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 
 public class Executor {
 
@@ -33,21 +31,25 @@ public class Executor {
   }
 
   private final Zystem zystem;
+  private final ShellCommand.Builder shellCommandBuilder;
 
   @Inject
   public Executor(Zystem zystem) {
     this.zystem = zystem;
+    this.shellCommandBuilder = new ShellCommand.Builder(zystem.getThreadFactory());
   }
   
   public PreparedCommand command(String... shellCommand) {
     SimplePreparedCommand pc = new SimplePreparedCommand(
+        shellCommandBuilder, 
         zystem, 
-        new ShellCommand(shellCommand));
+        shellCommandBuilder.build(shellCommand));
     return pc;
   }
 
   public PreparedCommand command(Command command) {
     SimplePreparedCommand pc = new SimplePreparedCommand(
+        shellCommandBuilder, 
         zystem, 
         command);
     return pc;
@@ -55,11 +57,16 @@ public class Executor {
 
   static class SimplePreparedCommand implements PreparedCommand {
 
+    private final Builder shellCommandBuilder;
     private final Zystem zystem;
     private final List<Command> commands;
 
-    public SimplePreparedCommand(Zystem zystem, Command command) {
+    public SimplePreparedCommand(
+        ShellCommand.Builder shellCommandBuilder,
+        Zystem zystem, 
+        Command command) {
       Preconditions.checkNotNull(command);
+      this.shellCommandBuilder = shellCommandBuilder;
       this.zystem = zystem;
       //TODO: make it immutable
       this.commands = Lists.newArrayList(command);
@@ -106,7 +113,7 @@ public class Executor {
 
     @Override
     public PreparedCommand pipe(String... shellCommand) {
-      commands.add(new ShellCommand(shellCommand));
+      commands.add(shellCommandBuilder.build(shellCommand));
       return this;
     }
   }

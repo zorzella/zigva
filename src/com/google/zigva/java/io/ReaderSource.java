@@ -30,6 +30,23 @@ public class ReaderSource implements Source<Character> {
   private boolean isClosed;
   private Integer nextDataPoint;
 
+  public static final class Builder {
+    
+    private Reader in = null;
+    
+    public ReaderSource create() {
+      if (in == null) {
+        throw new NullPointerException();
+      }
+      return new ReaderSource(in);
+    }
+    
+    public Builder withIn(Reader in) {
+      this.in = in;
+      return this;
+    }
+  }
+  
   public ReaderSource(Reader in) {
     this(in, DEFAULT_CAPACITY, DEFAULT_CLOSE_TIMEOUT);
   }

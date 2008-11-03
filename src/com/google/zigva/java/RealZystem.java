@@ -6,9 +6,11 @@ import com.google.zigva.io.FilePath;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.Zystem;
+import com.google.zigva.sh.ShellCommand;
 
 import java.net.UnknownHostException;
 import java.util.Map;
+import java.util.concurrent.ThreadFactory;
 
 public class RealZystem implements Zystem {
 
@@ -18,6 +20,7 @@ public class RealZystem implements Zystem {
   private FilePath currentDir;
   private final FilePath homeDir;
   private final Map<String, String> env;
+  private final ThreadFactory threadFactory;
   
   public RealZystem(
       Provider<Source<Character>> inProvider,
@@ -25,13 +28,15 @@ public class RealZystem implements Zystem {
       Provider<Sink<Character>> errProvider,
       FilePath currentDir,
       FilePath homeDir,
-      Map<String, String> env) {
+      Map<String, String> env, 
+      ThreadFactory threadFactory) {
     this.inProvider = inProvider;
     this.outProvider = outProvider;
     this.errProvider = errProvider;
     this.currentDir = currentDir;
     this.homeDir = homeDir;
     this.env = env;
+    this.threadFactory = threadFactory;
   }
   
   @Override
@@ -87,5 +92,10 @@ public class RealZystem implements Zystem {
   @Override
   public Provider<Sink<Character>> err() {
     return errProvider;
+  }
+
+  @Override
+  public ThreadFactory getThreadFactory() {
+    return threadFactory;
   }
 }

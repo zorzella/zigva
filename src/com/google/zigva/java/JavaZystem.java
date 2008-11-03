@@ -3,6 +3,7 @@
 package com.google.zigva.java;
 
 import com.google.inject.Provider;
+import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.io.FilePath;
 import com.google.zigva.io.RealFileSpec;
 import com.google.zigva.io.Sink;
@@ -38,7 +39,8 @@ public final class JavaZystem {
         createErr(), 
         getCurrentDir(), 
         getHomeDir(),
-        System.getenv()
+        System.getenv(), 
+        new ZigvaThreadFactory()
         );
   }
 
