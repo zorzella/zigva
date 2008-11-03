@@ -9,7 +9,6 @@ import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
 import com.google.zigva.lang.Zystem;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,15 +19,18 @@ public class ZivaProcessBuilder {
   private final Zystem zystem;
   private final JavaProcessExecutor javaProcessExecutor;
   private final FileRepository fileRepository;
+  private final ActivePipe.Builder activePipeBuilder;
 
   @Inject
   public ZivaProcessBuilder(
       Zystem zystem,
       JavaProcessExecutor javaProcessExecutor,
-      FileRepository fileRepository) {
+      FileRepository fileRepository,
+      ActivePipe.Builder activePipeBuilder) {
     this.zystem = zystem;
     this.javaProcessExecutor = javaProcessExecutor;
     this.fileRepository = fileRepository;
+    this.activePipeBuilder = activePipeBuilder;
   }
 
   private InputStream in;
@@ -102,15 +104,17 @@ public class ZivaProcessBuilder {
     
     try {
       Process process = javaProcessExecutor.start(getProcessBuilder());
-      Thread outS = new ActivePipe("ZivaProcessBuilder - out", 
+      Thread outS = activePipeBuilder.comboCreate(
+          "ZivaProcessBuilder - out", 
           process.getInputStream(), localOut).start();
-      Thread errS = new ActivePipe("ZivaProcessBuilder - err", 
+      Thread errS = activePipeBuilder.comboCreate(
+          "ZivaProcessBuilder - err", 
           process.getErrorStream(), localErr).start();
       Thread inS = null;
       if (in == null) {
         process.getOutputStream().close();
       } else {
-        inS = new ActivePipe(
+        inS = activePipeBuilder.comboCreate(
             "ZivaProcessBuilder - in", 
             new ReaderSource(Readers.buffered(in)), 
             process.getOutputStream()).start();

@@ -7,6 +7,8 @@ import com.google.zigva.io.WriterSink;
 import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
 import com.google.zigva.java.io.Writers;
+import com.google.zigva.lang.NamedRunnable;
+import com.google.zigva.lang.ZThread;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,7 +19,7 @@ import java.util.concurrent.ThreadFactory;
  * a Writer (and not a thread), this is an active thread that reads from a 
  * given "in" and dumps into a given "out".
  */
-class ActivePipe implements Runnable {
+class ActivePipe implements NamedRunnable {
 
   private final String name;
   private final Sink<Character> out;
@@ -86,18 +88,9 @@ class ActivePipe implements Runnable {
     this.out = out;
   }
   
-  public ActivePipe(String name, Source<Character> in, OutputStream out) {
-    this(name, in, new WriterSink(Writers.buffered(out)));
-  }
-
-  public ActivePipe(String name, InputStream in, Appendable out) {
-    this(name, 
-        new ReaderSource(Readers.buffered(in)), 
-        new WriterSink(Writers.buffered(out)));
-  }
-
-  public ActivePipe(String name, InputStream in, Sink<Character> out) {
-    this(name, new ReaderSource(Readers.buffered(in)), out);
+  @Override
+  public String getName() {
+    return "ActivePipe: " + name;
   }
 
   public void run(){
@@ -107,35 +100,32 @@ class ActivePipe implements Runnable {
     out.close();
   }
   
+  //TODO: it shouldn't be ActivePipe's responsibility to create itself. Think.
   public Thread start() {
     ActivePipeThread result = new ActivePipeThread(name, this);
     result.start();
     return result;
   }
   
-  public static class ActivePipeThread extends Thread {
+  public static class ActivePipeThread extends ZThread {
 
     private final ActivePipe activePipe;
 
     public ActivePipeThread(String name, ActivePipe activePipe) {
-      super("ActivePipeThread: " + name);
+      super(activePipe);
       this.activePipe = activePipe;
     }
     
+    //TODO: do I need this?
     public ActivePipe getActivePipe() {
       return activePipe;
     }
-    
-    @Override
-    public void run() {
-      activePipe.run();
-    }
-    
+
+    //TODO: kill this?
     @Override
     public void interrupt() {
       activePipe.in.close();
       super.interrupt();
     }
-    
   }
 }

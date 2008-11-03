@@ -68,13 +68,13 @@ public class ShellCommand implements Command {
 
       Process process = processBuilder.start();
 
-      Thread outS = new ActivePipe("ShellCommand - out", 
+      Thread outS = activePipeBuilder.comboCreate("ShellCommand - out", 
           process.getInputStream(), 
           zystem.out().get())
             .start();
       Thread errS;
       if (!processBuilder.redirectErrorStream()) {
-        errS = new ActivePipe("ShellCommand - err", 
+        errS = activePipeBuilder.comboCreate("ShellCommand - err", 
             process.getErrorStream(), 
             zystem.err().get())
               .start();

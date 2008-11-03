@@ -4,6 +4,7 @@ package com.google.zigva.sh;
 import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
+import com.google.zigva.sh.ActivePipe.Builder;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,8 +13,8 @@ import java.util.List;
 
 public class OS {
 
-  private static final ActivePipe.Builder activePipeBuilder = 
-    new ActivePipe.Builder(new ZigvaThreadFactory());
+//  private static final ActivePipe.Builder activePipeBuilder = 
+//    new ActivePipe.Builder(new ZigvaThreadFactory());
   
   public static ZivaProcess run(String[] cmdArray, File dir) {
     return run(cmdArray, dir, System.out, System.err);
@@ -41,18 +42,24 @@ public class OS {
 	    
   public static ZivaProcess run(String[] cmdArray, File dirToRun, 
         Appendable out, Appendable err, InputStream in) {
+    
+    ActivePipe.Builder activePipeBuilder = Static.injector.getInstance(ActivePipe.Builder.class);
+
     try {
       Process p = new ProcessBuilder(cmdArray)
         .directory(dirToRun)
         .redirectErrorStream(err == null)
         .start();
-      Thread outS  = new ActivePipe("OS - sysout", p.getInputStream(), out).start();
-      Thread errS = new ActivePipe("OS - syserr", p.getErrorStream(), err).start();
+      Thread outS  = activePipeBuilder.comboCreate(
+          "OS - sysout", p.getInputStream(), out).start();
+      Thread errS = activePipeBuilder.comboCreate(
+          "OS - syserr", p.getErrorStream(), err).start();
       Thread inS = null;
       if (in == null) {
         p.getOutputStream().close();
       } else {
-        inS = activePipeBuilder.comboCreate("OS - sysin",
+        inS = activePipeBuilder.comboCreate(
+            "OS - sysin",
             new ReaderSource(Readers.buffered(in)), 
             p.getOutputStream()).start();
       }
