@@ -6,7 +6,7 @@ import com.google.inject.testing.guiceberry.GuiceBerryEnv;
 import com.google.inject.testing.guiceberry.junit3.GuiceBerryJunit3TestCase;
 import com.google.zigva.ZivaEnvs;
 import com.google.zigva.exec.ZivaTask;
-import com.google.zigva.exec.Executor.Command;
+import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.guice.ZystemSelfBuilder;
 import com.google.zigva.lang.Waitable;
 import com.google.zigva.lang.Zystem;
@@ -44,7 +44,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
         .withEnv(fooBarBazIsZ)
         .withOut(out);
 
-    Waitable process = localZystem.executor().command("printenv", envName).execute();
+    Waitable process = localZystem.cmdExecutor().command("printenv", envName).execute();
     process.waitFor();
     assertEquals(expected, out.toString().trim());
   }
@@ -59,7 +59,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
         .withIn(new CharacterSource(expected))
         .withOut(out);
 
-    Waitable process = localZystem.executor().command("cat").execute();
+    Waitable process = localZystem.cmdExecutor().command("cat").execute();
     process.waitFor();
     assertEquals(expected, out.toString().trim());
   }
@@ -70,7 +70,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     Zystem localZystem =
       new ZystemSelfBuilder(zystem)
         .withOut(actual);
-    ZivaTask task = localZystem.executor().command(myCommand).execute();
+    ZivaTask task = localZystem.cmdExecutor().command(myCommand).execute();
     task.waitFor();
     assertEquals("z", actual.toString());
   }
@@ -85,7 +85,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
         .withOut(out);
 
     String expected = "foo";
-    Waitable process = localZystem.executor()
+    Waitable process = localZystem.cmdExecutor()
       .command("echo", expected)
       .pipe("cat")
       .execute();
@@ -102,7 +102,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
 
     @Override
     public ZivaTask execute(Zystem zystem) {
-      zystem.out().get().write('z');
+      zystem.ioFactory().buildOut().write('z');
       //TODO: SyncZivaTask?
       return new ZivaTask() {
         @Override

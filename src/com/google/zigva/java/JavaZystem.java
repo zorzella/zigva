@@ -12,6 +12,7 @@ import com.google.zigva.io.WriterSink;
 import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
 import com.google.zigva.java.io.Writers;
+import com.google.zigva.lang.IoFactory;
 import com.google.zigva.lang.Zystem;
 
 import java.io.File;
@@ -34,14 +35,33 @@ public final class JavaZystem {
   
   public static Zystem get() {
     return new RealZystem(
-        createIn(), 
-        createOut(),
-        createErr(), 
+        buildIoFactory(), 
         getCurrentDir(), 
         getHomeDir(),
         System.getenv(), 
         new ZigvaThreadFactory()
         );
+  }
+  
+  private static IoFactory buildIoFactory() {
+    return new IoFactory() {
+
+      @Override
+      public Sink<Character> buildErr() {
+        return new SpecialSinkSink<Character>(ERR_WRITER_SINK);
+      }
+
+      @Override
+      public Source<Character> buildIn() {
+        return new SpecialSourceSource<Character>(IN_READER_SOURCE, IN_LOCK);
+      }
+
+      @Override
+      public Sink<Character> buildOut() {
+        return new SpecialSinkSink<Character>(OUT_WRITER_SINK);
+      }
+      
+    };
   }
 
   private static Provider<Sink<Character>> createOut() {

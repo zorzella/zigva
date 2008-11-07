@@ -5,9 +5,8 @@ package com.google.zigva.sh;
 import com.google.common.base.Join;
 import com.google.inject.Inject;
 import com.google.zigva.exec.ZivaTask;
-import com.google.zigva.exec.Executor.Command;
+import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.lang.Zystem;
-import com.google.zigva.sh.ActivePipe.Builder;
 
 import java.io.IOException;
 import java.util.Map;
@@ -57,7 +56,7 @@ public class ShellCommand implements Command {
     processBuilder.directory(zystem.getCurrentDir().toFile());
     processBuilder.command(shellCommand);
     //TODO: implement a reasonable "equals" method here
-    if (zystem.out().get().equals(zystem.err().get())) {
+    if (zystem.ioFactory().buildOut().equals(zystem.ioFactory().buildErr())) {
       processBuilder.redirectErrorStream(true);
     }
     return processBuilder;
@@ -70,19 +69,19 @@ public class ShellCommand implements Command {
 
       Thread outS = activePipeBuilder.comboCreate("ShellCommand - out", 
           process.getInputStream(), 
-          zystem.out().get())
+          zystem.ioFactory().buildOut())
             .start();
       Thread errS;
       if (!processBuilder.redirectErrorStream()) {
         errS = activePipeBuilder.comboCreate("ShellCommand - err", 
             process.getErrorStream(), 
-            zystem.err().get())
+            zystem.ioFactory().buildErr())
               .start();
       } else {
         errS = null;
       }
       Thread inS = activePipeBuilder.comboCreate("ShellCommand - in", 
-          zystem.in().get(), process.getOutputStream()).start();
+          zystem.ioFactory().buildIn(), process.getOutputStream()).start();
       ZivaProcess temp = new ZivaProcess(process, inS, outS, errS);
       return temp;
     } catch (IOException e) {

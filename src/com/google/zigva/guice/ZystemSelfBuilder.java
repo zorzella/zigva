@@ -4,12 +4,13 @@ package com.google.zigva.guice;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.google.zigva.exec.Executor;
+import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.io.FilePath;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
 import com.google.zigva.java.Propertiez;
 import com.google.zigva.java.RealZystem;
+import com.google.zigva.lang.IoFactory;
 import com.google.zigva.lang.Zystem;
 
 import java.util.Map;
@@ -45,8 +46,8 @@ public final class ZystemSelfBuilder implements Zystem {
   }
 
   @Override
-  public Executor executor() {
-    return new Executor(this);
+  public CommandExecutor cmdExecutor() {
+    return new CommandExecutor(this);
   }
 
   @Override
@@ -57,9 +58,7 @@ public final class ZystemSelfBuilder implements Zystem {
   public ZystemSelfBuilder withEnv(Map<String, String> otherEnv) {
     return new ZystemSelfBuilder(
         new RealZystem(
-            zystem.in(),
-            zystem.out(),
-            zystem.err(),
+            zystem.ioFactory(),
             getCurrentDir(), 
             getHomeDir(), 
             otherEnv,
@@ -67,7 +66,7 @@ public final class ZystemSelfBuilder implements Zystem {
   }
 
   //TODO: use Providers
-  private static <T> Provider<T> getProvider(final T provided) {
+  public static <T> Provider<T> getProvider(final T provided) {
     return new Provider<T> () {
       @Override
       public T get() {
@@ -76,12 +75,81 @@ public final class ZystemSelfBuilder implements Zystem {
     };
   }
 
+  @Override
+  public IoFactory ioFactory() {
+    return zystem.ioFactory();
+  }
+  
+  private static IoFactory getForIn(
+      final IoFactory ioFactory, 
+      final Source<Character> otherIn) {
+    return new IoFactory() {
+
+      @Override
+      public Sink<Character> buildErr() {
+        return ioFactory.buildErr();
+      }
+
+      @Override
+      public Source<Character> buildIn() {
+        return otherIn;
+      }
+
+      @Override
+      public Sink<Character> buildOut() {
+        return ioFactory.buildOut();
+      }
+    };
+  }
+
+  private static IoFactory getForOut(
+      final IoFactory ioFactory, 
+      final Sink<Character> otherOut) {
+    return new IoFactory() {
+
+      @Override
+      public Sink<Character> buildErr() {
+        return ioFactory.buildErr();
+      }
+
+      @Override
+      public Source<Character> buildIn() {
+        return ioFactory.buildIn();
+      }
+
+      @Override
+      public Sink<Character> buildOut() {
+        return otherOut;
+      }
+    };
+  }
+
+  private static IoFactory getForErr(
+      final IoFactory ioFactory, 
+      final Sink<Character> otherErr) {
+    return new IoFactory() {
+
+      @Override
+      public Sink<Character> buildErr() {
+        return otherErr;
+      }
+
+      @Override
+      public Source<Character> buildIn() {
+        return ioFactory.buildIn();
+      }
+
+      @Override
+      public Sink<Character> buildOut() {
+        return ioFactory.buildOut();
+      }
+    };
+  }
+  
   public ZystemSelfBuilder withIn(Source<Character> otherIn) {
     return new ZystemSelfBuilder(
         new RealZystem(
-            getProvider(otherIn),
-            zystem.out(), 
-            zystem.err(), 
+            getForIn(zystem.ioFactory(), otherIn),
             getCurrentDir(), 
             getHomeDir(), 
             zystem.env(),
@@ -91,9 +159,7 @@ public final class ZystemSelfBuilder implements Zystem {
   public ZystemSelfBuilder withOut(Sink<Character> otherOut) {
     return new ZystemSelfBuilder(
         new RealZystem(
-            zystem.in(),
-            getProvider(otherOut), 
-            zystem.err(), 
+            getForOut(zystem.ioFactory(), otherOut), 
             getCurrentDir(), 
             getHomeDir(), 
             zystem.env(),
@@ -103,18 +169,11 @@ public final class ZystemSelfBuilder implements Zystem {
   public ZystemSelfBuilder withErr(Sink<Character> otherErr) {
     return new ZystemSelfBuilder(
         new RealZystem(
-            zystem.in(),
-            zystem.out(),
-            getProvider(otherErr), 
+            getForErr(zystem.ioFactory(), otherErr), 
             getCurrentDir(), 
             getHomeDir(), 
             zystem.env(),
             zystem.getThreadFactory()));
-  }
-
-  @Override
-  public Provider<Source<Character>> in() {
-    return zystem.in();
   }
 
 //  @Override
@@ -129,16 +188,6 @@ public final class ZystemSelfBuilder implements Zystem {
   @Override
   public String toString() {
     return zystem.toString();
-  }
-
-  @Override
-  public Provider<Sink<Character>> out() {
-    return zystem.out();
-  }
-
-  @Override
-  public Provider<Sink<Character>> err() {
-    return zystem.err();
   }
 
   @Override

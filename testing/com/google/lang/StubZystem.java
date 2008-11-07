@@ -1,11 +1,9 @@
 package com.google.lang;
 
-import com.google.inject.Provider;
-import com.google.zigva.exec.Executor;
+import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.io.FilePath;
-import com.google.zigva.io.Sink;
-import com.google.zigva.io.Source;
 import com.google.zigva.java.Propertiez;
+import com.google.zigva.lang.IoFactory;
 import com.google.zigva.lang.Zystem;
 
 import java.util.Map;
@@ -34,8 +32,8 @@ public class StubZystem implements Zystem {
   }
 
   @Override
-  public Executor executor() {
-    return new Executor(this);
+  public CommandExecutor cmdExecutor() {
+    return new CommandExecutor(this);
   }
 
   @Override
@@ -44,22 +42,12 @@ public class StubZystem implements Zystem {
   }
 
   @Override
-  public Provider<Source<Character>> in() {
-    return null;
-  }
-
-  @Override
-  public Provider<Sink<Character>> out() {
-    return null;
-  }
-
-  @Override
-  public Provider<Sink<Character>> err() {
-    return null;
-  }
-
-  @Override
   public ThreadFactory getThreadFactory() {
+    return null;
+  }
+
+  @Override
+  public IoFactory ioFactory() {
     return null;
   }
 }

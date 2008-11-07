@@ -18,7 +18,7 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
     
     public void run() {
       Waitable process = 
-        zystem.executor().command("echo", "foo").execute();
+        zystem.cmdExecutor().command("echo", "foo").execute();
       process.waitFor();
     }
   }
@@ -44,7 +44,7 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
         new ZystemSelfBuilder(zystem)
           .withOut(out);
 
-      Waitable process = localZystem.executor().command("echo", "foo").execute();
+      Waitable process = localZystem.cmdExecutor().command("echo", "foo").execute();
       process.waitFor();
       return out.toString();
     }
