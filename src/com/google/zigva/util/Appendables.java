@@ -1,5 +1,9 @@
 package com.google.zigva.util;
 
+import com.google.zigva.io.Sink;
+import com.google.zigva.io.util.AppendableFromLite;
+import com.google.zigva.io.util.AppendableLite;
+
 import java.util.Formatter;
 import java.util.Locale;
 
@@ -46,5 +50,20 @@ public class Appendables {
 //  public static String join(String separator, Object... args){
 //    return joinArray(separator, args);
 //  }
+  
+  public static Appendable from(final Sink<Character> sink) {
+    return new AppendableFromLite(new AppendableLite() {
+
+      @Override
+      public AppendableLite append(char c) {
+        sink.write(c);
+        return this;
+      }
+    });
+  }
+  
+  public static Appendable from(AppendableLite lite) {
+    return new AppendableFromLite(lite);
+  }
   
 }
