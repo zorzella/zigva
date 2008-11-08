@@ -18,7 +18,7 @@ import com.google.zigva.lang.Zystem;
 import java.io.File;
 import java.io.FileDescriptor;
 
-public final class JavaZystem {
+public final class RootZystemProvider implements Provider<Zystem> {
 
   private static final Object IN_LOCK = "System in lock";
   private static final Object OUT_LOCK = "System out lock";
@@ -33,7 +33,9 @@ public final class JavaZystem {
   private static final WriterSink ERR_WRITER_SINK = 
     new WriterSink(Writers.buffered(FileDescriptor.out), 100, 500, ERR_LOCK);
   
-  public static Zystem get() {
+  //TODO: package private constructor?
+  
+  public Zystem get() {
     return new RealZystem(
         buildIoFactory(), 
         getCurrentDir(), 
@@ -61,33 +63,6 @@ public final class JavaZystem {
         return new SpecialSinkSink<Character>(OUT_WRITER_SINK);
       }
       
-    };
-  }
-
-  private static Provider<Sink<Character>> createOut() {
-    return new Provider<Sink<Character>>() {
-      @Override
-      public Sink<Character> get() {
-        return new SpecialSinkSink<Character>(OUT_WRITER_SINK);//, OUT_LOCK);
-      }
-    };
-  }
-
-  private static Provider<Sink<Character>> createErr() {
-    return new Provider<Sink<Character>>() {
-      @Override
-      public Sink<Character> get() {
-        return new SpecialSinkSink<Character>(ERR_WRITER_SINK);//, ERR_LOCK);
-      }
-    };
-  }
-
-  private static Provider<Source<Character>> createIn() {
-    return new Provider<Source<Character>>() {
-      @Override
-      public Source<Character> get() {
-        return new SpecialSourceSource<Character>(IN_READER_SOURCE, IN_LOCK);
-      }
     };
   }
 
