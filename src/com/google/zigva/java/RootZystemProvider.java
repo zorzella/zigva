@@ -4,6 +4,9 @@ package com.google.zigva.java;
 
 import com.google.inject.Provider;
 import com.google.zigva.guice.ZigvaThreadFactory;
+import com.google.zigva.io.DataNotReadyException;
+import com.google.zigva.io.DataSourceClosedException;
+import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.FilePath;
 import com.google.zigva.io.RealFileSpec;
 import com.google.zigva.io.Sink;
@@ -20,7 +23,35 @@ import java.io.FileDescriptor;
 
 public final class RootZystemProvider implements Provider<Zystem> {
 
-  private static final Object IN_LOCK = "System in lock";
+	/**
+	 * A {@link Source} that is already at its end of stream.
+	 * @author zorzella
+	 *
+	 * @param <T>
+	 */
+  private static final class SourceAtEOS<T> implements Source<T> {
+		@Override
+		public void close() {
+		}
+
+		@Override
+		public boolean isEndOfStream() throws DataSourceClosedException {
+			return true;
+		}
+
+		@Override
+		public boolean isReady() throws DataSourceClosedException {
+			return true;
+		}
+
+		@Override
+		public T read() throws DataNotReadyException,
+				DataSourceClosedException, EndOfDataException {
+			return null;
+		}
+	}
+
+private static final Object IN_LOCK = "System in lock";
   private static final Object OUT_LOCK = "System out lock";
   private static final Object ERR_LOCK = "System err lock";
 
@@ -55,7 +86,10 @@ public final class RootZystemProvider implements Provider<Zystem> {
 
       @Override
       public Source<Character> buildIn() {
+    	  if (false) {
         return new SpecialSourceSource<Character>(IN_READER_SOURCE, IN_LOCK);
+    	  }
+    	return new SourceAtEOS<Character>();
       }
 
       @Override
