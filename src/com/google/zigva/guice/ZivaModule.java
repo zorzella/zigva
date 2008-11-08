@@ -12,31 +12,31 @@ import com.google.zigva.sh.RealJavaProcessExecutor;
 
 public class ZivaModule extends AbstractModule {
 
-  private final Provider<Zystem> rootZystem;
+  private final Provider<Zystem> zystemProvider;
 
   public ZivaModule() {
-    rootZystem = new ZystemProvider(new RootZystemProvider().get());
+    zystemProvider = new ZystemProvider();
   }
 
-  public ZivaModule(Provider<Zystem> rootZystem) {
-    this.rootZystem = rootZystem;
+  public ZivaModule(Provider<Zystem> zystemProvider) {
+    this.zystemProvider = zystemProvider;
   }
 
-  public ZivaModule(Zystem rootZystem) {
-    this.rootZystem = Providers.of(rootZystem);
-  }
-  
   @Override
   protected void configure() {
 //    ZystemScopeHelper zystemScopeHelper = new ZystemScopeHelper(rootZystem);
     bind(FileRepository.class).to(RealFileRepository.class);
-    bind(Zystem.class).toProvider(rootZystem).in(Scopes.SINGLETON);
+    bind(Zystem.class).toProvider(zystemProvider).in(Scopes.SINGLETON);
     bind(JavaProcessExecutor.class).to(RealJavaProcessExecutor.class);
 //    bind(ZystemScopeHelper.class).toInstance(zystemScopeHelper);
   }
   
   public static final class ZystemProvider implements Provider<Zystem> {
 
+    public ZystemProvider() {
+      this(new RootZystemProvider().get());
+    }
+    
     public ZystemProvider(Zystem root) {
       threadLocal.set(root);
     }
