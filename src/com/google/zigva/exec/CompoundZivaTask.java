@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 
 import java.util.List;
 
-public class CompoundZivaTask implements ZivaTask {
+class CompoundZivaTask implements ZivaTask {
 
   private final List<ZivaTask> zivaTasks;
 
@@ -20,6 +20,13 @@ public class CompoundZivaTask implements ZivaTask {
   public void waitFor() {
     for (ZivaTask zivaTask : zivaTasks) {
       zivaTask.waitFor();
+    }
+  }
+
+  @Override
+  public void kill() {
+    for (ZivaTask zivaTask : zivaTasks) {
+      zivaTask.kill();
     }
   }
 }

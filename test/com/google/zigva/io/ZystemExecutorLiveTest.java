@@ -108,6 +108,10 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
         @Override
         public void waitFor() {
         }
+
+        @Override
+        public void kill() {
+        }
       };
     }
   }

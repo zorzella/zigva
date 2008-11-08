@@ -17,7 +17,7 @@ import com.google.zigva.sh.ShellCommand.Builder;
 import java.util.Iterator;
 import java.util.List;
 
-public class Executor {
+public class CommandExecutor {
 
   public interface Command {
     ZivaTask execute(Zystem zystem);
@@ -34,7 +34,7 @@ public class Executor {
   private final ShellCommand.Builder shellCommandBuilder;
 
   @Inject
-  public Executor(Zystem zystem) {
+  public CommandExecutor(Zystem zystem) {
     this.zystem = zystem;
     this.shellCommandBuilder = new ShellCommand.Builder(zystem.getThreadFactory());
   }
@@ -79,7 +79,7 @@ public class Executor {
     
     @Override
     public ZivaTask execute() {
-      Source<Character> nextIn = zystem.in().get();
+      Source<Character> nextIn = zystem.ioFactory().buildIn();
       Sink<Character> nextOut;// = zystem.out();
       
       List<ZivaTask> allTasksExecuted = Lists.newArrayList();
@@ -92,7 +92,7 @@ public class Executor {
           zivaPipe = new ZivaPipe();
           nextOut = zivaPipe.in();
         } else {
-          nextOut = zystem.out().get();
+          nextOut = zystem.ioFactory().buildOut();
         }
         // The last command needs to be special-cased, since it won't have
         // a pipe in front of it
