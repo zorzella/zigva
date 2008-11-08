@@ -6,7 +6,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.zigva.guice.ZivaModule;
 import com.google.zigva.guice.ZystemSelfBuilder;
-import com.google.zigva.java.JavaZystem;
+import com.google.zigva.java.RootZystemProvider;
 import com.google.zigva.lang.Waitable;
 import com.google.zigva.lang.Zystem;
 
@@ -26,7 +26,7 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
   public void testSwappedRootZystem() throws Exception {
     SinkToString out = new SinkToString();
     Zystem rootZystem = 
-      new ZystemSelfBuilder(JavaZystem.get())
+      new ZystemSelfBuilder(new RootZystemProvider().get())
         .withOut(out);
     Injector injector = Guice.createInjector(new ZivaModule(rootZystem));
     EchoFoo task = injector.getInstance(EchoFoo.class);
