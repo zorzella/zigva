@@ -60,4 +60,24 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
     assertEquals("foo", result.trim());
   }
   
+  public void testInheritingThreadLocalSemantics() {
+    Injector injector = Guice.createInjector(new ZivaModule());
+    
+    injector.getInstance(OtherApp.class);
+  }
+  
+  private static final class OtherApp {
+    @Inject
+    private ZivaModule.ZystemProvider zystemProvider;
+    
+    @Inject
+    private Zystem zystem;
+    
+    public String go() {
+//      zystem.cmdExecutor().command(command)
+//      SinkToString
+      return null;
+    }
+  }
+  
 }

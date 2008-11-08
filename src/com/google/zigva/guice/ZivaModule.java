@@ -24,6 +24,7 @@ public class ZivaModule extends AbstractModule {
 
   @Override
   protected void configure() {
+    install(new JavaModule());
 //    ZystemScopeHelper zystemScopeHelper = new ZystemScopeHelper(rootZystem);
     bind(FileRepository.class).to(RealFileRepository.class);
     bind(Zystem.class).toProvider(zystemProvider).in(Scopes.SINGLETON);

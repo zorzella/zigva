@@ -3,13 +3,11 @@ package com.google.zigva.sh;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.zigva.guice.JavaModule;
 import com.google.zigva.guice.ZivaModule;
 
 public class Static {
 
   public static final Injector injector = Guice.createInjector(
-      new ZivaModule (), 
-      new JavaModule());
+      new ZivaModule ());
   
 }

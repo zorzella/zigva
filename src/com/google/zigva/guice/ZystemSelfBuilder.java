@@ -16,6 +16,7 @@ import com.google.zigva.lang.Zystem;
 import java.util.Map;
 import java.util.concurrent.ThreadFactory;
 
+//TODO: make it also implement Provider<Zystem>?
 public final class ZystemSelfBuilder implements Zystem {
   
   private final Zystem zystem;
