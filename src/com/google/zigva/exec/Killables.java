@@ -12,23 +12,7 @@ import java.util.List;
 public class Killables {
 
   public static Killable of(final Killable... killables) {
-    return new Killable() {
-    
-      @Override
-      public void kill() {
-        List<RuntimeException> exceptions = Lists.newArrayList();
-        for (Killable killable : killables) {
-          try {
-            killable.kill();
-          } catch (RuntimeException e) {
-            exceptions.add(e);
-          }
-        }
-        if (exceptions.size() > 0) {
-          throw ExceptionCollection.create(exceptions);
-        }
-      }
-    };
+    return of(Lists.newArrayList(killables));
   }
   
   public static Killable of(final Sink<?> sink) {
@@ -54,6 +38,25 @@ public class Killables {
         } catch (DataSourceClosedException ignore) {
         } catch (RuntimeException e) {
           throw new FailedToKillException(e);
+        }
+      }
+    };
+  }
+
+  public static Killable of(final Iterable<Killable> killables) {
+    return new Killable() {
+      @Override
+      public void kill() {
+        List<RuntimeException> exceptions = Lists.newArrayList();
+        for (Killable killable : killables) {
+          try {
+            killable.kill();
+          } catch (RuntimeException e) {
+            exceptions.add(e);
+          }
+        }
+        if (exceptions.size() > 0) {
+          throw ExceptionCollection.create(exceptions);
         }
       }
     };
