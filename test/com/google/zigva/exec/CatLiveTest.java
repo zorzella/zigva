@@ -28,6 +28,47 @@ public class CatLiveTest extends TestCase {
       .execute()
       .waitFor();
     assertEquals("foo", sink.toString());
-    
   }
+
+  public void testPipe() {
+    Injector injector = Guice.createInjector(new ZivaModule());
+    Cat cat = new Cat();
+    Zystem zystem = injector.getInstance(Zystem.class);
+    SinkToString sink = new SinkToString();
+    Source<Character> source = new CharacterSource("foo");
+    new ZystemSelfBuilder(zystem)
+      .withIn(source)
+      .withOut(sink)
+      .cmdExecutor()
+      .command(cat)
+      .pipe(cat)
+      .execute()
+      .waitFor();
+    assertEquals("foo", sink.toString());
+  }
+
+  public void testMultipePipes() {
+    Injector injector = Guice.createInjector(new ZivaModule());
+    Cat cat = new Cat();
+    Zystem zystem = injector.getInstance(Zystem.class);
+    SinkToString sink = new SinkToString();
+    Source<Character> source = new CharacterSource("foo");
+    new ZystemSelfBuilder(zystem)
+      .withIn(source)
+      .withOut(sink)
+      .cmdExecutor()
+      .command(cat)
+      .pipe(cat)
+      .pipe(cat)
+      .pipe(cat)
+      .pipe(cat)
+      .pipe(cat)
+      .pipe(cat)
+      .pipe(cat)
+      .pipe(cat)
+      .execute()
+      .waitFor();
+    assertEquals("foo", sink.toString());
+  }
+
 }

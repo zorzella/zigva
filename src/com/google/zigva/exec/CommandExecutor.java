@@ -27,6 +27,8 @@ public class CommandExecutor {
 
     ZivaTask execute();
 
+    PreparedCommand pipe(Command command);
+
     PreparedCommand pipe(String... shellCommand);
   }
 
@@ -119,6 +121,12 @@ public class CommandExecutor {
     @Override
     public PreparedCommand pipe(String... shellCommand) {
       commands.add(shellCommandBuilder.build(shellCommand));
+      return this;
+    }
+
+    @Override
+    public PreparedCommand pipe(Command command) {
+      commands.add(command);
       return this;
     }
   }
