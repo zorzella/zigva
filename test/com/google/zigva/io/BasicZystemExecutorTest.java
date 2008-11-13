@@ -5,10 +5,12 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
+import com.google.zigva.exec.Cat;
 import com.google.zigva.guice.Providers;
 import com.google.zigva.guice.ZivaModule;
 import com.google.zigva.guice.ZystemSelfBuilder;
 import com.google.zigva.java.RootZystemProvider;
+import com.google.zigva.lang.NamedRunnable;
 import com.google.zigva.lang.Waitable;
 import com.google.zigva.lang.Zystem;
 
@@ -67,11 +69,49 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
   }
   
   private static final class OtherApp {
+    
+    private static final class Task implements NamedRunnable {
+
+      @Inject
+      private Zystem zystem;
+
+      @Inject
+      private Cat.Builder catBuilder;
+      
+      @Inject
+      private ZivaModule.ZystemProvider zystemProvider;
+
+      @Override
+      public String getName() {
+        return "NamedRunnable";
+      }
+
+      @Override
+      public void run() {
+        
+//        zystemProvider.threadLocal.set(value)
+        
+        SinkToString sink = new SinkToString();
+        Source<Character> source = new CharacterSource("foo");
+        new ZystemSelfBuilder(zystem)
+          .withIn(source)
+          .withOut(sink)
+          .cmdExecutor()
+          .command(catBuilder.create())
+          .execute()
+          .waitFor();
+      }
+      
+    }
+    
     @Inject
     private ZivaModule.ZystemProvider zystemProvider;
     
     @Inject
     private Zystem zystem;
+    
+    @Inject
+    private Task task;
     
     public String go() {
 //      zystem.cmdExecutor().command(command)
