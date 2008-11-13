@@ -68,5 +68,4 @@ public interface Source<T> {
    * {@link Source}.
    */
   void close();
-  
 }

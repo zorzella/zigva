@@ -12,7 +12,7 @@ public class Cat implements Command {
   private final class MyZivaTask implements ZivaTask, NamedRunnable {
     
     private final Zystem zystem;
-    private boolean killed = false;
+    private Killable killable;
 
     public MyZivaTask(Zystem zystem) {
       this.zystem = zystem;
@@ -24,14 +24,15 @@ public class Cat implements Command {
 
     @Override
     public void kill() {
-      killed = true;
+      killable.kill();
     }
 
     @Override
     public void run() {
       Source<Character> in = zystem.ioFactory().buildIn();
       Sink<Character> out = zystem.ioFactory().buildOut();
-      while (!in.isEndOfStream() && !killed) {
+      this.killable = Killables.of(Killables.of(in), Killables.of(out));
+      while (!in.isEndOfStream()) {
         out.write(in.read());
       }
       out.close();
