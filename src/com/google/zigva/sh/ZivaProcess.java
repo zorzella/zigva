@@ -57,5 +57,19 @@ public class ZivaProcess implements ZivaTask {
 //    out.interrupt();
 //    err.interrupt();
   }
+
+  @Override
+  public String getName() {
+    return "ZivaProcess";
+  }
+
+  /**
+   * Does nothing: the process has been started outside this class
+   */
+  //TODO: consider starting the process inside this method -- not sure it's very
+  //viable, given we need to start the process to get the stdin/out/err
+  @Override
+  public void run() {
+  }
   
 }

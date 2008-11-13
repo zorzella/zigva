@@ -29,4 +29,17 @@ class CompoundZivaTask implements ZivaTask {
       zivaTask.kill();
     }
   }
+
+  @Override
+  public String getName() {
+    return "CompoundZivaTask";
+  }
+
+  //TODO: will need to start each one in a diff thread!
+  @Override
+  public void run() {
+    for (ZivaTask zivaTask : zivaTasks) {
+      zivaTask.run();
+    }
+  }
 }

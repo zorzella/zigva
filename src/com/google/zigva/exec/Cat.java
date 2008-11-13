@@ -87,7 +87,7 @@ public class Cat implements Command {
   @Override
   public ZivaTask execute(final Zystem zystem) {
     MyZivaTask result = new MyZivaTask(zystem);
-    threadFactory.newThread(result).start();
+//    threadFactory.newThread(result).start();
     return result;
   }
 }

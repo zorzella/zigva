@@ -101,8 +101,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   private static final class MyCommand implements Command {
 
     @Override
-    public ZivaTask execute(Zystem zystem) {
-      zystem.ioFactory().buildOut().write('z');
+    public ZivaTask execute(final Zystem zystem) {
       //TODO: SyncZivaTask?
       return new ZivaTask() {
         @Override
@@ -111,6 +110,16 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
 
         @Override
         public void kill() {
+        }
+
+        @Override
+        public String getName() {
+          return "MyCommand";
+        }
+
+        @Override
+        public void run() {
+          zystem.ioFactory().buildOut().write('z');
         }
       };
     }

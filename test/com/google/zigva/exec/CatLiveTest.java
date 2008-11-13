@@ -32,5 +32,4 @@ public class CatLiveTest extends TestCase {
     assertEquals("foo", sink.toString());
     
   }
-  
 }

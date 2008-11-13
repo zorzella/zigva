@@ -108,7 +108,10 @@ public class CommandExecutor {
           nextIn = zivaPipe.out();
         }
       }
-      return new CompoundZivaTask(allTasksExecuted);
+      CompoundZivaTask result = new CompoundZivaTask(allTasksExecuted);
+      // TODO: start a thread
+      result.run();
+      return result;
     }
 
     @Override
