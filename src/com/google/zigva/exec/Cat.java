@@ -12,7 +12,7 @@ public class Cat implements Command {
 
   private final class MyZivaTask implements ZivaTask, NamedRunnable {
     
-    private KillableCollector toKill;
+    private KillableCollector toKill = new KillableCollector();
     private final IoFactory ioFactory;
 
     private MyZivaTask(Zystem zystem) {

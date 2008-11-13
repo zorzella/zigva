@@ -26,10 +26,18 @@ public class SyncZivaTask implements ZivaTask {
 
   @Override
   public void run() {
-    delegate.run();
+    RuntimeException exception = null;
+    try {
+      delegate.run();
+    } catch (RuntimeException e) {
+      exception = e;
+    }
     synchronized(this) {
       done = true;
       notifyAll();
+    }
+    if (exception != null) {
+      throw exception;
     }
   }
 
