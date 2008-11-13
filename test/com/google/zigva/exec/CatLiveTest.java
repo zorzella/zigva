@@ -3,7 +3,6 @@ package com.google.zigva.exec;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.zigva.exec.Cat.Builder;
 import com.google.zigva.guice.ZivaModule;
 import com.google.zigva.guice.ZystemSelfBuilder;
 import com.google.zigva.io.CharacterSource;
@@ -17,8 +16,7 @@ public class CatLiveTest extends TestCase {
 
   public void testSunnycase() {
     Injector injector = Guice.createInjector(new ZivaModule());
-    Builder catBuilder = injector.getInstance(Cat.Builder.class);
-    Cat cat = catBuilder.create();
+    Cat cat = new Cat();
     Zystem zystem = injector.getInstance(Zystem.class);
     SinkToString sink = new SinkToString();
     Source<Character> source = new CharacterSource("foo");

@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.testing.guiceberry.GuiceBerryEnv;
 import com.google.inject.testing.guiceberry.junit3.GuiceBerryJunit3TestCase;
 import com.google.zigva.ZivaEnvs;
+import com.google.zigva.exec.SyncZivaTask;
 import com.google.zigva.exec.ZivaTask;
 import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.guice.ZystemSelfBuilder;
@@ -103,7 +104,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     @Override
     public ZivaTask execute(final Zystem zystem) {
       //TODO: SyncZivaTask?
-      return new ZivaTask() {
+      return new SyncZivaTask(new ZivaTask() {
         @Override
         public void waitFor() {
         }
@@ -121,7 +122,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
         public void run() {
           zystem.ioFactory().buildOut().write('z');
         }
-      };
+      });
     }
   }
 }

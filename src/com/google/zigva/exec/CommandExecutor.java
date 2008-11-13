@@ -109,8 +109,10 @@ public class CommandExecutor {
         }
       }
       CompoundZivaTask result = new CompoundZivaTask(allTasksExecuted);
-      // TODO: start a thread
-      result.run();
+      
+      zystem.getThreadFactory().newThread(result).start();
+//      // TODO: start a thread
+//      result.run();
       return result;
     }
 
@@ -120,6 +122,7 @@ public class CommandExecutor {
       return this;
     }
   }
+  
   
   public static class ZivaPipe {
    

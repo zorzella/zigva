@@ -76,9 +76,6 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
       private Zystem zystem;
 
       @Inject
-      private Cat.Builder catBuilder;
-      
-      @Inject
       private ZivaModule.ZystemProvider zystemProvider;
 
       @Override
@@ -97,7 +94,7 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
           .withIn(source)
           .withOut(sink)
           .cmdExecutor()
-          .command(catBuilder.create())
+          .command(new Cat())
           .execute()
           .waitFor();
       }
