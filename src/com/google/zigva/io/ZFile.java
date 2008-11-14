@@ -3,6 +3,7 @@ package com.google.zigva.io;
 import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
 import com.google.zigva.lang.RegexReplacement;
+import com.google.zigva.sh.Static;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -116,7 +117,8 @@ public class ZFile {
     try {
       in = new FileInputStream(toRead);
       StringBuilder builder = new StringBuilder();
-      Source<Character> s = new ReaderSource(Readers.buffered(in));
+      Source<Character> s = Static.injector.getInstance(ReaderSource.Builder.class)
+        .withIn(Readers.buffered(in)).create();
       while (!s.isEndOfStream()) {
         builder.append(s.read());
       }

@@ -1,26 +1,18 @@
 package com.google.zigva.sh;
 
 import com.google.lang.StubZystem;
-import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.io.FilePath;
 import com.google.zigva.io.FileRepository;
 import com.google.zigva.io.RealFileSpec;
-import com.google.zigva.sh.JavaProcessExecutor;
-import com.google.zigva.sh.StubFileRepository;
-import com.google.zigva.sh.StubJavaProcessExecutor;
-import com.google.zigva.sh.ZivaProcessBuilder;
-import com.google.zigva.sh.ActivePipe.Builder;
 
 import junit.framework.TestCase;
 
 import java.io.File;
 
-
-
 public class ZivaProcessBuilderTest extends TestCase {
 
   private ActivePipe.Builder activePipeBuilder = 
-    new ActivePipe.Builder(new ZigvaThreadFactory());
+    Static.injector.getInstance(ActivePipe.Builder.class);
 
   public void testCmdIsNecessary() throws Exception {
     FileRepository fileRepository = new StubFileRepository();

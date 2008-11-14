@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.google.zigva.exec.Cat;
+import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.guice.Providers;
 import com.google.zigva.guice.ZivaModule;
 import com.google.zigva.guice.ZystemSelfBuilder;
@@ -18,11 +19,11 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
   
   private static final class EchoFoo implements Runnable {
     @Inject
-    private Zystem zystem;
+    private CommandExecutor.Builder commandExecutorBuilder;
     
     public void run() {
       Waitable process = 
-        zystem.cmdExecutor().command("echo", "foo").execute();
+        commandExecutorBuilder.create().command("echo", "foo").execute();
       process.waitFor();
     }
   }
@@ -41,15 +42,19 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
   
   private static final class MyApp {
     @Inject
-    private Zystem zystem;
+    private ZystemSelfBuilder zystem;
+    
+    @Inject
+    private CommandExecutor.Builder commandExecutorBuilder;
     
     public String go() {
       SinkToString out = new SinkToString();
-      Zystem localZystem = 
-        new ZystemSelfBuilder(zystem)
-          .withOut(out);
+      Zystem modifiedZystem = zystem.withOut(out);
 
-      Waitable process = localZystem.cmdExecutor().command("echo", "foo").execute();
+      Waitable process =
+        commandExecutorBuilder
+          .with(modifiedZystem).create()
+          .command("echo", "foo").execute();
       process.waitFor();
       return out.toString();
     }
@@ -73,11 +78,11 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
     private static final class Task implements NamedRunnable {
 
       @Inject
-      private Zystem zystem;
+      private ZystemSelfBuilder zystem;
 
       @Inject
-      private ZivaModule.ZystemProvider zystemProvider;
-
+      private CommandExecutor.Builder commandExecutorBuilder;
+      
       @Override
       public String getName() {
         return "NamedRunnable";
@@ -85,36 +90,17 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
 
       @Override
       public void run() {
-        
-//        zystemProvider.threadLocal.set(value)
-        
         SinkToString sink = new SinkToString();
         Source<Character> source = new CharacterSource("foo");
-        new ZystemSelfBuilder(zystem)
+        ZystemSelfBuilder modifiedZystem = new ZystemSelfBuilder(zystem)
           .withIn(source)
-          .withOut(sink)
-          .cmdExecutor()
+          .withOut(sink);
+        
+        commandExecutorBuilder.with(modifiedZystem).create()
           .command(new Cat())
           .execute()
           .waitFor();
       }
-      
-    }
-    
-    @Inject
-    private ZivaModule.ZystemProvider zystemProvider;
-    
-    @Inject
-    private Zystem zystem;
-    
-    @Inject
-    private Task task;
-    
-    public String go() {
-//      zystem.cmdExecutor().command(command)
-//      SinkToString
-      return null;
     }
   }
-  
 }

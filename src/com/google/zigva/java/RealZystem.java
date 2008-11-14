@@ -1,6 +1,5 @@
 package com.google.zigva.java;
 
-import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.io.FilePath;
 import com.google.zigva.lang.IoFactory;
 import com.google.zigva.lang.Zystem;
@@ -58,11 +57,6 @@ public class RealZystem implements Zystem {
   @Override
   public Propertiez properties() {
     return new RealPropertiez();
-  }
-
-  @Override
-  public CommandExecutor cmdExecutor() {
-    return new CommandExecutor(this);
   }
 
   @Override

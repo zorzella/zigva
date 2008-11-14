@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.testing.guiceberry.GuiceBerryEnv;
 import com.google.inject.testing.guiceberry.junit3.GuiceBerryJunit3TestCase;
 import com.google.zigva.ZivaEnvs;
+import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.exec.SyncZivaTask;
 import com.google.zigva.exec.WaitableZivaTask;
 import com.google.zigva.exec.ZivaTask;
@@ -19,7 +20,10 @@ import java.util.Map;
 public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
 
   @Inject
-  private Zystem zystem;
+  private ZystemSelfBuilder zystem;
+  
+  @Inject
+  private CommandExecutor.Builder commandExecutorBuilder;
   
   @Override
   protected void setUp() throws Exception {
@@ -42,11 +46,12 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     fooBarBazIsZ.put(envName, expected);
     
     Zystem localZystem = 
-      new ZystemSelfBuilder(zystem)
+      zystem
         .withEnv(fooBarBazIsZ)
         .withOut(out);
 
-    Waitable process = localZystem.cmdExecutor().command("printenv", envName).execute();
+    Waitable process = commandExecutorBuilder.with(localZystem).create()
+      .command("printenv", envName).execute();
     process.waitFor();
     assertEquals(expected, out.toString().trim());
   }
@@ -56,12 +61,13 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     SinkToString out = new SinkToString();
     String expected = "ziva rules";
     
-    Zystem localZystem = 
-      new ZystemSelfBuilder(zystem)
+    Zystem localZystem =
+      zystem
         .withIn(new CharacterSource(expected))
         .withOut(out);
 
-    Waitable process = localZystem.cmdExecutor().command("cat").execute();
+    Waitable process = commandExecutorBuilder.with(localZystem).create()
+      .command("cat").execute();
     process.waitFor();
     assertEquals(expected, out.toString().trim());
   }
@@ -69,10 +75,11 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   public void testNonShell() throws Exception {
     MyCommand myCommand = new MyCommand();
     SinkToString actual = new SinkToString();
-    Zystem localZystem =
-      new ZystemSelfBuilder(zystem)
+    Zystem localZystem = 
+      zystem
         .withOut(actual);
-    WaitableZivaTask task = localZystem.cmdExecutor().command(myCommand).execute();
+    WaitableZivaTask task = commandExecutorBuilder.with(localZystem).create()
+      .command(myCommand).execute();
     task.waitFor();
     assertEquals("z", actual.toString());
   }
@@ -83,11 +90,11 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     SinkToString out = new SinkToString();
     
     Zystem localZystem = 
-      new ZystemSelfBuilder(zystem)
+      zystem
         .withOut(out);
 
     String expected = "foo";
-    Waitable process = localZystem.cmdExecutor()
+    Waitable process = commandExecutorBuilder.with(localZystem).create()
       .command("echo", expected)
       .pipe("cat")
       .execute();

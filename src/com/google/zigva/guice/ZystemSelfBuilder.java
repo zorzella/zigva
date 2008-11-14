@@ -4,7 +4,6 @@ package com.google.zigva.guice;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.io.FilePath;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
@@ -44,11 +43,6 @@ public final class ZystemSelfBuilder implements Zystem {
   @Override
   public Propertiez properties() {
     return zystem.properties();
-  }
-
-  @Override
-  public CommandExecutor cmdExecutor() {
-    return new CommandExecutor(this);
   }
 
   @Override

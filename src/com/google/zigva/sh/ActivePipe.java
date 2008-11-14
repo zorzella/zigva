@@ -19,26 +19,31 @@ import java.util.concurrent.ThreadFactory;
  * a Writer (and not a thread), this is an active thread that reads from a 
  * given "in" and dumps into a given "out".
  */
-class ActivePipe implements NamedRunnable {
+public class ActivePipe implements NamedRunnable {
 
   private final String name;
   private final Sink<Character> out;
   private final Source<Character> in;
 
-  static final class Builder {
+  public static final class Builder {
     
+    private final ReaderSource.Builder readerSourceBuilder;
     private final ThreadFactory threadFactory;
 
     private String name;
     private Source<Character> in;
     private Sink<Character> out;
-    
+
     @Inject
-    Builder(ThreadFactory threadFactory) {
+    public Builder(ReaderSource.Builder readerSourceBuilder, ThreadFactory threadFactory) {
+      this.readerSourceBuilder = readerSourceBuilder;
       this.threadFactory = threadFactory;
     }
 
-    Builder(ThreadFactory threadFactory, String name, Source<Character> in, Sink<Character> out) {
+    Builder(ReaderSource.Builder readerSourceBuilder, 
+        ThreadFactory threadFactory, 
+        String name, Source<Character> in, Sink<Character> out) {
+      this.readerSourceBuilder = readerSourceBuilder;
       this.threadFactory = threadFactory;
       this.name = name;
       this.in = in;
@@ -57,28 +62,32 @@ class ActivePipe implements NamedRunnable {
     }
     
     public ActivePipe comboCreate(String name, InputStream in, Appendable out) {
-      return new ActivePipe(name, 
-          new ReaderSource(Readers.buffered(in)), 
+      return new ActivePipe(
+          name, 
+          readerSourceBuilder.withIn(Readers.buffered(in)).create(), 
           new WriterSink(Writers.buffered(out)));
     }
 
     public ActivePipe comboCreate(String name, InputStream in, Sink<Character> out) {
-      return new ActivePipe(name, new ReaderSource(Readers.buffered(in)), out);
+      return new ActivePipe(
+          name, 
+          readerSourceBuilder.withIn(Readers.buffered(in)).create(), 
+          out);
     }
 
     public Builder withtName(String name) {
       this.name = name;
-      return new Builder(threadFactory, name, in, out);
+      return new Builder(readerSourceBuilder, threadFactory, name, in, out);
     }
     
     public Builder withIn(Source<Character> in) {
       this.in = in;
-      return new Builder(threadFactory, name, in, out);
+      return new Builder(readerSourceBuilder, threadFactory, name, in, out);
     }
     
     public Builder withOut(Sink<Character> out) {
       this.out = out;
-      return new Builder(threadFactory, name, in, out);
+      return new Builder(readerSourceBuilder, threadFactory, name, in, out);
     }
   }
   

@@ -21,8 +21,8 @@ public class ShellCommand implements Command {
     private final ActivePipe.Builder activePipeBuilder;
 
     @Inject
-    public Builder (ThreadFactory threadFactory) {
-      this.activePipeBuilder = new ActivePipe.Builder(threadFactory);
+    public Builder (ActivePipe.Builder activePipeBuilder) {
+      this.activePipeBuilder = activePipeBuilder;
     }
     
     public ShellCommand build(String... shellCommand) {

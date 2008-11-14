@@ -2,7 +2,11 @@
 package com.google.zigva.exec;
 
 import com.google.inject.Guice;
+import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.testing.guiceberry.GuiceBerryEnv;
+import com.google.inject.testing.guiceberry.junit3.GuiceBerryJunit3TestCase;
+import com.google.zigva.ZivaEnvs;
 import com.google.zigva.guice.ZivaModule;
 import com.google.zigva.guice.ZystemSelfBuilder;
 import com.google.zigva.io.CharacterSource;
@@ -10,20 +14,26 @@ import com.google.zigva.io.SinkToString;
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.Zystem;
 
-import junit.framework.TestCase;
+@GuiceBerryEnv(ZivaEnvs.REGULAR)
+public class CatLiveTest extends GuiceBerryJunit3TestCase {
 
-public class CatLiveTest extends TestCase {
-
+  @Inject
+  private CommandExecutor.Builder commandExecutorBuilder;
+  
+  @Inject 
+  private ZystemSelfBuilder zystem;
+  
   public void testSunnycase() {
     Injector injector = Guice.createInjector(new ZivaModule());
     Cat cat = new Cat();
-    Zystem zystem = injector.getInstance(Zystem.class);
     SinkToString sink = new SinkToString();
     Source<Character> source = new CharacterSource("foo");
-    new ZystemSelfBuilder(zystem)
-      .withIn(source)
-      .withOut(sink)
-      .cmdExecutor()
+    Zystem modifiedZystem = 
+      zystem
+        .withIn(source)
+        .withOut(sink);
+
+    commandExecutorBuilder.with(modifiedZystem).create()
       .command(cat)
       .execute()
       .waitFor();
@@ -33,13 +43,13 @@ public class CatLiveTest extends TestCase {
   public void testPipe() {
     Injector injector = Guice.createInjector(new ZivaModule());
     Cat cat = new Cat();
-    Zystem zystem = injector.getInstance(Zystem.class);
     SinkToString sink = new SinkToString();
     Source<Character> source = new CharacterSource("foo");
-    new ZystemSelfBuilder(zystem)
-      .withIn(source)
-      .withOut(sink)
-      .cmdExecutor()
+    Zystem modifiedZystem = 
+      zystem
+        .withIn(source)
+        .withOut(sink);
+    commandExecutorBuilder.with(modifiedZystem).create()
       .command(cat)
       .pipe(cat)
       .execute()
@@ -50,13 +60,12 @@ public class CatLiveTest extends TestCase {
   public void testMultipePipes() throws InterruptedException {
     Injector injector = Guice.createInjector(new ZivaModule());
     Cat cat = new Cat();
-    Zystem zystem = injector.getInstance(Zystem.class);
     SinkToString sink = new SinkToString();
     Source<Character> source = new CharacterSource("foo");
-    new ZystemSelfBuilder(zystem)
+    Zystem modifiedZystem = zystem
       .withIn(source)
-      .withOut(sink)
-      .cmdExecutor()
+      .withOut(sink);
+    commandExecutorBuilder.with(modifiedZystem).create()
       .command(cat)
       .pipe(cat)
       .pipe(cat)
@@ -71,5 +80,4 @@ public class CatLiveTest extends TestCase {
     Thread.sleep(300);
     assertEquals("foo", sink.toString());
   }
-
 }

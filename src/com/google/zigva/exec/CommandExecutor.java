@@ -10,15 +10,35 @@ import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
+import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.lang.Zystem;
+import com.google.zigva.sh.ActivePipe;
 import com.google.zigva.sh.ShellCommand;
-import com.google.zigva.sh.ShellCommand.Builder;
 
 import java.util.Iterator;
 import java.util.List;
 
 public class CommandExecutor {
 
+  public static final class Builder {
+    
+    private final Zystem zystem;
+
+    @Inject
+    Builder(Zystem zystem) {
+      this.zystem = zystem;
+    }
+    
+    public CommandExecutor create() {
+      return new CommandExecutor(zystem);
+    }
+    
+    public Builder with(Zystem zystem) {
+      return new Builder(zystem);
+    }
+    
+  }
+  
   public interface Command {
     ZivaTask execute(Zystem zystem);
   }
@@ -38,7 +58,9 @@ public class CommandExecutor {
   @Inject
   public CommandExecutor(Zystem zystem) {
     this.zystem = zystem;
-    this.shellCommandBuilder = new ShellCommand.Builder(zystem.getThreadFactory());
+    this.shellCommandBuilder = new ShellCommand.Builder(
+        new ActivePipe.Builder(new ReaderSource.Builder(zystem), 
+            zystem.getThreadFactory()));
   }
   
   public PreparedCommand command(String... shellCommand) {
@@ -59,7 +81,7 @@ public class CommandExecutor {
 
   static class SimplePreparedCommand implements PreparedCommand {
 
-    private final Builder shellCommandBuilder;
+    private final ShellCommand.Builder shellCommandBuilder;
     private final Zystem zystem;
     private final List<Command> commands;
 
@@ -82,7 +104,7 @@ public class CommandExecutor {
     @Override
     public WaitableZivaTask execute() {
       Source<Character> nextIn = zystem.ioFactory().buildIn();
-      Sink<Character> nextOut;// = zystem.out();
+      Sink<Character> nextOut;
       
       List<ZivaTask> allTasksExecuted = Lists.newArrayList();
       
@@ -96,16 +118,11 @@ public class CommandExecutor {
         } else {
           nextOut = zystem.ioFactory().buildOut();
         }
-        // The last command needs to be special-cased, since it won't have
-        // a pipe in front of it
-//        if (!iterator.hasNext()) {
-          ZystemSelfBuilder tempZystem = 
-            new ZystemSelfBuilder(zystem)
-              .withIn(nextIn)
-              .withOut(nextOut);
-          allTasksExecuted.add(new SyncZivaTask(command.execute(tempZystem)));
-//          break;
-//        }
+        ZystemSelfBuilder tempZystem = 
+          new ZystemSelfBuilder(zystem)
+            .withIn(nextIn)
+            .withOut(nextOut);
+        allTasksExecuted.add(new SyncZivaTask(command.execute(tempZystem)));
         if (iterator.hasNext()) {
           nextIn = zivaPipe.out();
         }
@@ -114,8 +131,6 @@ public class CommandExecutor {
           zystem.getThreadFactory(), allTasksExecuted));
       
       zystem.getThreadFactory().newThread(result).start();
-//      // TODO: start a thread
-//      result.run();
       return result;
     }
 
@@ -131,7 +146,6 @@ public class CommandExecutor {
       return this;
     }
   }
-  
   
   public static class ZivaPipe {
    

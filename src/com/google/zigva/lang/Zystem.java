@@ -1,6 +1,5 @@
 package com.google.zigva.lang;
 
-import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.io.FilePath;
 import com.google.zigva.java.Propertiez;
 
@@ -19,8 +18,6 @@ public interface Zystem {
   
   FilePath getHomeDir();
   
-  CommandExecutor cmdExecutor();
-
   IoFactory ioFactory();
   
   ThreadFactory getThreadFactory();

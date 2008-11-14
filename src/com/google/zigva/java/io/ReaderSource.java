@@ -1,12 +1,14 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
 package com.google.zigva.java.io;
 
+import com.google.inject.Inject;
 import com.google.zigva.collections.CircularBuffer;
 import com.google.zigva.io.DataNotReadyException;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.FailedToCloseException;
 import com.google.zigva.io.Source;
+import com.google.zigva.lang.Zystem;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -32,7 +34,14 @@ public class ReaderSource implements Source<Character> {
 
   public static final class Builder {
     
+    private final Zystem zystem;
+
     private Reader in = null;
+    
+    @Inject
+    public Builder(Zystem zystem) {
+      this.zystem = zystem;
+    }
     
     public ReaderSource create() {
       if (in == null) {

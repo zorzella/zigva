@@ -1,10 +1,7 @@
 package com.google.zigva.sh;
 
-
-import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
-import com.google.zigva.sh.ActivePipe.Builder;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,7 +57,8 @@ public class OS {
       } else {
         inS = activePipeBuilder.comboCreate(
             "OS - sysin",
-            new ReaderSource(Readers.buffered(in)), 
+            Static.injector.getInstance(ReaderSource.Builder.class)
+              .withIn(Readers.buffered(in)).create(), 
             p.getOutputStream()).start();
       }
       return new ZivaProcess(p, inS, outS, errS);
