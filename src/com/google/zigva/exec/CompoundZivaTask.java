@@ -22,24 +22,24 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ThreadFactory;
 
-class CompoundZivaTask implements ZivaTask {
+class CompoundZivaTask implements ZigvaTask {
 
   private final ThreadFactory threadFactory;
-  private final List<ZivaTask> zivaTasks;
+  private final List<ZigvaTask> zivaTasks;
 
-  public CompoundZivaTask(ThreadFactory threadFactory, ZivaTask... zivaTasks) {
+  public CompoundZivaTask(ThreadFactory threadFactory, ZigvaTask... zivaTasks) {
     this.threadFactory = threadFactory;
     this.zivaTasks = Lists.newArrayList(zivaTasks);
   }
   
-  public CompoundZivaTask(ThreadFactory threadFactory, List<ZivaTask> zivaTasks) {
+  public CompoundZivaTask(ThreadFactory threadFactory, List<ZigvaTask> zivaTasks) {
     this.threadFactory = threadFactory;
     this.zivaTasks = zivaTasks;
   }
 
   @Override
   public void kill() {
-    for (ZivaTask zivaTask : zivaTasks) {
+    for (ZigvaTask zivaTask : zivaTasks) {
       zivaTask.kill();
     }
   }
@@ -53,7 +53,7 @@ class CompoundZivaTask implements ZivaTask {
   
   @Override
   public void run() {
-    for (ZivaTask zivaTask : zivaTasks) {
+    for (ZigvaTask zivaTask : zivaTasks) {
       Thread thread = this.threadFactory.newThread(zivaTask);
       allThreads.add(thread);
       thread.start();

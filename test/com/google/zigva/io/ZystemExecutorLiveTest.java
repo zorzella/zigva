@@ -20,11 +20,11 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.testing.guiceberry.GuiceBerryEnv;
 import com.google.inject.testing.guiceberry.junit3.GuiceBerryJunit3TestCase;
-import com.google.zigva.ZivaEnvs;
+import com.google.zigva.ZigvaEnvs;
 import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.exec.SyncZivaTask;
 import com.google.zigva.exec.WaitableZivaTask;
-import com.google.zigva.exec.ZivaTask;
+import com.google.zigva.exec.ZigvaTask;
 import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.guice.ZystemSelfBuilder;
 import com.google.zigva.lang.Waitable;
@@ -32,7 +32,7 @@ import com.google.zigva.lang.Zystem;
 
 import java.util.Map;
 
-@GuiceBerryEnv(ZivaEnvs.REGULAR)
+@GuiceBerryEnv(ZigvaEnvs.REGULAR)
 public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
 
   @Inject
@@ -126,8 +126,8 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   private static final class MyCommand implements Command {
 
     @Override
-    public ZivaTask execute(final Zystem zystem) {
-      return new SyncZivaTask(new ZivaTask() {
+    public ZigvaTask execute(final Zystem zystem) {
+      return new SyncZivaTask(new ZigvaTask() {
         @Override
         public void kill() {
         }

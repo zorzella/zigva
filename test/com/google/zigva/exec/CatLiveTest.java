@@ -21,15 +21,15 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.testing.guiceberry.GuiceBerryEnv;
 import com.google.inject.testing.guiceberry.junit3.GuiceBerryJunit3TestCase;
-import com.google.zigva.ZivaEnvs;
-import com.google.zigva.guice.ZivaModule;
+import com.google.zigva.ZigvaEnvs;
+import com.google.zigva.guice.ZigvaModule;
 import com.google.zigva.guice.ZystemSelfBuilder;
 import com.google.zigva.io.CharacterSource;
 import com.google.zigva.io.SinkToString;
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.Zystem;
 
-@GuiceBerryEnv(ZivaEnvs.REGULAR)
+@GuiceBerryEnv(ZigvaEnvs.REGULAR)
 public class CatLiveTest extends GuiceBerryJunit3TestCase {
 
   @Inject
@@ -39,7 +39,7 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
   private ZystemSelfBuilder zystem;
   
   public void testSunnycase() {
-    Injector injector = Guice.createInjector(new ZivaModule());
+    Injector injector = Guice.createInjector(new ZigvaModule());
     Cat cat = new Cat();
     SinkToString sink = new SinkToString();
     Source<Character> source = new CharacterSource("foo");
@@ -56,7 +56,7 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
   }
 
   public void testPipe() {
-    Injector injector = Guice.createInjector(new ZivaModule());
+    Injector injector = Guice.createInjector(new ZigvaModule());
     Cat cat = new Cat();
     SinkToString sink = new SinkToString();
     Source<Character> source = new CharacterSource("foo");
@@ -73,7 +73,7 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
   }
 
   public void testMultipePipes() throws InterruptedException {
-    Injector injector = Guice.createInjector(new ZivaModule());
+    Injector injector = Guice.createInjector(new ZigvaModule());
     Cat cat = new Cat();
     SinkToString sink = new SinkToString();
     Source<Character> source = new CharacterSource("foo");

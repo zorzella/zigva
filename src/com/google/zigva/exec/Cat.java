@@ -25,7 +25,7 @@ import com.google.zigva.lang.Zystem;
 
 public class Cat implements Command {
 
-  private final class MyZivaTask implements ZivaTask, NamedRunnable {
+  private final class MyZivaTask implements ZigvaTask, NamedRunnable {
     
     private KillableCollector toKill = new KillableCollector();
     private final IoFactory ioFactory;
@@ -58,8 +58,8 @@ public class Cat implements Command {
   }
 
   @Override
-  public ZivaTask execute(final Zystem zystem) {
-    ZivaTask result = new SyncZivaTask(new MyZivaTask(zystem));
+  public ZigvaTask execute(final Zystem zystem) {
+    ZigvaTask result = new SyncZivaTask(new MyZivaTask(zystem));
     return result;
   }
 }

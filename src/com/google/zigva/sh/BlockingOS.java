@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 
+@Deprecated
 public class BlockingOS {
 
   public static ZivaProcess run(String[] cmdArray, File dir) {

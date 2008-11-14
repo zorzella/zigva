@@ -16,11 +16,11 @@
 
 package com.google.zigva.sh;
 
-import com.google.zigva.exec.ZivaTask;
+import com.google.zigva.exec.ZigvaTask;
 
 import java.io.IOException;
 
-public class ZivaProcess implements ZivaTask {
+public class ZivaProcess implements ZigvaTask {
 
   private final Process process;
   private final Thread in;

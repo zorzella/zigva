@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 
+@Deprecated
 public class ZivaProcessBuilder {
 
   private final Zystem zystem;

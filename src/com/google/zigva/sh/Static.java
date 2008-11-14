@@ -18,11 +18,11 @@ package com.google.zigva.sh;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.zigva.guice.ZivaModule;
+import com.google.zigva.guice.ZigvaModule;
 
 public class Static {
 
   public static final Injector injector = Guice.createInjector(
-      new ZivaModule ());
+      new ZigvaModule ());
   
 }

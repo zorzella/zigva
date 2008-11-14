@@ -16,7 +16,7 @@
 
 package com.google.zigva;
 
-public interface ZivaEnvs {
+public interface ZigvaEnvs {
 
   String REGULAR = "com.google.zigva.RegularEnv";
   

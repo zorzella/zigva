@@ -62,7 +62,7 @@ public class CommandExecutor {
   }
   
   public interface Command {
-    ZivaTask execute(Zystem zystem);
+    ZigvaTask execute(Zystem zystem);
   }
   
   public interface PreparedCommand {
@@ -134,14 +134,14 @@ public class CommandExecutor {
       Source<Character> nextIn = zystem.ioFactory().buildIn();
       Sink<Character> nextOut;
       
-      List<ZivaTask> allTasksExecuted = Lists.newArrayList();
+      List<ZigvaTask> allTasksExecuted = Lists.newArrayList();
       
       Iterator<? extends Command> iterator = commands.iterator();
       while (iterator.hasNext()) {
         Command command = iterator.next();
-        ZivaPipe zivaPipe = new ZivaPipe();
+        ZigvaPipe zivaPipe = new ZigvaPipe();
         if (iterator.hasNext()) {
-          zivaPipe = new ZivaPipe();
+          zivaPipe = new ZigvaPipe();
           nextOut = zivaPipe.in();
         } else {
           nextOut = zystem.ioFactory().buildOut();
@@ -175,7 +175,7 @@ public class CommandExecutor {
     }
   }
   
-  public static class ZivaPipe {
+  public static class ZigvaPipe {
    
     private final class MySink implements Sink<Character> {
       @Override
@@ -247,7 +247,7 @@ public class CommandExecutor {
     private final CircularBuffer<Character> buffer;
     private final String lock;
 
-    public ZivaPipe() {
+    public ZigvaPipe() {
       this.lock = "LOCK";
       this.buffer = new CircularBuffer<Character>(1000, lock);
     }

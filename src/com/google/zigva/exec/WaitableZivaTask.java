@@ -18,6 +18,6 @@ package com.google.zigva.exec;
 
 import com.google.zigva.lang.Waitable;
 
-public interface WaitableZivaTask extends ZivaTask, Waitable {
+public interface WaitableZivaTask extends ZigvaTask, Waitable {
 
 }

@@ -23,6 +23,7 @@ import com.google.zigva.sh.ZivaProcessBuilder;
 
 import java.util.List;
 
+@Deprecated
 public class ZivaProcessUtil {
 
   public static List<String> readLines(ZivaProcessBuilder zivaProcessBuilder) {

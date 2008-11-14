@@ -16,14 +16,14 @@
 
 package com.google.zigva.exec;
 
-import com.google.zigva.exec.ZivaTask;
+import com.google.zigva.exec.ZigvaTask;
 
 public class SyncZivaTask implements WaitableZivaTask {
 
   private boolean done = false;
-  private final ZivaTask delegate;
+  private final ZigvaTask delegate;
 
-  public SyncZivaTask(ZivaTask delegate) {
+  public SyncZivaTask(ZigvaTask delegate) {
     this.delegate = delegate;
   }
   

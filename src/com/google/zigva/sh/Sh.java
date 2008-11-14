@@ -18,6 +18,7 @@ package com.google.zigva.sh;
 
 import java.io.File;
 
+@Deprecated
 public class Sh {
   
   public static ZivaProcess run(String command) {

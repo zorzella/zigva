@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+@Deprecated
 public class BlockingSh {
 
   public static String readFullContent(String command, String dirToRun) {

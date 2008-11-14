@@ -20,14 +20,14 @@ import com.google.inject.AbstractModule;
 
 import com.google.inject.testing.guiceberry.NoOpTestScopeListener;
 import com.google.inject.testing.guiceberry.TestScopeListener;
-import com.google.zigva.guice.ZivaModule;
+import com.google.zigva.guice.ZigvaModule;
 
 
 public class RegularEnv extends AbstractModule {
 
   @Override
   protected void configure() {
-    install(new ZivaModule());
+    install(new ZigvaModule());
     bind(TestScopeListener.class).to(NoOpTestScopeListener.class);
   }
 }

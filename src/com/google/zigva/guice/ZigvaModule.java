@@ -26,15 +26,15 @@ import com.google.zigva.lang.Zystem;
 import com.google.zigva.sh.JavaProcessExecutor;
 import com.google.zigva.sh.RealJavaProcessExecutor;
 
-public class ZivaModule extends AbstractModule {
+public class ZigvaModule extends AbstractModule {
 
   private final Provider<Zystem> zystemProvider;
 
-  public ZivaModule() {
+  public ZigvaModule() {
     zystemProvider = new ZystemProvider();
   }
 
-  public ZivaModule(Provider<Zystem> zystemProvider) {
+  public ZigvaModule(Provider<Zystem> zystemProvider) {
     this.zystemProvider = zystemProvider;
   }
 

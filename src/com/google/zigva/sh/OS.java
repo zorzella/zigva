@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+@Deprecated
 public class OS {
 
   public static ZivaProcess run(String[] cmdArray, File dir) {

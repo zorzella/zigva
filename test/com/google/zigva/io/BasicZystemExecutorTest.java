@@ -24,7 +24,7 @@ import com.google.inject.Provider;
 import com.google.zigva.exec.Cat;
 import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.guice.Providers;
-import com.google.zigva.guice.ZivaModule;
+import com.google.zigva.guice.ZigvaModule;
 import com.google.zigva.guice.ZystemSelfBuilder;
 import com.google.zigva.java.RootZystemProvider;
 import com.google.zigva.lang.NamedRunnable;
@@ -50,7 +50,7 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
       Providers.of(
           new ZystemSelfBuilder(new RootZystemProvider().get())
           .withOut(out));
-    Injector injector = Guice.createInjector(new ZivaModule(rootZystem));
+    Injector injector = Guice.createInjector(new ZigvaModule(rootZystem));
     EchoFoo task = injector.getInstance(EchoFoo.class);
     task.run();
     assertEquals("foo", out.toString().trim());
@@ -77,14 +77,14 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
   }
 
   public void testLocalRootZystem() throws Exception {
-    Injector injector = Guice.createInjector(new ZivaModule());
+    Injector injector = Guice.createInjector(new ZigvaModule());
     MyApp myApp = injector.getInstance(MyApp.class);
     String result = myApp.go();
     assertEquals("foo", result.trim());
   }
   
   public void testInheritingThreadLocalSemantics() {
-    Injector injector = Guice.createInjector(new ZivaModule());
+    Injector injector = Guice.createInjector(new ZigvaModule());
     
     injector.getInstance(OtherApp.class);
   }
