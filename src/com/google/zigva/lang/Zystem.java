@@ -19,7 +19,8 @@ public interface Zystem {
   FilePath getHomeDir();
   
   IoFactory ioFactory();
-  
+
+  // TODO: remove?
   ThreadFactory getThreadFactory();
   
 }
