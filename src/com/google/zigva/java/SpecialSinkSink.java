@@ -31,4 +31,9 @@ public class SpecialSinkSink<T> implements Sink<T> {
     sink.write(data);
   }
 
+  @Override
+  public void flush() {
+    sink.flush();
+  }
+
 }

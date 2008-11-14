@@ -47,7 +47,7 @@ public class CatLiveTest extends TestCase {
     assertEquals("foo", sink.toString());
   }
 
-  public void testMultipePipes() {
+  public void testMultipePipes() throws InterruptedException {
     Injector injector = Guice.createInjector(new ZivaModule());
     Cat cat = new Cat();
     Zystem zystem = injector.getInstance(Zystem.class);
@@ -68,6 +68,7 @@ public class CatLiveTest extends TestCase {
       .pipe(cat)
       .execute()
       .waitFor();
+    Thread.sleep(300);
     assertEquals("foo", sink.toString());
   }
 

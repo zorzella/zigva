@@ -3,16 +3,20 @@ package com.google.zigva.exec;
 import com.google.common.collect.Lists;
 
 import java.util.List;
+import java.util.concurrent.ThreadFactory;
 
 class CompoundZivaTask implements ZivaTask {
 
+  private final ThreadFactory threadFactory;
   private final List<ZivaTask> zivaTasks;
 
-  public CompoundZivaTask(ZivaTask... zivaTasks) {
+  public CompoundZivaTask(ThreadFactory threadFactory, ZivaTask... zivaTasks) {
+    this.threadFactory = threadFactory;
     this.zivaTasks = Lists.newArrayList(zivaTasks);
   }
   
-  public CompoundZivaTask(List<ZivaTask> zivaTasks) {
+  public CompoundZivaTask(ThreadFactory threadFactory, List<ZivaTask> zivaTasks) {
+    this.threadFactory = threadFactory;
     this.zivaTasks = zivaTasks;
   }
 
@@ -39,7 +43,7 @@ class CompoundZivaTask implements ZivaTask {
   @Override
   public void run() {
     for (ZivaTask zivaTask : zivaTasks) {
-      zivaTask.run();
+      this.threadFactory.newThread(zivaTask).start();
     }
   }
 }

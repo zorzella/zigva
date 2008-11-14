@@ -103,14 +103,15 @@ public class CommandExecutor {
             new ZystemSelfBuilder(zystem)
               .withIn(nextIn)
               .withOut(nextOut);
-          allTasksExecuted.add(command.execute(tempZystem));
+          allTasksExecuted.add(new SyncZivaTask(command.execute(tempZystem)));
 //          break;
 //        }
         if (iterator.hasNext()) {
           nextIn = zivaPipe.out();
         }
       }
-      CompoundZivaTask result = new CompoundZivaTask(allTasksExecuted);
+      ZivaTask result = new SyncZivaTask(new CompoundZivaTask(
+          zystem.getThreadFactory(), allTasksExecuted));
       
       zystem.getThreadFactory().newThread(result).start();
 //      // TODO: start a thread
@@ -156,6 +157,11 @@ public class CommandExecutor {
           lock.notifyAll();
         }
       }
+
+      @Override
+      public void flush() {
+        buffer.blockUntilEmpty();
+      }
     }
 
     private final class MySource implements Source<Character> {
@@ -181,7 +187,9 @@ public class CommandExecutor {
       public boolean isEndOfStream() throws DataSourceClosedException {
         while (!isEOS && buffer.size() == 0) {
           try {
-            lock.wait();
+            synchronized(lock) {
+              lock.wait();
+            }
           } catch (InterruptedException e) {
             throw new RuntimeException(e);
           }

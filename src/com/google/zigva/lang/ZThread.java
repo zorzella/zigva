@@ -36,7 +36,11 @@ public class ZThread extends Thread {
   
   @Override
   public void run() {
-    super.run();
+    try {
+      super.run();
+    } catch (RuntimeException e) {
+      e.printStackTrace();
+    }
     if (originalName != null) {
       setName(originalName);
       originalName = null;

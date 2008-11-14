@@ -19,7 +19,7 @@ public class WriterSinkTest extends TestCase {
     while(!source.isEndOfStream()) {
       sink.write(source.read());
     }
-    
+    sink.flush();
     sink.close();
     
     // TODO: 

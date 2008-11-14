@@ -38,8 +38,42 @@ public class ShellCommand implements Command {
 
   @Override
   public ZivaTask execute(Zystem zystem) {
-    return buildZivaTask(zystem, shellCommand);
+    return new JavaProcessZivaTask(zystem, shellCommand, activePipeBuilder);
   }
+  
+  private static final class JavaProcessZivaTask implements ZivaTask {
+
+    private final Zystem zystem;
+    private final String[] shellCommand;
+    private final ActivePipe.Builder activePipeBuilder;
+
+    public JavaProcessZivaTask(
+        Zystem zystem, 
+        String[] shellCommand,
+        ActivePipe.Builder activePipeBuilder) {
+      this.zystem = zystem;
+      this.shellCommand = shellCommand;
+      this.activePipeBuilder = activePipeBuilder;
+    }
+
+    @Override
+    public void kill() {
+    }
+
+    @Override
+    public String getName() {
+      return null;
+    }
+
+    @Override
+    public void run() {
+      buildZivaTask(zystem, shellCommand).waitFor();
+    }
+
+    @Override
+    public void waitFor() {
+    }
+    
   
   private ZivaTask buildZivaTask(Zystem zystem, String... shellCommand) {
     return buildZivaTask(zystem, buildProcessBuilder(zystem, shellCommand));
@@ -87,6 +121,7 @@ public class ShellCommand implements Command {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
   }
   
   @Override

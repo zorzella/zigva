@@ -8,6 +8,7 @@ import java.io.Closeable;
  *    while (!source.isEndOfStream()) {
  *      sink.write(source.read());
  *    }
+ *    source.flush();
  *    source.close();
  *
  * @author Luiz-Otavio Zorzella, John Thomas
@@ -46,4 +47,13 @@ public interface Sink<T> extends Closeable {
    * {@link Source}.
    */
   void close();
+  
+  /**
+   * Blocks until any and all the data written to it and buffered is sent to the
+   * underlying resource.
+   * 
+   * <p>Calling {@link #close()} before/without flushing is liable to cause data
+   * loss.
+   */
+  void flush();
 }

@@ -97,6 +97,7 @@ class ActivePipe implements NamedRunnable {
     while(!in.isEndOfStream()) {
       out.write(in.read());
     }
+    out.flush();
     out.close();
   }
   

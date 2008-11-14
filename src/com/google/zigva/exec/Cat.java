@@ -35,6 +35,7 @@ public class Cat implements Command {
       while (!in.isEndOfStream()) {
         out.write(in.read());
       }
+      out.flush();
       out.close();
       in.close();
     }

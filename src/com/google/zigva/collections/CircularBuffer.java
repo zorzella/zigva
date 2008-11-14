@@ -78,4 +78,19 @@ public class CircularBuffer<T> {
   public boolean isFull() {
     return amountOfData == capacity;
   }
+  
+  /**
+   * Blocks the current thread until
+   */
+  public void blockUntilEmpty() {
+    synchronized(lock) {
+      while(amountOfData > 0) {
+        try {
+          lock.wait();
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+        }
+      }
+    }
+  }
 }

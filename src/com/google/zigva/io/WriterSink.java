@@ -112,4 +112,12 @@ public class WriterSink implements Sink<Character> {
     }
   }
 
+
+
+
+  @Override
+  public void flush() {
+    this.queue.blockUntilEmpty();
+  }
+
 }
