@@ -70,12 +70,7 @@ public class ShellCommand implements Command {
       buildZivaTask(zystem, shellCommand).waitFor();
     }
 
-    @Override
-    public void waitFor() {
-    }
-    
-  
-  private ZivaTask buildZivaTask(Zystem zystem, String... shellCommand) {
+  private ZivaProcess buildZivaTask(Zystem zystem, String... shellCommand) {
     return buildZivaTask(zystem, buildProcessBuilder(zystem, shellCommand));
   }
 
@@ -96,7 +91,7 @@ public class ShellCommand implements Command {
     return processBuilder;
   }
 
-  private ZivaTask buildZivaTask(Zystem zystem, ProcessBuilder processBuilder) {
+  private ZivaProcess buildZivaTask(Zystem zystem, ProcessBuilder processBuilder) {
     try {
 
       Process process = processBuilder.start();

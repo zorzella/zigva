@@ -6,6 +6,7 @@ import com.google.inject.testing.guiceberry.GuiceBerryEnv;
 import com.google.inject.testing.guiceberry.junit3.GuiceBerryJunit3TestCase;
 import com.google.zigva.ZivaEnvs;
 import com.google.zigva.exec.SyncZivaTask;
+import com.google.zigva.exec.WaitableZivaTask;
 import com.google.zigva.exec.ZivaTask;
 import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.guice.ZystemSelfBuilder;
@@ -71,7 +72,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     Zystem localZystem =
       new ZystemSelfBuilder(zystem)
         .withOut(actual);
-    ZivaTask task = localZystem.cmdExecutor().command(myCommand).execute();
+    WaitableZivaTask task = localZystem.cmdExecutor().command(myCommand).execute();
     task.waitFor();
     assertEquals("z", actual.toString());
   }
@@ -103,12 +104,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
 
     @Override
     public ZivaTask execute(final Zystem zystem) {
-      //TODO: SyncZivaTask?
       return new SyncZivaTask(new ZivaTask() {
-        @Override
-        public void waitFor() {
-        }
-
         @Override
         public void kill() {
         }

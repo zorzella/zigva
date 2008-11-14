@@ -5,7 +5,7 @@ package com.google.zigva.exec;
 
 import com.google.zigva.exec.ZivaTask;
 
-public class SyncZivaTask implements ZivaTask {
+public class SyncZivaTask implements WaitableZivaTask {
 
   private boolean done = false;
   private final ZivaTask delegate;
@@ -43,7 +43,6 @@ public class SyncZivaTask implements ZivaTask {
 
   @Override
   public void waitFor() {
-    delegate.waitFor();
     while(!done) {
       try {
         synchronized(this) {

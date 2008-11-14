@@ -25,7 +25,7 @@ public class CommandExecutor {
   
   public interface PreparedCommand {
 
-    ZivaTask execute();
+    WaitableZivaTask execute();
 
     PreparedCommand pipe(Command command);
 
@@ -80,7 +80,7 @@ public class CommandExecutor {
     }
     
     @Override
-    public ZivaTask execute() {
+    public WaitableZivaTask execute() {
       Source<Character> nextIn = zystem.ioFactory().buildIn();
       Sink<Character> nextOut;// = zystem.out();
       
@@ -110,7 +110,7 @@ public class CommandExecutor {
           nextIn = zivaPipe.out();
         }
       }
-      ZivaTask result = new SyncZivaTask(new CompoundZivaTask(
+      WaitableZivaTask result = new SyncZivaTask(new CompoundZivaTask(
           zystem.getThreadFactory(), allTasksExecuted));
       
       zystem.getThreadFactory().newThread(result).start();

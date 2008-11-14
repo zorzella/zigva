@@ -20,10 +20,6 @@ public class Cat implements Command {
     }
     
     @Override
-    public void waitFor() {
-    }
-
-    @Override
     public void kill() {
       toKill.killable().kill();
     }
