@@ -72,7 +72,7 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
     assertEquals("foo", sink.toString());
   }
 
-  public void testMultipePipes() throws InterruptedException {
+  public void testMultipePipes() {
     Injector injector = Guice.createInjector(new ZigvaModule());
     Cat cat = new Cat();
     SinkToString sink = new SinkToString();
@@ -92,7 +92,6 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
       .pipe(cat)
       .execute()
       .waitFor();
-    Thread.sleep(300);
     assertEquals("foo", sink.toString());
   }
 }

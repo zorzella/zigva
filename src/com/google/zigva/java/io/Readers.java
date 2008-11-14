@@ -17,6 +17,7 @@
 package com.google.zigva.java.io;
 
 import com.google.common.base.Preconditions;
+import com.google.zigva.lang.ZigvaInterruptedException;
 
 import java.io.BufferedReader;
 import java.io.FileDescriptor;
@@ -100,7 +101,7 @@ public class Readers {
           try {
             cbuf[off] = q.take();
           } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new ZigvaInterruptedException(e);
           }
           off++;
         }

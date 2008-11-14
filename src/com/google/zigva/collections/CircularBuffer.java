@@ -16,6 +16,8 @@
 
 package com.google.zigva.collections;
 
+import com.google.zigva.lang.ZigvaInterruptedException;
+
 public class CircularBuffer<T> {
 
   private final T[] buffer;
@@ -39,10 +41,7 @@ public class CircularBuffer<T> {
 
   /**
    * Causes all threads that are blocked, either on an {@link #enq(Object)} or a
-   * {@link #deq()} method to get an {@link InterruptedException}.
-   * 
-   * <p>Though zigva disavows the use of checked exceptions, java special-cases
-   * the {@link InterruptedException}.
+   * {@link #deq()} method to get an {@link ZigvaInterruptedException}.
    */
   public void interrupt() {
     synchronized(lock) {
@@ -51,12 +50,16 @@ public class CircularBuffer<T> {
     }
   }
   
-  public CircularBuffer<T> enq(T c) throws InterruptedException {
+  public CircularBuffer<T> enq(T c) throws ZigvaInterruptedException {
     synchronized(lock) {
       while (amountOfData == capacity) {
-        lock.wait();
+        try {
+          lock.wait();
+        } catch (InterruptedException e) {
+          throw new ZigvaInterruptedException(e);
+        }
         if (interrupted) {
-          throw new InterruptedException();
+          throw new ZigvaInterruptedException();
         }
       }
       buffer[((nextReadPos + amountOfData) % capacity)] = c;
@@ -66,12 +69,16 @@ public class CircularBuffer<T> {
     }
   }
 
-  public T deq() throws InterruptedException {
+  public T deq() throws ZigvaInterruptedException {
     synchronized(lock) {
       while (amountOfData == 0) {
-        lock.wait();
+        try {
+          lock.wait();
+        } catch (InterruptedException e) {
+          throw new ZigvaInterruptedException(e);
+        }
         if (interrupted) {
-          throw new InterruptedException();
+          throw new ZigvaInterruptedException();
         }
       }
       T result = buffer[nextReadPos];
@@ -97,13 +104,13 @@ public class CircularBuffer<T> {
   /**
    * Blocks the current thread until
    */
-  public void blockUntilEmpty() {
+  public void blockUntilEmpty() throws ZigvaInterruptedException {
     synchronized(lock) {
       while(amountOfData > 0) {
         try {
           lock.wait();
         } catch (InterruptedException e) {
-          throw new RuntimeException(e);
+          throw new ZigvaInterruptedException(e);
         }
       }
     }

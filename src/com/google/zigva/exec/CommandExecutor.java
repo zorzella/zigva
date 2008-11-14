@@ -26,6 +26,7 @@ import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
+import com.google.zigva.lang.ZigvaInterruptedException;
 import com.google.zigva.lang.Zystem;
 import com.google.zigva.sh.ShellCommand;
 
@@ -180,11 +181,7 @@ public class CommandExecutor {
     private final class MySink implements Sink<Character> {
       @Override
       public void write(Character data) throws DataSourceClosedException {
-        try {
-          buffer.enq(data);
-        } catch (InterruptedException e) {
-          throw new RuntimeException(e);
-        }
+        buffer.enq(data);
       }
 
       @Override
@@ -213,11 +210,7 @@ public class CommandExecutor {
       @Override
       public Character read() throws DataNotReadyException, DataSourceClosedException,
           EndOfDataException {
-        try {
-          return buffer.deq();
-        } catch (InterruptedException e) {
-          throw new RuntimeException(e);
-        }
+        return buffer.deq();
       }
 
       @Override
@@ -226,14 +219,14 @@ public class CommandExecutor {
       }
 
       @Override
-      public boolean isEndOfStream() throws DataSourceClosedException {
+      public boolean isEndOfStream() throws DataSourceClosedException, ZigvaInterruptedException {
         while (!isEOS && buffer.size() == 0) {
           try {
             synchronized(lock) {
               lock.wait();
             }
           } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new ZigvaInterruptedException(e);
           }
         }
         return isEOS && buffer.size() == 0;

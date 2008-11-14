@@ -17,6 +17,7 @@
 package com.google.zigva.io;
 
 import com.google.zigva.collections.CircularBuffer;
+import com.google.zigva.lang.ZigvaInterruptedException;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -68,9 +69,9 @@ public class WriterSink implements Sink<Character> {
               out.append(queue.deq());
             }
           }
-        } catch (InterruptedException e) {
+        } catch (ZigvaInterruptedException e) {
           if (!isClosed) {
-            throw new RuntimeException(e);
+            throw e;
           }
           // "Normal" code path -- we have either interrupted a blocked read or 
           // put by closing this Source (cases "b" and "d" above).
@@ -89,12 +90,6 @@ public class WriterSink implements Sink<Character> {
     this.consumer.start();
   }
 
-
-  
-  
-  
-  
-  
   @Override
   public void close() {
     /* TODO
@@ -108,8 +103,6 @@ public class WriterSink implements Sink<Character> {
       consumer.join(closeTimeout);
     } catch (InterruptedException e) {
       throw new FailedToCloseException(e);
-      
-      
     }
   }
 
@@ -120,11 +113,7 @@ public class WriterSink implements Sink<Character> {
 
   @Override
   public void write(Character data) throws DataSourceClosedException {
-    try {
-      this.queue.enq(data);
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    }
+    this.queue.enq(data);
   }
 
 

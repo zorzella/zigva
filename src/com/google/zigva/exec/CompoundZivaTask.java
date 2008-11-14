@@ -17,6 +17,7 @@
 package com.google.zigva.exec;
 
 import com.google.common.collect.Lists;
+import com.google.zigva.lang.ZigvaInterruptedException;
 
 import java.util.Collection;
 import java.util.List;
@@ -62,9 +63,7 @@ class CompoundZivaTask implements ZigvaTask {
       try {
         t.join();
       } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-        
-        
+        throw new ZigvaInterruptedException(e);
       }
     }
   }

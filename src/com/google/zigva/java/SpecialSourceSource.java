@@ -20,6 +20,7 @@ import com.google.zigva.io.DataNotReadyException;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.Source;
+import com.google.zigva.lang.ZigvaInterruptedException;
 
 public class SpecialSourceSource<T> implements Source<T> {
 
@@ -49,7 +50,7 @@ public class SpecialSourceSource<T> implements Source<T> {
           lock.wait();
         } catch (InterruptedException e) {
           if (!isClosed) {
-            throw new RuntimeException(e);
+            throw new ZigvaInterruptedException(e);
           }
           throw new DataSourceClosedException();
         }

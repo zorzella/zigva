@@ -16,6 +16,8 @@
 
 package com.google.zigva.io;
 
+import com.google.zigva.lang.ZigvaInterruptedException;
+
 /**
  * TODO (document)
  * 
@@ -52,7 +54,7 @@ public interface Source<T> {
    * @throws DataSourceClosedException if this {@link Source} has been closed. 
    * This is also thrown... TODO
    */
-  boolean isEndOfStream() throws DataSourceClosedException;
+  boolean isEndOfStream() throws DataSourceClosedException, ZigvaInterruptedException;
   
   /**
    * Reads the next character from the stream. 
@@ -83,5 +85,5 @@ public interface Source<T> {
    * @throws FailedToCloseException if there were problems closing this 
    * {@link Source}.
    */
-  void close();
+  void close() throws ZigvaInterruptedException;
 }

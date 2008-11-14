@@ -17,6 +17,7 @@
 package com.google.zigva.exec;
 
 import com.google.zigva.exec.ZigvaTask;
+import com.google.zigva.lang.ZigvaInterruptedException;
 
 public class SyncZivaTask implements WaitableZivaTask {
 
@@ -62,7 +63,7 @@ public class SyncZivaTask implements WaitableZivaTask {
           wait();
         }
       } catch (InterruptedException e) {
-        throw new RuntimeException(e);
+        throw new ZigvaInterruptedException(e);
       }
     }
   }

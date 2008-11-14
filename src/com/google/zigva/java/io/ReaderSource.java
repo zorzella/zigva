@@ -24,6 +24,7 @@ import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.FailedToCloseException;
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.NamedRunnable;
+import com.google.zigva.lang.ZigvaInterruptedException;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -128,9 +129,9 @@ public class ReaderSource implements Source<Character> {
               queue.enq(dataPoint);
             }
           } while (dataPoint != -1 && !isClosed);
-        } catch (InterruptedException e) {
+        } catch (ZigvaInterruptedException e) {
           if (!isClosed) {
-            throw new RuntimeException(e);
+            throw e;
           }
           // "Normal" code path -- we have either interrupted a blocked read or 
           // put by closing this Source (cases "b" and "d" above).
@@ -173,7 +174,7 @@ public class ReaderSource implements Source<Character> {
       }
 
     } catch (InterruptedException e) {
-      throw new RuntimeException(e);
+      throw new ZigvaInterruptedException(e);
     }
   }
 
@@ -185,9 +186,9 @@ public class ReaderSource implements Source<Character> {
     }
     try {
         nextDataPoint = queue.deq();
-    } catch (InterruptedException e) {
+    } catch (ZigvaInterruptedException e) {
       if (!isClosed) {
-        throw new RuntimeException(e);
+        throw e;
       }
       // We have closed this Source while a thread was blocked on "take"
       throw new DataSourceClosedException();

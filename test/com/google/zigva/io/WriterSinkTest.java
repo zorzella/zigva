@@ -22,7 +22,7 @@ import java.io.StringWriter;
 
 public class WriterSinkTest extends TestCase {
 
-  public void testFoo() throws InterruptedException {
+  public void testFoo() {
     
     StringWriter out = new StringWriter();
     
@@ -37,11 +37,7 @@ public class WriterSinkTest extends TestCase {
     sink.flush();
     sink.close();
     
-    // TODO: 
-    Thread.sleep(100);
-    
     assertEquals(expected, out.toString());
-    
   }
   
   public void testBar() {

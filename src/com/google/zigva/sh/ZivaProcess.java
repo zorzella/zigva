@@ -17,6 +17,7 @@
 package com.google.zigva.sh;
 
 import com.google.zigva.exec.ZigvaTask;
+import com.google.zigva.lang.ZigvaInterruptedException;
 
 import java.io.IOException;
 
@@ -48,7 +49,7 @@ public class ZivaProcess implements ZigvaTask {
         in.join();
       }
     } catch (InterruptedException e) {
-      throw new RuntimeException(e);
+      throw new ZigvaInterruptedException(e);
     }
   }
 
@@ -67,7 +68,7 @@ public class ZivaProcess implements ZigvaTask {
       this.process.getErrorStream().close();
       this.process.getOutputStream().close();
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new FailedToKillException(e);
     }
     this.process.destroy();
 //    out.interrupt();

@@ -23,19 +23,19 @@ import java.lang.Thread.State;
 
 public class CircularBufferTest extends TearDownTestCase {
 
-  private static void enq(CircularBuffer<Character> buffer, String string) throws InterruptedException {
+  private static void enq(CircularBuffer<Character> buffer, String string) {
     for (char c: string.toCharArray()) {
       buffer.enq(c);
     }
   }
 
-  public void testSunnycase() throws InterruptedException {
+  public void testSunnycase() {
     CircularBuffer<Character> buffer = new CircularBuffer<Character>(100);
     buffer.enq('a');
     assertEquals(new Character('a'), buffer.deq());
   }
 
-  public void testSunnycaseIterable() throws InterruptedException {
+  public void testSunnycaseIterable() {
     CircularBuffer<Character> buffer = new CircularBuffer<Character>(100);
     enq(buffer, "abc");
     assertEquals(new Character('a'), buffer.deq());
@@ -43,7 +43,7 @@ public class CircularBufferTest extends TearDownTestCase {
     assertEquals(new Character('c'), buffer.deq());
   }
 
-  public void testWrapAround() throws InterruptedException {
+  public void testWrapAround() {
     CircularBuffer<Character> buffer = new CircularBuffer<Character>(2);
     enq(buffer, "ab");
     assertEquals(new Character('a'), buffer.deq());
@@ -81,11 +81,7 @@ public class CircularBufferTest extends TearDownTestCase {
 
     @Override
     public void run() {
-      try {
-        enq(buffer, "abcd");
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
+      enq(buffer, "abcd");
     }
     
   }

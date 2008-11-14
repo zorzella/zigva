@@ -17,6 +17,7 @@
 package com.google.zigva.io;
 
 import com.google.zigva.java.io.Readers;
+import com.google.zigva.lang.ZigvaInterruptedException;
 
 import junit.framework.TestCase;
 
@@ -51,7 +52,7 @@ public class ReadersTest extends TestCase {
     try {
       Thread.sleep(1);
     } catch (InterruptedException e) {
-      throw new RuntimeException(e);
+      throw new ZigvaInterruptedException(e);
     }
     if (alive) {
       assertTrue(thread.isAlive());

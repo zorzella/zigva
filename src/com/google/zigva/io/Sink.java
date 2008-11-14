@@ -16,6 +16,8 @@
 
 package com.google.zigva.io;
 
+import com.google.zigva.lang.ZigvaInterruptedException;
+
 import java.io.Closeable;
 
 /**
@@ -46,7 +48,7 @@ public interface Sink<T> extends Closeable {
    * 
    * @throws DataSourceClosedException if this {@link Sink} has been closed
    */
-  void write(T data) throws DataSourceClosedException;
+  void write(T data) throws DataSourceClosedException, ZigvaInterruptedException;
 
   /**
    * Closes this {@link Sink}, and releases all resources it holds.
@@ -71,5 +73,5 @@ public interface Sink<T> extends Closeable {
    * <p>Calling {@link #close()} before/without flushing is liable to cause data
    * loss.
    */
-  void flush();
+  void flush() throws ZigvaInterruptedException;
 }

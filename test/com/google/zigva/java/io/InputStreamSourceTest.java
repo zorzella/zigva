@@ -23,6 +23,7 @@ import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.FailedToCloseException;
 import com.google.zigva.io.Source;
 import com.google.zigva.io.ThreadCountAsserter;
+import com.google.zigva.lang.ZigvaInterruptedException;
 
 import junit.framework.TestCase;
 
@@ -218,7 +219,7 @@ public class InputStreamSourceTest extends TestCase {
     try {
       t.join();
     } catch (InterruptedException e) {
-      throw new RuntimeException(e);
+      throw new ZigvaInterruptedException(e);
     }
     is.terminate();
     assertEquals("success", result.toString());

@@ -60,7 +60,7 @@ public class ZFileTest extends TestCase {
   }
 
   // Tests that if there's nothing to do, the file won't even be touched
-  public void testReplacementNoOp() throws InterruptedException{
+  public void testReplacementNoOp() throws InterruptedException {
     File f = new File("/tmp/ztestabcdefg");
     ZFile.createFileWithContents(f, "contentsoftestabcdefg",
       FileCreationFailurePolicy.DELETE_DIR_IF_EXISTS_TO_CREATE_FILE, false);
