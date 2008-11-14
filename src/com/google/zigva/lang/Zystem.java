@@ -4,7 +4,6 @@ import com.google.zigva.io.FilePath;
 import com.google.zigva.java.Propertiez;
 
 import java.util.Map;
-import java.util.concurrent.ThreadFactory;
 
 public interface Zystem {
 
@@ -19,8 +18,4 @@ public interface Zystem {
   FilePath getHomeDir();
   
   IoFactory ioFactory();
-
-  // TODO: remove?
-  ThreadFactory getThreadFactory();
-  
 }

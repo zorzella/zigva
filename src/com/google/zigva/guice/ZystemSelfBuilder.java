@@ -13,7 +13,6 @@ import com.google.zigva.lang.IoFactory;
 import com.google.zigva.lang.Zystem;
 
 import java.util.Map;
-import java.util.concurrent.ThreadFactory;
 
 //TODO: make it also implement Provider<Zystem>?
 public final class ZystemSelfBuilder implements Zystem {
@@ -56,8 +55,7 @@ public final class ZystemSelfBuilder implements Zystem {
             zystem.ioFactory(),
             getCurrentDir(), 
             getHomeDir(), 
-            otherEnv,
-            zystem.getThreadFactory()));
+            otherEnv));
   }
 
   //TODO: use Providers
@@ -147,8 +145,7 @@ public final class ZystemSelfBuilder implements Zystem {
             getForIn(zystem.ioFactory(), otherIn),
             getCurrentDir(), 
             getHomeDir(), 
-            zystem.env(),
-            zystem.getThreadFactory()));
+            zystem.env()));
   }
 
   public ZystemSelfBuilder withOut(Sink<Character> otherOut) {
@@ -157,8 +154,7 @@ public final class ZystemSelfBuilder implements Zystem {
             getForOut(zystem.ioFactory(), otherOut), 
             getCurrentDir(), 
             getHomeDir(), 
-            zystem.env(),
-            zystem.getThreadFactory()));
+            zystem.env()));
   }
 
   public ZystemSelfBuilder withErr(Sink<Character> otherErr) {
@@ -167,8 +163,7 @@ public final class ZystemSelfBuilder implements Zystem {
             getForErr(zystem.ioFactory(), otherErr), 
             getCurrentDir(), 
             getHomeDir(), 
-            zystem.env(),
-            zystem.getThreadFactory()));
+            zystem.env()));
   }
 
 //  @Override
@@ -183,10 +178,5 @@ public final class ZystemSelfBuilder implements Zystem {
   @Override
   public String toString() {
     return zystem.toString();
-  }
-
-  @Override
-  public ThreadFactory getThreadFactory() {
-    return zystem.getThreadFactory();
   }
 }

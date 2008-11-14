@@ -17,6 +17,7 @@ import com.google.zigva.sh.ShellCommand;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ThreadFactory;
 
 public class CommandExecutor {
 
@@ -24,19 +25,24 @@ public class CommandExecutor {
     
     private final Zystem zystem;
     private final ShellCommand.Builder shellCommandBuilder;
+    private final ThreadFactory threadFactory;
 
     @Inject
-    Builder(Zystem zystem, ShellCommand.Builder shellCommandBuilder) {
+    Builder(
+        Zystem zystem, 
+        ShellCommand.Builder shellCommandBuilder, 
+        ThreadFactory threadFactory) {
       this.zystem = zystem;
       this.shellCommandBuilder = shellCommandBuilder;
+      this.threadFactory = threadFactory;
     }
     
     public CommandExecutor create() {
-      return new CommandExecutor(zystem, shellCommandBuilder);
+      return new CommandExecutor(zystem, threadFactory, shellCommandBuilder);
     }
     
     public Builder with(Zystem zystem) {
-      return new Builder(zystem, shellCommandBuilder);
+      return new Builder(zystem, shellCommandBuilder, threadFactory);
     }
     
   }
@@ -54,18 +60,23 @@ public class CommandExecutor {
     PreparedCommand pipe(String... shellCommand);
   }
 
+  private final ThreadFactory threadFactory;
   private final Zystem zystem;
   private final ShellCommand.Builder shellCommandBuilder;
 
   @Inject
-  public CommandExecutor(Zystem zystem, ShellCommand.Builder shellCommandBuilder) {
+  public CommandExecutor(
+      Zystem zystem,
+      ThreadFactory threadFactory,
+      ShellCommand.Builder shellCommandBuilder) {
     this.zystem = zystem;
+    this.threadFactory = threadFactory;
     this.shellCommandBuilder = shellCommandBuilder;
   }
   
   public PreparedCommand command(String... shellCommand) {
     SimplePreparedCommand pc = new SimplePreparedCommand(
-        shellCommandBuilder, 
+        threadFactory, shellCommandBuilder, 
         zystem, 
         shellCommandBuilder.build(shellCommand));
     return pc;
@@ -73,6 +84,7 @@ public class CommandExecutor {
 
   public PreparedCommand command(Command command) {
     SimplePreparedCommand pc = new SimplePreparedCommand(
+        threadFactory,
         shellCommandBuilder, 
         zystem, 
         command);
@@ -84,12 +96,14 @@ public class CommandExecutor {
     private final ShellCommand.Builder shellCommandBuilder;
     private final Zystem zystem;
     private final List<Command> commands;
+    private final ThreadFactory threadFactory;
 
     public SimplePreparedCommand(
-        ShellCommand.Builder shellCommandBuilder,
+        ThreadFactory threadFactory, ShellCommand.Builder shellCommandBuilder,
         Zystem zystem, 
         Command command) {
       Preconditions.checkNotNull(command);
+      this.threadFactory = threadFactory;
       this.shellCommandBuilder = shellCommandBuilder;
       this.zystem = zystem;
       //TODO: make it immutable
@@ -128,9 +142,9 @@ public class CommandExecutor {
         }
       }
       WaitableZivaTask result = new SyncZivaTask(new CompoundZivaTask(
-          zystem.getThreadFactory(), allTasksExecuted));
+          threadFactory, allTasksExecuted));
       
-      zystem.getThreadFactory().newThread(result).start();
+      threadFactory.newThread(result).start();
       return result;
     }
 

@@ -74,8 +74,7 @@ public final class RootZystemProvider implements Provider<Zystem> {
         buildIoFactory(), 
         getCurrentDir(), 
         getHomeDir(),
-        System.getenv(), 
-        ROOT_THREAD_FACTORY
+        System.getenv()
         );
   }
   

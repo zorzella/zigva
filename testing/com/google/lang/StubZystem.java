@@ -6,7 +6,6 @@ import com.google.zigva.lang.IoFactory;
 import com.google.zigva.lang.Zystem;
 
 import java.util.Map;
-import java.util.concurrent.ThreadFactory;
 
 public class StubZystem implements Zystem {
 
@@ -32,11 +31,6 @@ public class StubZystem implements Zystem {
 
   @Override
   public Map<String, String> env() {
-    return null;
-  }
-
-  @Override
-  public ThreadFactory getThreadFactory() {
     return null;
   }
 
