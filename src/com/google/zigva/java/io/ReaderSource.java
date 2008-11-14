@@ -21,7 +21,6 @@ import java.util.concurrent.ThreadFactory;
  */
 public class ReaderSource implements Source<Character> {
 
-  private final ThreadFactory threadFactory;
   private final Thread producer;
   //TODO: can't have CircularBuffer<Character> because of "-1". Think 
   private final CircularBuffer<Integer> queue;
@@ -99,7 +98,6 @@ public class ReaderSource implements Source<Character> {
    */
   private ReaderSource(ThreadFactory threadFactory, 
       final Reader in, int capacity, int closeTimeout, Object lock) {
-    this.threadFactory = threadFactory;
     this.closeTimeout = closeTimeout;
     this.lock = lock;
     this.queue = new CircularBuffer<Integer>(capacity, lock);

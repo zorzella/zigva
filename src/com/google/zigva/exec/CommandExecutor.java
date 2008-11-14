@@ -10,9 +10,7 @@ import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
-import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.lang.Zystem;
-import com.google.zigva.sh.ActivePipe;
 import com.google.zigva.sh.ShellCommand;
 
 import java.util.Iterator;
