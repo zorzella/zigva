@@ -8,10 +8,11 @@ import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.FailedToCloseException;
 import com.google.zigva.io.Source;
-import com.google.zigva.lang.Zystem;
+import com.google.zigva.lang.NamedRunnable;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * Implementation of {@link Source} backed by a {@link Reader}.
@@ -20,9 +21,7 @@ import java.io.Reader;
  */
 public class ReaderSource implements Source<Character> {
 
-  private static final int DEFAULT_CAPACITY = 100;
-  private static final int DEFAULT_CLOSE_TIMEOUT = 500;
-  
+  private final ThreadFactory threadFactory;
   private final Thread producer;
   //TODO: can't have CircularBuffer<Character> because of "-1". Think 
   private final CircularBuffer<Integer> queue;
@@ -34,38 +33,55 @@ public class ReaderSource implements Source<Character> {
 
   public static final class Builder {
     
-    private final Zystem zystem;
-
-    private Reader in = null;
+    private static final int DEFAULT_CAPACITY = 100;
+    private static final int DEFAULT_CLOSE_TIMEOUT = 500;
     
+    private final ThreadFactory threadFactory;
+    private final int capacity;
+    private final int closeTimeout;
+    private final Object lock;
+    
+    public Builder(
+        ThreadFactory threadFactory,
+        int capacity, 
+        int closeTimeout, 
+        Object lock
+        ) {
+      super();
+      this.capacity = capacity;
+      this.closeTimeout = closeTimeout;
+      this.lock = lock;
+      this.threadFactory = threadFactory;
+    }
+
     @Inject
-    public Builder(Zystem zystem) {
-      this.zystem = zystem;
+    public Builder(ThreadFactory threadFactory) {
+      this(threadFactory, DEFAULT_CAPACITY, DEFAULT_CLOSE_TIMEOUT, 
+          new StringBuilder("LOCK"));
     }
     
-    public ReaderSource create() {
+    public ReaderSource create(Reader in) {
       if (in == null) {
         throw new NullPointerException();
       }
-      return new ReaderSource(in);
+      return new ReaderSource(threadFactory, in, capacity, closeTimeout, lock);
     }
     
-    public Builder withIn(Reader in) {
-      this.in = in;
-      return this;
+    public Builder withCapacity(int capacity) {
+      return new Builder(threadFactory, capacity, closeTimeout, lock);
     }
-  }
-  
-  public ReaderSource(Reader in) {
-    this(in, DEFAULT_CAPACITY, DEFAULT_CLOSE_TIMEOUT);
-  }
 
-  public ReaderSource(Reader in, int capacity) {
-    this(in, capacity, DEFAULT_CLOSE_TIMEOUT);
-  }
-  
-  public ReaderSource(final Reader in, int capacity, int closeTimeout) {
-    this(in, capacity, closeTimeout, "LOCK");
+    public Builder withCloseTimeout(int closeTimeout) {
+      return new Builder(threadFactory, capacity, closeTimeout, lock);
+    }
+
+    public Builder withLock(Object lock) {
+      return new Builder(threadFactory, capacity, closeTimeout, lock);
+    }
+    
+    public Builder withCombo(int capacity, int closeTimeout, Object lock) {
+      return new Builder(threadFactory, capacity, closeTimeout, lock);
+    }
   }
   
   /*
@@ -81,11 +97,13 @@ public class ReaderSource implements Source<Character> {
    * 
    * There should be tests for each.
    */
-  public ReaderSource(final Reader in, int capacity, int closeTimeout, Object lock) {
+  private ReaderSource(ThreadFactory threadFactory, 
+      final Reader in, int capacity, int closeTimeout, Object lock) {
+    this.threadFactory = threadFactory;
     this.closeTimeout = closeTimeout;
     this.lock = lock;
     this.queue = new CircularBuffer<Integer>(capacity, lock);
-    this.producer = new Thread (new Runnable() {
+    this.producer = threadFactory.newThread(new NamedRunnable() {
       @Override
       public void run() {
         try {
@@ -113,7 +131,12 @@ public class ReaderSource implements Source<Character> {
           }
         }
       }
-    }, "ReaderSource Thread");
+
+      @Override
+      public String getName() {
+        return "ReaderSource Thread";
+      }
+    });
     this.producer.start();
   }
 

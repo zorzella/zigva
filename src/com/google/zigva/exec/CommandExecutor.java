@@ -23,18 +23,20 @@ public class CommandExecutor {
   public static final class Builder {
     
     private final Zystem zystem;
+    private final ShellCommand.Builder shellCommandBuilder;
 
     @Inject
-    Builder(Zystem zystem) {
+    Builder(Zystem zystem, ShellCommand.Builder shellCommandBuilder) {
       this.zystem = zystem;
+      this.shellCommandBuilder = shellCommandBuilder;
     }
     
     public CommandExecutor create() {
-      return new CommandExecutor(zystem);
+      return new CommandExecutor(zystem, shellCommandBuilder);
     }
     
     public Builder with(Zystem zystem) {
-      return new Builder(zystem);
+      return new Builder(zystem, shellCommandBuilder);
     }
     
   }
@@ -56,11 +58,9 @@ public class CommandExecutor {
   private final ShellCommand.Builder shellCommandBuilder;
 
   @Inject
-  public CommandExecutor(Zystem zystem) {
+  public CommandExecutor(Zystem zystem, ShellCommand.Builder shellCommandBuilder) {
     this.zystem = zystem;
-    this.shellCommandBuilder = new ShellCommand.Builder(
-        new ActivePipe.Builder(new ReaderSource.Builder(zystem), 
-            zystem.getThreadFactory()));
+    this.shellCommandBuilder = shellCommandBuilder;
   }
   
   public PreparedCommand command(String... shellCommand) {

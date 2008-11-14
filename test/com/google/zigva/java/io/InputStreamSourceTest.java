@@ -2,6 +2,7 @@
 package com.google.zigva.java.io;
 
 import com.google.common.collect.Lists;
+import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.FailedToCloseException;
@@ -28,7 +29,7 @@ public class InputStreamSourceTest extends TestCase {
   public void testSunnycase() {
     String data = "znjt";
     FakeInputStream is = new FakeInputStream().withData(data, true);
-    Source<Integer> source = new InputStreamSource(is);
+    Source<Integer> source = getInputStreamSource(is);
     StringBuilder result = new StringBuilder();
     while (!source.isEndOfStream()) {
       result.append(Character.toChars(source.read()));
@@ -40,7 +41,7 @@ public class InputStreamSourceTest extends TestCase {
   public void testEmptyString() {
     String data = "";
     StringBufferInputStream is = new StringBufferInputStream(data);
-    Source<Integer> source = new InputStreamSource(is);
+    Source<Integer> source = getInputStreamSource(is);
     StringBuilder result = new StringBuilder();
     waitUntilReady(source);
     while (!source.isEndOfStream()) {
@@ -53,7 +54,7 @@ public class InputStreamSourceTest extends TestCase {
   public void testCloseForIsReady() {
     String data = "zrules";
     StringBufferInputStream is = new StringBufferInputStream(data);
-    Source<Integer> source = new InputStreamSource(is);
+    Source<Integer> source = getInputStreamSource(is);
     StringBuilder result = new StringBuilder();
     waitUntilReady(source);
     result.append(Character.toChars(source.read()));
@@ -74,7 +75,7 @@ public class InputStreamSourceTest extends TestCase {
   public void testCloseForReadWhileNotBlocked() {
     String data = "zrules";
     StringBufferInputStream is = new StringBufferInputStream(data);
-    Source<Integer> source = new InputStreamSource(is);
+    Source<Integer> source = getInputStreamSource(is);
     StringBuilder result = new StringBuilder();
     waitUntilReady(source);
     result.append(Character.toChars(source.read()));
@@ -93,7 +94,7 @@ public class InputStreamSourceTest extends TestCase {
   public void testReadBeyondEndOfStream() {
     String data = "znjt";
     StringBufferInputStream is = new StringBufferInputStream(data);
-    Source<Integer> source = new InputStreamSource(is);
+    Source<Integer> source = getInputStreamSource(is);
     StringBuilder result = new StringBuilder();
     while (!source.isEndOfStream()) {
       result.append(Character.toChars(source.read()));
@@ -110,7 +111,7 @@ public class InputStreamSourceTest extends TestCase {
   public void testCloseTwiceThrows() {
     String data = "znjt";
     StringBufferInputStream is = new StringBufferInputStream(data);
-    Source<Integer> source = new InputStreamSource(is);
+    Source<Integer> source = getInputStreamSource(is);
     source.close();
     try {
       source.close();
@@ -119,13 +120,22 @@ public class InputStreamSourceTest extends TestCase {
     }
   }
 
+  private static InputStreamSource getInputStreamSource(InputStream is) {
+    return new InputStreamSource.Builder(new ZigvaThreadFactory())
+      .create(is);
+  }
+
+  private static InputStreamSource getInputStreamSource(InputStream is, int capacity) {
+    return new InputStreamSource.Builder(new ZigvaThreadFactory())
+      .withCapacity(capacity).create(is);
+  }
   
   // UNIX-ism
   //TODO: this relies on the assumption that we won't read the 5000 chars from
   // /dev/zero before we close the source. Make it deterministic
   public void testCloseCaseA() throws FileNotFoundException {
     FileInputStream is = new FileInputStream("/dev/zero");
-    Source<Integer> source = new InputStreamSource(is, 5000);
+    Source<Integer> source = getInputStreamSource(is, 5000);
     waitUntilReady(source);
     // Make sure /dev/zero is ok before doing the real test
     assertEquals(new Integer(0), source.read());
@@ -137,7 +147,7 @@ public class InputStreamSourceTest extends TestCase {
   //TODO: make this really deterministic
   public void testCloseCaseD() throws FileNotFoundException {
     FileInputStream is = new FileInputStream("/dev/zero");
-    Source<Integer> source = new InputStreamSource(is, 1);
+    Source<Integer> source = getInputStreamSource(is, 1);
     waitUntilReady(source);
     // Make sure /dev/zero is ok before doing the real test
     assertEquals(new Integer(0), source.read());
@@ -151,7 +161,7 @@ public class InputStreamSourceTest extends TestCase {
   //TODO: make this really deterministic
   public void testCloseCaseB() {
     FakeInputStream is = new FakeInputStream().block();
-    Source<Integer> source = new InputStreamSource(is, 1);
+    Source<Integer> source = getInputStreamSource(is, 1);
     Thread.yield();
     try {
       source.close();
@@ -164,7 +174,7 @@ public class InputStreamSourceTest extends TestCase {
   //TODO: make this really deterministic
   public void testCloseWhileBlockingOnIsEOS() {
     FakeInputStream is = new FakeInputStream().block();
-    final Source<Integer> source = new InputStreamSource(is, 1);
+    final Source<Integer> source = getInputStreamSource(is, 1);
     
     final StringBuilder result = new StringBuilder();
     

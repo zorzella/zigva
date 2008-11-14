@@ -118,7 +118,7 @@ public class ZFile {
       in = new FileInputStream(toRead);
       StringBuilder builder = new StringBuilder();
       Source<Character> s = Static.injector.getInstance(ReaderSource.Builder.class)
-        .withIn(Readers.buffered(in)).create();
+        .create(Readers.buffered(in));
       while (!s.isEndOfStream()) {
         builder.append(s.read());
       }

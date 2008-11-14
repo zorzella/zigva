@@ -20,17 +20,23 @@ public class ZivaProcessBuilder {
   private final JavaProcessExecutor javaProcessExecutor;
   private final FileRepository fileRepository;
   private final ActivePipe.Builder activePipeBuilder;
+  private final ReaderSource.Builder readerSourceBuilder;
 
+  private ProcessBuilder processBuilder = null;
+  private boolean redirectStdErrToStdOut;
+  
   @Inject
   public ZivaProcessBuilder(
       Zystem zystem,
       JavaProcessExecutor javaProcessExecutor,
       FileRepository fileRepository,
-      ActivePipe.Builder activePipeBuilder) {
+      ActivePipe.Builder activePipeBuilder, 
+      ReaderSource.Builder readerSourceBuilder) {
     this.zystem = zystem;
     this.javaProcessExecutor = javaProcessExecutor;
     this.fileRepository = fileRepository;
     this.activePipeBuilder = activePipeBuilder;
+    this.readerSourceBuilder = readerSourceBuilder;
   }
 
   private InputStream in;
@@ -116,7 +122,7 @@ public class ZivaProcessBuilder {
       } else {
         inS = activePipeBuilder.comboCreate(
             "ZivaProcessBuilder - in", 
-            new ReaderSource(Readers.buffered(in)), 
+            readerSourceBuilder.create(Readers.buffered(in)), 
             process.getOutputStream()).start();
       }
       return new ZivaProcess(process, inS, outS, errS);
@@ -126,9 +132,6 @@ public class ZivaProcessBuilder {
     }
   }
 
-  private ProcessBuilder processBuilder = null;
-  private boolean redirectStdErrToStdOut;
-  
   public ZivaProcessBuilder setRedirectStdErrToStdOut(boolean redirectStdErrToStdOut) {
     this.redirectStdErrToStdOut = redirectStdErrToStdOut;
     return this;

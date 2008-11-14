@@ -58,7 +58,7 @@ public class OS {
         inS = activePipeBuilder.comboCreate(
             "OS - sysin",
             Static.injector.getInstance(ReaderSource.Builder.class)
-              .withIn(Readers.buffered(in)).create(), 
+              .create(Readers.buffered(in)), 
             p.getOutputStream()).start();
       }
       return new ZivaProcess(p, inS, outS, errS);

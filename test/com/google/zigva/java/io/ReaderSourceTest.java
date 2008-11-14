@@ -2,6 +2,7 @@
 package com.google.zigva.java.io;
 
 import com.google.common.collect.Lists;
+import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.FailedToCloseException;
@@ -30,7 +31,7 @@ public class ReaderSourceTest extends TestCase {
   public void testSunnycase() {
     String data = "znjt";
     Reader is = new InputStreamReader(new StringBufferInputStream(data));
-    Source<Character> source = new ReaderSource(is);
+    Source<Character> source = getReaderSource(is);
     StringBuilder result = new StringBuilder();
     while (!source.isEndOfStream()) {
       result.append(Character.toChars(source.read()));
@@ -39,10 +40,25 @@ public class ReaderSourceTest extends TestCase {
     assertEquals("znjt", result.toString());
   }
 
+  private ReaderSource getReaderSource(Reader is) {
+    return new ReaderSource.Builder(new ZigvaThreadFactory()).create(is);
+  }
+
+  private ReaderSource getReaderSource(Reader is, int capacity) {
+    return new ReaderSource.Builder(new ZigvaThreadFactory()).withCapacity(capacity).create(is);
+  }
+
+  private ReaderSource getReaderSource(Reader is, int capacity, int closeTimeout) {
+    return new ReaderSource.Builder(new ZigvaThreadFactory())
+      .withCapacity(capacity)
+      .withCloseTimeout(closeTimeout)
+      .create(is);
+  }
+
   public void testEmptyString() {
     String data = "";
     InputStreamReader is = new InputStreamReader(new StringBufferInputStream(data));
-    Source<Character> source = new ReaderSource(is);
+    Source<Character> source = getReaderSource(is);
     StringBuilder result = new StringBuilder();
     waitUntilReady(source);
     while (!source.isEndOfStream()) {
@@ -55,7 +71,7 @@ public class ReaderSourceTest extends TestCase {
   public void testCloseForIsReady() {
     String data = "zrules";
     InputStreamReader is = new InputStreamReader(new StringBufferInputStream(data));
-    Source<Character> source = new ReaderSource(is);
+    Source<Character> source = getReaderSource(is);
     StringBuilder result = new StringBuilder();
     waitUntilReady(source);
     result.append(Character.toChars(source.read()));
@@ -76,7 +92,7 @@ public class ReaderSourceTest extends TestCase {
   public void testCloseForReadWhileNotBlocked() {
     String data = "zrules";
     InputStreamReader is = new InputStreamReader(new StringBufferInputStream(data));
-    Source<Character> source = new ReaderSource(is);
+    Source<Character> source = getReaderSource(is);
     StringBuilder result = new StringBuilder();
     waitUntilReady(source);
     result.append(Character.toChars(source.read()));
@@ -95,7 +111,7 @@ public class ReaderSourceTest extends TestCase {
   public void testReadBeyondEndOfStream() {
     String data = "znjt";
     InputStreamReader is = new InputStreamReader(new StringBufferInputStream(data));
-    Source<Character> source = new ReaderSource(is);
+    Source<Character> source = getReaderSource(is);
     StringBuilder result = new StringBuilder();
     while (!source.isEndOfStream()) {
       result.append(Character.toChars(source.read()));
@@ -112,7 +128,7 @@ public class ReaderSourceTest extends TestCase {
   public void testCloseTwiceThrows() {
     String data = "znjt";
     InputStreamReader is = new InputStreamReader(new StringBufferInputStream(data));
-    Source<Character> source = new ReaderSource(is, 500, 50000);
+    Source<Character> source = getReaderSource(is, 500, 50000);
     source.close();
     try {
       source.close();
@@ -127,7 +143,7 @@ public class ReaderSourceTest extends TestCase {
   // /dev/zero before we close the source. Make it deterministic
   public void testCloseCaseA() throws FileNotFoundException {
     Reader is = new InputStreamReader(new FileInputStream("/dev/zero"));
-    Source<Character> source = new ReaderSource(is, 5000);
+    Source<Character> source = getReaderSource(is, 5000);
     waitUntilReady(source);
     // Make sure /dev/zero is ok before doing the real test
     Character result = source.read();
@@ -140,7 +156,7 @@ public class ReaderSourceTest extends TestCase {
   //TODO: make this really deterministic
   public void testCloseCaseD() throws FileNotFoundException {
     Reader is = new InputStreamReader(new FileInputStream("/dev/zero"));
-    Source<Character> source = new ReaderSource(is, 1);
+    Source<Character> source = getReaderSource(is, 1);
     waitUntilReady(source);
     // Make sure /dev/zero is ok before doing the real test
     assertEquals(new Character('\0'), source.read());
@@ -154,7 +170,7 @@ public class ReaderSourceTest extends TestCase {
   //TODO: make this really deterministic
   public void testCloseCaseB() {
     FakeReader is = new FakeReader().block();
-    Source<Character> source = new ReaderSource(is, 1);
+    Source<Character> source = getReaderSource(is, 1);
     Thread.yield();
     try {
       source.close();
@@ -167,7 +183,7 @@ public class ReaderSourceTest extends TestCase {
   //TODO: make this really deterministic
   public void testCloseWhileBlockingOnIsEOS() {
     FakeReader is = new FakeReader().block();
-    final Source<Character> source = new ReaderSource(is, 1);
+    final Source<Character> source = getReaderSource(is, 1);
     
     final StringBuilder result = new StringBuilder();
     

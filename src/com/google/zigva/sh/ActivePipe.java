@@ -64,14 +64,14 @@ public class ActivePipe implements NamedRunnable {
     public ActivePipe comboCreate(String name, InputStream in, Appendable out) {
       return new ActivePipe(
           name, 
-          readerSourceBuilder.withIn(Readers.buffered(in)).create(), 
+          readerSourceBuilder.create(Readers.buffered(in)), 
           new WriterSink(Writers.buffered(out)));
     }
 
     public ActivePipe comboCreate(String name, InputStream in, Sink<Character> out) {
       return new ActivePipe(
           name, 
-          readerSourceBuilder.withIn(Readers.buffered(in)).create(), 
+          readerSourceBuilder.create(Readers.buffered(in)), 
           out);
     }
 

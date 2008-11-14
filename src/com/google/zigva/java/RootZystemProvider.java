@@ -23,7 +23,9 @@ import java.io.FileDescriptor;
 
 public final class RootZystemProvider implements Provider<Zystem> {
 
-	/**
+	private static final ZigvaThreadFactory ROOT_THREAD_FACTORY = new ZigvaThreadFactory();
+
+  /**
 	 * A {@link Source} that is already at its end of stream.
 	 * @author zorzella
 	 *
@@ -51,12 +53,13 @@ public final class RootZystemProvider implements Provider<Zystem> {
 		}
 	}
 
-private static final Object IN_LOCK = "System in lock";
-  private static final Object OUT_LOCK = "System out lock";
-  private static final Object ERR_LOCK = "System err lock";
+  private static final Object IN_LOCK = new StringBuilder("System in lock");
+  private static final Object OUT_LOCK = new StringBuilder("System out lock");
+  private static final Object ERR_LOCK = new StringBuilder("System err lock");
 
   private static final ReaderSource IN_READER_SOURCE = 
-    new ReaderSource(Readers.buffered(FileDescriptor.in), 100, 500, IN_LOCK);
+    new ReaderSource.Builder(ROOT_THREAD_FACTORY).withCombo(100, 500, IN_LOCK)
+      .create(Readers.buffered(FileDescriptor.in));
 
   private static final WriterSink OUT_WRITER_SINK = 
     new WriterSink(Writers.buffered(FileDescriptor.out), 100, 500, OUT_LOCK);
@@ -72,7 +75,7 @@ private static final Object IN_LOCK = "System in lock";
         getCurrentDir(), 
         getHomeDir(),
         System.getenv(), 
-        new ZigvaThreadFactory()
+        ROOT_THREAD_FACTORY
         );
   }
   
