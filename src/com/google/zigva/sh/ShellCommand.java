@@ -41,7 +41,6 @@ public class ShellCommand implements Command {
     public ShellCommand build(String... shellCommand) {
       return new ShellCommand(activePipeBuilder, shellCommand);
     }
-    
   }
   
   private ShellCommand(ActivePipe.Builder activePipeBuilder, String... shellCommand) {
@@ -80,7 +79,13 @@ public class ShellCommand implements Command {
 
     @Override
     public void run() {
-      buildZivaTask(zystem, shellCommand).waitFor();
+      ZivaProcess process = buildZivaTask(zystem, shellCommand);
+      process.waitFor();
+      if (process.exitValue() != 0) {
+        throw new RuntimeException(String.format(
+            "Process '%s' exited with status '%d'.", 
+            process.getName(), process.exitValue()));
+      }
     }
 
   private ZivaProcess buildZivaTask(Zystem zystem, String... shellCommand) {

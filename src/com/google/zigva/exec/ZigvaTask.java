@@ -23,4 +23,14 @@ public interface ZigvaTask extends NamedRunnable, Killable {
 
   void kill();
   
+  /**
+   * {@inheritDoc}
+   * 
+   * <p> When this method completes successfully, it signifies the task was 
+   * successfully completed. A task that does not complete successfully should
+   * throw a RuntimeException.
+   */
+  @Override
+  public void run() throws RuntimeException;
+  
 }

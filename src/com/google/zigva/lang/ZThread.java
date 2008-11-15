@@ -28,6 +28,8 @@ public class ZThread extends Thread {
   private Runnable r;
   
   private String originalName;
+
+  private RuntimeException exception;
   
   public ZThread(Runnable r) {
     super(r);
@@ -36,6 +38,7 @@ public class ZThread extends Thread {
   
   @Override
   public synchronized void start() {
+    exception = null;
     threadCreationStack = new Exception().getStackTrace();
     //TODO: do this through reflection
 //      if (r instanceof ThreadPoolExecutor.Worker) {
@@ -54,6 +57,7 @@ public class ZThread extends Thread {
     try {
       super.run();
     } catch (RuntimeException e) {
+      exception = e;
       e.printStackTrace();
     }
     if (originalName != null) {
@@ -67,6 +71,10 @@ public class ZThread extends Thread {
         "Thread %s started at:\n%s", 
         getName(),
         Join.join("\n", threadCreationStack));
+  }
+  
+  public RuntimeException getException() {
+    return exception;
   }
   
 }

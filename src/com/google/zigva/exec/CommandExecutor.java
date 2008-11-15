@@ -20,6 +20,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.zigva.collections.CircularBuffer;
+import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.guice.ZystemSelfBuilder;
 import com.google.zigva.io.DataNotReadyException;
 import com.google.zigva.io.DataSourceClosedException;
@@ -32,7 +33,6 @@ import com.google.zigva.sh.ShellCommand;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ThreadFactory;
 
 public class CommandExecutor {
 
@@ -40,13 +40,13 @@ public class CommandExecutor {
     
     private final Zystem zystem;
     private final ShellCommand.Builder shellCommandBuilder;
-    private final ThreadFactory threadFactory;
+    private final ZigvaThreadFactory threadFactory;
 
     @Inject
     Builder(
         Zystem zystem, 
         ShellCommand.Builder shellCommandBuilder, 
-        ThreadFactory threadFactory) {
+        ZigvaThreadFactory threadFactory) {
       this.zystem = zystem;
       this.shellCommandBuilder = shellCommandBuilder;
       this.threadFactory = threadFactory;
@@ -75,14 +75,14 @@ public class CommandExecutor {
     PreparedCommand pipe(String... shellCommand);
   }
 
-  private final ThreadFactory threadFactory;
+  private final ZigvaThreadFactory threadFactory;
   private final Zystem zystem;
   private final ShellCommand.Builder shellCommandBuilder;
 
   @Inject
   public CommandExecutor(
       Zystem zystem,
-      ThreadFactory threadFactory,
+      ZigvaThreadFactory threadFactory,
       ShellCommand.Builder shellCommandBuilder) {
     this.zystem = zystem;
     this.threadFactory = threadFactory;
@@ -111,10 +111,10 @@ public class CommandExecutor {
     private final ShellCommand.Builder shellCommandBuilder;
     private final Zystem zystem;
     private final List<Command> commands;
-    private final ThreadFactory threadFactory;
+    private final ZigvaThreadFactory threadFactory;
 
     public SimplePreparedCommand(
-        ThreadFactory threadFactory, ShellCommand.Builder shellCommandBuilder,
+        ZigvaThreadFactory threadFactory, ShellCommand.Builder shellCommandBuilder,
         Zystem zystem, 
         Command command) {
       Preconditions.checkNotNull(command);
@@ -257,16 +257,3 @@ public class CommandExecutor {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

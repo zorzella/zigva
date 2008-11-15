@@ -38,9 +38,10 @@ public class SyncZivaTask implements WaitableZivaTask {
     return delegate.getName();
   }
 
+  private RuntimeException exception = null;
+  
   @Override
   public void run() {
-    RuntimeException exception = null;
     try {
       delegate.run();
     } catch (RuntimeException e) {
@@ -68,4 +69,7 @@ public class SyncZivaTask implements WaitableZivaTask {
     }
   }
   
+  public RuntimeException getException() {
+    return exception;
+  }
 }

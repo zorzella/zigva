@@ -17,23 +17,25 @@
 package com.google.zigva.exec;
 
 import com.google.common.collect.Lists;
+import com.google.zigva.guice.ZigvaThreadFactory;
+import com.google.zigva.lang.ExceptionCollection;
+import com.google.zigva.lang.ZThread;
 import com.google.zigva.lang.ZigvaInterruptedException;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ThreadFactory;
 
 class CompoundZivaTask implements ZigvaTask {
 
-  private final ThreadFactory threadFactory;
+  private final ZigvaThreadFactory threadFactory;
   private final List<ZigvaTask> zivaTasks;
 
-  public CompoundZivaTask(ThreadFactory threadFactory, ZigvaTask... zivaTasks) {
+  public CompoundZivaTask(ZigvaThreadFactory threadFactory, ZigvaTask... zivaTasks) {
     this.threadFactory = threadFactory;
     this.zivaTasks = Lists.newArrayList(zivaTasks);
   }
   
-  public CompoundZivaTask(ThreadFactory threadFactory, List<ZigvaTask> zivaTasks) {
+  public CompoundZivaTask(ZigvaThreadFactory threadFactory, List<ZigvaTask> zivaTasks) {
     this.threadFactory = threadFactory;
     this.zivaTasks = zivaTasks;
   }
@@ -50,21 +52,30 @@ class CompoundZivaTask implements ZigvaTask {
     return "CompoundZivaTask";
   }
 
-  private final Collection<Thread> allThreads = Lists.newArrayList();
+  private final Collection<ZThread> allThreads = Lists.newArrayList();
   
   @Override
   public void run() {
+    Collection<RuntimeException> exceptions = Lists.newArrayList();
+    
     for (ZigvaTask zivaTask : zivaTasks) {
-      Thread thread = this.threadFactory.newThread(zivaTask);
+      ZThread thread = this.threadFactory.newThread(zivaTask);
       allThreads.add(thread);
       thread.start();
     }
-    for (Thread t : allThreads) {
+    for (ZThread t : allThreads) {
       try {
         t.join();
+        RuntimeException exception = t.getException();
+        if (exception != null) {
+          exceptions.add(exception);
+        }
       } catch (InterruptedException e) {
         throw new ZigvaInterruptedException(e);
       }
+    }
+    if (exceptions.size() > 0) {
+      throw ExceptionCollection.create(exceptions);
     }
   }
 }

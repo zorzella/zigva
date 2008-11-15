@@ -20,4 +20,6 @@ import com.google.zigva.lang.Waitable;
 
 public interface WaitableZivaTask extends ZigvaTask, Waitable {
 
+  RuntimeException getException();
+  
 }

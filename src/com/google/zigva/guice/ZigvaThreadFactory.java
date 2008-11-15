@@ -23,7 +23,7 @@ import java.util.concurrent.ThreadFactory;
 public class ZigvaThreadFactory implements ThreadFactory {
 
   @Override
-  public Thread newThread(Runnable r) {
+  public ZThread newThread(Runnable r) {
     return new ZThread(r);
   }
 
