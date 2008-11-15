@@ -19,6 +19,7 @@ package com.google.zigva.lang;
 import java.util.Arrays;
 import java.util.Iterator;
 
+@Deprecated
 public class Ztring {
   
   public static String join(CharSequence separator, Iterable<?> it){

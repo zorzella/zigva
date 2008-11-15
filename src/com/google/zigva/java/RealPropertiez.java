@@ -16,6 +16,8 @@
 
 package com.google.zigva.java;
 
+import com.google.zigva.lang.Propertiez;
+
 public class RealPropertiez implements Propertiez {
 
   @Override

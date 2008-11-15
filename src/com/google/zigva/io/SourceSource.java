@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package com.google.zigva.java;
+package com.google.zigva.io;
 
-import com.google.zigva.io.DataNotReadyException;
-import com.google.zigva.io.DataSourceClosedException;
-import com.google.zigva.io.EndOfDataException;
-import com.google.zigva.io.Source;
 
 public class SourceSource<T> implements Source<T> {
 

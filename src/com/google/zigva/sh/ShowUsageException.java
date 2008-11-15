@@ -16,6 +16,7 @@
 
 package com.google.zigva.sh;
 
+@Deprecated
 public class ShowUsageException extends Exception {
 
   public ShowUsageException(String string) {

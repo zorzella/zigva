@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.google.zigva.io.util;
+package com.google.zigva.lang;
 
-public interface AppendableLite {
+public interface Propertiez {
 
-  public AppendableLite append(char c);
-
+  String get(String key);
+  
 }

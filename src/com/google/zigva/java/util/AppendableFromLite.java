@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package com.google.zigva.io.util;
+package com.google.zigva.java.util;
+
 
 public class AppendableFromLite implements Appendable {
 
