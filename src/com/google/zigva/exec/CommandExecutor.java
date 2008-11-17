@@ -191,8 +191,8 @@ public class CommandExecutor {
 
       @Override
       public void close() {
-        reader.isEOS = true;
         synchronized(lock) {
+          reader.isEOS = true;
           lock.notifyAll();
         }
       }
@@ -220,14 +220,14 @@ public class CommandExecutor {
 
       @Override
       public boolean isEndOfStream() throws DataSourceClosedException, ZigvaInterruptedException {
-        while (!isEOS && buffer.size() == 0) {
-          try {
-            synchronized(lock) {
+        try {
+          synchronized(lock) {
+            while (!isEOS && buffer.size() == 0) {
               lock.wait();
             }
-          } catch (InterruptedException e) {
-            throw new ZigvaInterruptedException(e);
           }
+        } catch (InterruptedException e) {
+          throw new ZigvaInterruptedException(e);
         }
         return isEOS && buffer.size() == 0;
       }
