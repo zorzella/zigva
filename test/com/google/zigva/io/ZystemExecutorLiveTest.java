@@ -114,7 +114,6 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
       .command("echo", expected)
       .pipe("cat")
       .execute();
-    System.out.println(out);
     process.waitFor();
     assertEquals(expected, out.toString().trim());
   }
