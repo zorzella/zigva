@@ -19,9 +19,11 @@ package com.google.zigva.io;
 import com.google.zigva.collections.CircularBuffer;
 import com.google.zigva.lang.ZigvaInterruptedException;
 
+import java.io.Closeable;
+import java.io.Flushable;
 import java.io.IOException;
-import java.io.Writer;
 
+// TODO: rename to AppendableSink, add Builder
 public class WriterSink implements Sink<Character> {
 
   private static final int DEFAULT_CAPACITY = 100;
@@ -35,7 +37,7 @@ public class WriterSink implements Sink<Character> {
   
   private boolean isClosed;
 
-  public WriterSink(final Writer out) {
+  public WriterSink(final Appendable out) {
     this(out, DEFAULT_CAPACITY, DEFAULT_CLOSE_TIMEOUT, "LOCK");
   }
   
@@ -55,7 +57,7 @@ public class WriterSink implements Sink<Character> {
    * 
    * There should be tests for each.
    */
-  public WriterSink(final Writer out, int capacity, int closeTimeout, Object lock) {
+  public WriterSink(final Appendable out, int capacity, int closeTimeout, Object lock) {
     this.closeTimeout = closeTimeout;
     this.lock = lock;
     this.queue = new CircularBuffer<Character>(capacity, lock);
@@ -79,8 +81,11 @@ public class WriterSink implements Sink<Character> {
           throw new RuntimeException(e);
         } finally {
           try {
-            out.flush();
-            out.close();
+            if (out instanceof Flushable) {
+              ((Flushable)out).flush();
+            }
+            if (out instanceof Closeable)
+              ((Closeable)out).close();
           } catch (IOException e) {
             throw new RuntimeException(e);
           }
