@@ -20,13 +20,13 @@ import junit.framework.TestCase;
 
 import java.io.StringWriter;
 
-public class WriterSinkTest extends TestCase {
+public class AppendableSinkTest extends TestCase {
 
   public void testFoo() {
     
     StringWriter out = new StringWriter();
     
-    Sink<Character> sink = new WriterSink(out);
+    Sink<Character> sink = new AppendableSink(out);
     
     String expected = "foo";
     

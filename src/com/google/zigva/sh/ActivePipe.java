@@ -17,9 +17,9 @@
 package com.google.zigva.sh;
 
 import com.google.inject.Inject;
+import com.google.zigva.io.AppendableSink;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
-import com.google.zigva.io.WriterSink;
 import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
 import com.google.zigva.java.io.Writers;
@@ -74,14 +74,14 @@ public class ActivePipe implements NamedRunnable {
     }
 
     public ActivePipe comboCreate(String name, Source<Character> in, OutputStream out) {
-      return new ActivePipe(name, in, new WriterSink(Writers.buffered(out)));
+      return new ActivePipe(name, in, new AppendableSink(Writers.buffered(out)));
     }
     
     public ActivePipe comboCreate(String name, InputStream in, Appendable out) {
       return new ActivePipe(
           name, 
           readerSourceBuilder.create(Readers.buffered(in)), 
-          new WriterSink(Writers.buffered(out)));
+          new AppendableSink(Writers.buffered(out)));
     }
 
     public ActivePipe comboCreate(String name, InputStream in, Sink<Character> out) {

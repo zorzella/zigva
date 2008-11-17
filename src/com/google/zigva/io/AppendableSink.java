@@ -24,7 +24,7 @@ import java.io.Flushable;
 import java.io.IOException;
 
 // TODO: rename to AppendableSink, add Builder
-public class WriterSink implements Sink<Character> {
+public class AppendableSink implements Sink<Character> {
 
   private static final int DEFAULT_CAPACITY = 100;
   private static final int DEFAULT_CLOSE_TIMEOUT = 500;
@@ -37,7 +37,7 @@ public class WriterSink implements Sink<Character> {
   
   private boolean isClosed;
 
-  public WriterSink(final Appendable out) {
+  public AppendableSink(final Appendable out) {
     this(out, DEFAULT_CAPACITY, DEFAULT_CLOSE_TIMEOUT, "LOCK");
   }
   
@@ -57,7 +57,7 @@ public class WriterSink implements Sink<Character> {
    * 
    * There should be tests for each.
    */
-  public WriterSink(final Appendable out, int capacity, int closeTimeout, Object lock) {
+  public AppendableSink(final Appendable out, int capacity, int closeTimeout, Object lock) {
     this.closeTimeout = closeTimeout;
     this.lock = lock;
     this.queue = new CircularBuffer<Character>(capacity, lock);
@@ -67,7 +67,7 @@ public class WriterSink implements Sink<Character> {
         try {
           int dataPoint;
           while (queue.size() > 0 || !isClosed)  {
-            synchronized(WriterSink.this.lock) {
+            synchronized(AppendableSink.this.lock) {
               out.append(queue.deq());
             }
           }

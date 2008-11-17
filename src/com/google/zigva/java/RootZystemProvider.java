@@ -25,7 +25,7 @@ import com.google.zigva.io.FilePath;
 import com.google.zigva.io.RealFileSpec;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
-import com.google.zigva.io.WriterSink;
+import com.google.zigva.io.AppendableSink;
 import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
 import com.google.zigva.java.io.Writers;
@@ -75,11 +75,11 @@ public final class RootZystemProvider implements Provider<Zystem> {
     new ReaderSource.Builder(ROOT_THREAD_FACTORY).withCombo(100, 500, IN_LOCK)
       .create(Readers.buffered(FileDescriptor.in));
 
-  private static final WriterSink OUT_WRITER_SINK = 
-    new WriterSink(Writers.buffered(FileDescriptor.out), 100, 500, OUT_LOCK);
+  private static final AppendableSink OUT_WRITER_SINK = 
+    new AppendableSink(Writers.buffered(FileDescriptor.out), 100, 500, OUT_LOCK);
 
-  private static final WriterSink ERR_WRITER_SINK = 
-    new WriterSink(Writers.buffered(FileDescriptor.out), 100, 500, ERR_LOCK);
+  private static final AppendableSink ERR_WRITER_SINK = 
+    new AppendableSink(Writers.buffered(FileDescriptor.out), 100, 500, ERR_LOCK);
   
   //TODO: package private constructor?
   
