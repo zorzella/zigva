@@ -141,6 +141,43 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   // ls | cat > bar.txt
   // $ ls | (cd ../bar; cat > bar.txt)
   // executor().source("foo").sink(bar).execute();
+  
+  public void testWithParams() throws Exception {
+    Sink<Character> out = new SinkToString();
+    Zystem localZystem = zystem
+      .withOut(out);
+    commandExecutorBuilder.with(localZystem).create().command("echo", "-n", "foo")
+      .execute().waitFor();
+    assertEquals("foo", out.toString());
+  }
+
+  public void testExistingCommandErr() throws Exception {
+    Sink<Character> out = new SinkToString();
+    Zystem localZystem = zystem
+      .withOut(out);
+    try {
+      commandExecutorBuilder.with(localZystem).create().command("ls", "/idontexist")
+        .execute().waitFor();
+      fail();
+    } catch (RuntimeException expected) {
+      //TODO brittle UNIXism
+      assertTrue(expected.getMessage().contains("ls: /idontexist: No such file or directory"));
+    }
+  }
+  
+  public void testNonExistingCommandErr() throws Exception {
+    Sink<Character> out = new SinkToString();
+    Zystem localZystem = zystem
+      .withOut(out);
+    try {
+      commandExecutorBuilder.with(localZystem).create().command("/idontexist")
+        .execute().waitFor();
+      fail();
+    } catch (RuntimeException expected) {
+      // TODO: can we assert something about the exception?
+    }
+  }
+
 
   private static final class MyCommand implements Command {
 

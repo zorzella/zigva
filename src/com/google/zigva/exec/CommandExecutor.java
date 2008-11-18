@@ -25,7 +25,9 @@ import com.google.zigva.guice.ZystemSelfBuilder;
 import com.google.zigva.io.DataNotReadyException;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
+import com.google.zigva.io.ForkingSink;
 import com.google.zigva.io.Sink;
+import com.google.zigva.io.SinkToString;
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.ZigvaInterruptedException;
 import com.google.zigva.lang.Zystem;
@@ -133,7 +135,14 @@ public class CommandExecutor {
     
     @Override
     public WaitableZivaTask execute() {
-      Source<Character> nextIn = zystem.ioFactory().buildIn();
+      SinkToString errMonitor = new SinkToString();
+      @SuppressWarnings("unchecked")
+      Sink<Character> forkedErr = new ForkingSink<Character>(
+          zystem.ioFactory().buildErr(), 
+          errMonitor);
+      Zystem localZystem = new ZystemSelfBuilder(zystem).withErr(forkedErr);
+      
+      Source<Character> nextIn = localZystem.ioFactory().buildIn();
       Sink<Character> nextOut;
       
       List<ZigvaTask> allTasksExecuted = Lists.newArrayList();
@@ -146,10 +155,10 @@ public class CommandExecutor {
           zivaPipe = new ZigvaPipe();
           nextOut = zivaPipe.in();
         } else {
-          nextOut = zystem.ioFactory().buildOut();
+          nextOut = localZystem.ioFactory().buildOut();
         }
         ZystemSelfBuilder tempZystem = 
-          new ZystemSelfBuilder(zystem)
+          new ZystemSelfBuilder(localZystem)
             .withIn(nextIn)
             .withOut(nextOut);
         allTasksExecuted.add(new SyncZivaTask(command.execute(tempZystem)));
@@ -158,7 +167,7 @@ public class CommandExecutor {
         }
       }
       WaitableZivaTask result = new SyncZivaTask(new CompoundZivaTask(
-          threadFactory, allTasksExecuted));
+          threadFactory, errMonitor, allTasksExecuted));
       
       threadFactory.newThread(result).start();
       return result;

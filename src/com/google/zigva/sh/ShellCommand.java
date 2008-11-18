@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.Map;
 
 public class ShellCommand implements Command {
+  
   private final String[] shellCommand;
   private final ActivePipe.Builder activePipeBuilder;
 

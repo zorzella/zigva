@@ -26,6 +26,8 @@ public interface Zystem {
   
   Map<String,String> env();
   
+//  environment
+  
   String getHostname();
   
   FilePath getCurrentDir();

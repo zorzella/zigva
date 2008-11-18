@@ -18,6 +18,7 @@ package com.google.zigva.exec;
 
 import com.google.common.collect.Lists;
 import com.google.zigva.guice.ZigvaThreadFactory;
+import com.google.zigva.io.SinkToString;
 import com.google.zigva.lang.ExceptionCollection;
 import com.google.zigva.lang.ZThread;
 import com.google.zigva.lang.ZigvaInterruptedException;
@@ -27,16 +28,22 @@ import java.util.List;
 
 class CompoundZivaTask implements ZigvaTask {
 
+  private final Collection<ZThread> allThreads = Lists.newArrayList();
   private final ZigvaThreadFactory threadFactory;
   private final List<ZigvaTask> zivaTasks;
+  private final SinkToString errMonitor;
 
-  public CompoundZivaTask(ZigvaThreadFactory threadFactory, ZigvaTask... zivaTasks) {
+  public CompoundZivaTask(ZigvaThreadFactory threadFactory, SinkToString errMonitor, 
+      ZigvaTask... zivaTasks) {
     this.threadFactory = threadFactory;
+    this.errMonitor = errMonitor;
     this.zivaTasks = Lists.newArrayList(zivaTasks);
   }
   
-  public CompoundZivaTask(ZigvaThreadFactory threadFactory, List<ZigvaTask> zivaTasks) {
+  public CompoundZivaTask(ZigvaThreadFactory threadFactory, 
+      SinkToString errMonitor, List<ZigvaTask> zivaTasks) {
     this.threadFactory = threadFactory;
+    this.errMonitor = errMonitor;
     this.zivaTasks = zivaTasks;
   }
 
@@ -52,8 +59,6 @@ class CompoundZivaTask implements ZigvaTask {
     return "CompoundZivaTask";
   }
 
-  private final Collection<ZThread> allThreads = Lists.newArrayList();
-  
   @Override
   public void run() {
     Collection<RuntimeException> exceptions = Lists.newArrayList();
@@ -75,7 +80,12 @@ class CompoundZivaTask implements ZigvaTask {
       }
     }
     if (exceptions.size() > 0) {
-      throw ExceptionCollection.create(exceptions);
+      throw new RuntimeException(String.format(
+          "stderr of command was:\n" +
+          "******************************************\n" +
+          "%s \n" +
+          "******************************************", errMonitor.toString()), 
+          ExceptionCollection.create(exceptions));
     }
   }
 }

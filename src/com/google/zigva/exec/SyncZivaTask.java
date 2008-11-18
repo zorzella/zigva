@@ -67,6 +67,9 @@ public class SyncZivaTask implements WaitableZivaTask {
         throw new ZigvaInterruptedException(e);
       }
     }
+    if (exception != null) {
+      throw exception;
+    }
   }
   
   public RuntimeException getException() {
