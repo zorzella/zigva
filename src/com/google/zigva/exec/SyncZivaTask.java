@@ -72,4 +72,9 @@ public class SyncZivaTask implements WaitableZivaTask {
   public RuntimeException getException() {
     return exception;
   }
+
+  @Override
+  public boolean isFinished() {
+    return done;
+  }
 }

@@ -118,6 +118,26 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     assertEquals(expected, out.toString().trim());
   }
 
+  // $ echo foo | cat | cat | cat | grep foo
+  public void testMultiplePipes() throws Exception {
+    SinkToString out = new SinkToString();
+    
+    Zystem localZystem = 
+      zystem
+        .withOut(out);
+
+    String expected = "foo";
+    Waitable process = commandExecutorBuilder.with(localZystem).create()
+      .command("echo", expected)
+      .pipe("cat")
+      .pipe("cat")
+      .pipe("cat")
+      .pipe("grep", "foo")
+      .execute();
+    process.waitFor();
+    assertEquals(expected, out.toString().trim());
+  }
+
   // ls | cat > bar.txt
   // $ ls | (cd ../bar; cat > bar.txt)
   // executor().source("foo").sink(bar).execute();

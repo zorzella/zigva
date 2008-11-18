@@ -18,6 +18,8 @@ package com.google.zigva.lang;
 
 public interface Waitable {
 
+  boolean isFinished();
+  
   void waitFor();
   
 }

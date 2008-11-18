@@ -79,6 +79,7 @@ public class CommandExecutor {
   private final Zystem zystem;
   private final ShellCommand.Builder shellCommandBuilder;
 
+  //TODO: make this an ImmutableSelfBuilder?
   @Inject
   public CommandExecutor(
       Zystem zystem,
