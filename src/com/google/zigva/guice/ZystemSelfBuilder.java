@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package com.google.zigva.guice;
 
 import com.google.inject.Inject;
@@ -64,12 +63,21 @@ public final class ZystemSelfBuilder implements Zystem {
     return zystem.env();
   }
   
+  public ZystemSelfBuilder withCurrentDir(FilePath dir) {
+    return new ZystemSelfBuilder(
+        new RealZystem(
+            zystem.ioFactory(),
+            dir, 
+            zystem.getHomeDir(), 
+            zystem.env()));
+  }
+  
   public ZystemSelfBuilder withEnv(Map<String, String> otherEnv) {
     return new ZystemSelfBuilder(
         new RealZystem(
             zystem.ioFactory(),
-            getCurrentDir(), 
-            getHomeDir(), 
+            zystem.getCurrentDir(), 
+            zystem.getHomeDir(), 
             otherEnv));
   }
 
@@ -158,8 +166,8 @@ public final class ZystemSelfBuilder implements Zystem {
     return new ZystemSelfBuilder(
         new RealZystem(
             getForIn(zystem.ioFactory(), otherIn),
-            getCurrentDir(), 
-            getHomeDir(), 
+            zystem.getCurrentDir(), 
+            zystem.getHomeDir(), 
             zystem.env()));
   }
 
@@ -167,8 +175,8 @@ public final class ZystemSelfBuilder implements Zystem {
     return new ZystemSelfBuilder(
         new RealZystem(
             getForOut(zystem.ioFactory(), otherOut), 
-            getCurrentDir(), 
-            getHomeDir(), 
+            zystem.getCurrentDir(), 
+            zystem.getHomeDir(), 
             zystem.env()));
   }
 
@@ -176,8 +184,8 @@ public final class ZystemSelfBuilder implements Zystem {
     return new ZystemSelfBuilder(
         new RealZystem(
             getForErr(zystem.ioFactory(), otherErr), 
-            getCurrentDir(), 
-            getHomeDir(), 
+            zystem.getCurrentDir(), 
+            zystem.getHomeDir(), 
             zystem.env()));
   }
 
