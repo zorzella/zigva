@@ -19,6 +19,8 @@ package com.google.zigva.guice;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provider;
 import com.google.inject.Scopes;
+import com.google.zigva.exec.CommandExecutor;
+import com.google.zigva.exec.SimpleCommandExecutor;
 import com.google.zigva.io.FileRepository;
 import com.google.zigva.java.RealFileRepository;
 import com.google.zigva.java.RootZystemProvider;
@@ -46,6 +48,7 @@ public class ZigvaModule extends AbstractModule {
     bind(Zystem.class).toProvider(zystemProvider).in(Scopes.SINGLETON);
     bind(JavaProcessExecutor.class).to(RealJavaProcessExecutor.class);
 //    bind(ZystemScopeHelper.class).toInstance(zystemScopeHelper);
+    bind(CommandExecutor.Builder.class).to(SimpleCommandExecutor.Builder.class);
   }
   
   public static final class ZystemProvider implements Provider<Zystem> {

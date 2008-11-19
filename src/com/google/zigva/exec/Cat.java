@@ -16,6 +16,7 @@
 
 package com.google.zigva.exec;
 
+import com.google.zigva.exec.CommandExecutor.Builder;
 import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
@@ -58,7 +59,7 @@ public class Cat implements Command {
   }
 
   @Override
-  public ZigvaTask execute(final Zystem zystem) {
+  public ZigvaTask buildTask(Builder cmdExecutorBuilder, final Zystem zystem) {
     ZigvaTask result = new SyncZivaTask(new MyZivaTask(zystem));
     return result;
   }

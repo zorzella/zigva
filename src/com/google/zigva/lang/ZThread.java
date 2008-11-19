@@ -58,7 +58,8 @@ public class ZThread extends Thread {
       super.run();
     } catch (RuntimeException e) {
       exception = e;
-      e.printStackTrace();
+      //TODO: use a callback to deal with this!
+//      e.printStackTrace();
     }
     if (originalName != null) {
       setName(originalName);

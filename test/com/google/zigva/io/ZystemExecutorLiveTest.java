@@ -21,10 +21,12 @@ import com.google.inject.Inject;
 import com.google.inject.testing.guiceberry.GuiceBerryEnv;
 import com.google.inject.testing.guiceberry.junit3.GuiceBerryJunit3TestCase;
 import com.google.zigva.ZigvaEnvs;
+import com.google.zigva.exec.Cat;
 import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.exec.SyncZivaTask;
 import com.google.zigva.exec.WaitableZivaTask;
 import com.google.zigva.exec.ZigvaTask;
+import com.google.zigva.exec.CommandExecutor.Builder;
 import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.guice.ZystemSelfBuilder;
 import com.google.zigva.lang.Waitable;
@@ -138,6 +140,26 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     assertEquals(expected, out.toString().trim());
   }
 
+  // $ echo foo | cat | Cat | cat | grep foo
+  public void testMixOsAndJava() throws Exception {
+    SinkToString out = new SinkToString();
+    
+    Zystem localZystem = 
+      zystem
+        .withOut(out);
+
+    String expected = "foo";
+    Waitable process = commandExecutorBuilder.with(localZystem).create()
+      .command("echo", expected)
+      .pipe("cat")
+      .pipe(new Cat())
+      .pipe("cat")
+      .pipe("grep", "foo")
+      .execute();
+    process.waitFor();
+    assertEquals(expected, out.toString().trim());
+  }
+
   // ls | cat > bar.txt
   // $ ls | (cd ../bar; cat > bar.txt)
   // executor().source("foo").sink(bar).execute();
@@ -178,26 +200,51 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     }
   }
 
+  public void testComplexCommand() throws Exception {
+    Sink<Character> out = new SinkToString();
+    Zystem localZystem = zystem
+      .withOut(out);
+    commandExecutorBuilder
+      .with(localZystem)
+      .create()
+      .command(new MyComplexCommand())
+      .execute()
+      .waitFor();
+    // TODO jthomas why "\n"?
+    assertEquals("foo\n", out.toString());
+  }
+  
+  /**
+   * This class internally calls echo -n foo | cat | grep foo
+   */
+  private static final class MyComplexCommand implements Command {
+
+    @Override
+    public ZigvaTask buildTask(final Builder cmdExecutorBuilder, final Zystem zystem) {
+      return new StubZigvaTask() {
+        @Override
+        public void run() throws RuntimeException {
+          cmdExecutorBuilder.create()
+            .command("echo", "foo")
+            .pipe("cat")
+            .pipe("grep", "foo")
+            .execute()
+            .waitFor();
+        }
+      };
+    }
+  }
 
   private static final class MyCommand implements Command {
 
     @Override
-    public ZigvaTask execute(final Zystem zystem) {
-      return new SyncZivaTask(new ZigvaTask() {
-        @Override
-        public void kill() {
-        }
-
-        @Override
-        public String getName() {
-          return "MyCommand";
-        }
-
+    public ZigvaTask buildTask(Builder cmdExecutorBuilder, final Zystem zystem) {
+      return new StubZigvaTask() {
         @Override
         public void run() {
           zystem.ioFactory().buildOut().write('z');
         }
-      });
+      };
     }
   }
 }

@@ -58,10 +58,15 @@ public class SyncZivaTask implements WaitableZivaTask {
 
   @Override
   public void waitFor() {
+    waitFor(0);
+  }
+  
+  @Override
+  public void waitFor(long timeout) {
     while(!done) {
       try {
         synchronized(this) {
-          wait();
+          wait(timeout);
         }
       } catch (InterruptedException e) {
         throw new ZigvaInterruptedException(e);

@@ -21,5 +21,7 @@ public interface Waitable {
   boolean isFinished();
   
   void waitFor();
+
+  void waitFor(long timeout);
   
 }

@@ -18,6 +18,7 @@ package com.google.zigva.sh;
 
 import com.google.common.base.Join;
 import com.google.inject.Inject;
+import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.exec.ZigvaTask;
 import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.lang.Zystem;
@@ -50,7 +51,7 @@ public class ShellCommand implements Command {
   }
 
   @Override
-  public ZigvaTask execute(Zystem zystem) {
+  public ZigvaTask buildTask(CommandExecutor.Builder cmdExecutorBuilder, Zystem zystem) {
     return new JavaProcessZivaTask(zystem, shellCommand, activePipeBuilder);
   }
   
