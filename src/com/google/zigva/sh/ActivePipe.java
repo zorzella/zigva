@@ -20,6 +20,7 @@ import com.google.inject.Inject;
 import com.google.zigva.io.AppendableSink;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
+import com.google.zigva.io.AppendableSink.Builder;
 import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
 import com.google.zigva.java.io.Writers;
@@ -44,6 +45,7 @@ public class ActivePipe implements NamedRunnable {
   public static final class Builder {
     
     private final ReaderSource.Builder readerSourceBuilder;
+    private final AppendableSink.Builder appendableSinkBuilder;
     private final ThreadFactory threadFactory;
 
     private String name;
@@ -51,15 +53,21 @@ public class ActivePipe implements NamedRunnable {
     private Sink<Character> out;
 
     @Inject
-    public Builder(ReaderSource.Builder readerSourceBuilder, ThreadFactory threadFactory) {
+    public Builder(
+        ReaderSource.Builder readerSourceBuilder,
+        AppendableSink.Builder appendableSinkBuilder,
+        ThreadFactory threadFactory) {
       this.readerSourceBuilder = readerSourceBuilder;
+      this.appendableSinkBuilder = appendableSinkBuilder;
       this.threadFactory = threadFactory;
     }
 
-    Builder(ReaderSource.Builder readerSourceBuilder, 
+    Builder(ReaderSource.Builder readerSourceBuilder,
+        AppendableSink.Builder appendableSinkBuilder,
         ThreadFactory threadFactory, 
         String name, Source<Character> in, Sink<Character> out) {
       this.readerSourceBuilder = readerSourceBuilder;
+      this.appendableSinkBuilder = appendableSinkBuilder;
       this.threadFactory = threadFactory;
       this.name = name;
       this.in = in;
@@ -74,14 +82,14 @@ public class ActivePipe implements NamedRunnable {
     }
 
     public ActivePipe comboCreate(String name, Source<Character> in, OutputStream out) {
-      return new ActivePipe(name, in, new AppendableSink(Writers.buffered(out)));
+      return new ActivePipe(name, in, appendableSinkBuilder.create(Writers.buffered(out)));
     }
     
     public ActivePipe comboCreate(String name, InputStream in, Appendable out) {
       return new ActivePipe(
           name, 
           readerSourceBuilder.create(Readers.buffered(in)), 
-          new AppendableSink(Writers.buffered(out)));
+          appendableSinkBuilder.create(Writers.buffered(out)));
     }
 
     public ActivePipe comboCreate(String name, InputStream in, Sink<Character> out) {
@@ -93,17 +101,17 @@ public class ActivePipe implements NamedRunnable {
 
     public Builder withtName(String name) {
       this.name = name;
-      return new Builder(readerSourceBuilder, threadFactory, name, in, out);
+      return new Builder(readerSourceBuilder, appendableSinkBuilder, threadFactory, name, in, out);
     }
     
     public Builder withIn(Source<Character> in) {
       this.in = in;
-      return new Builder(readerSourceBuilder, threadFactory, name, in, out);
+      return new Builder(readerSourceBuilder, appendableSinkBuilder, threadFactory, name, in, out);
     }
     
     public Builder withOut(Sink<Character> out) {
       this.out = out;
-      return new Builder(readerSourceBuilder, threadFactory, name, in, out);
+      return new Builder(readerSourceBuilder, appendableSinkBuilder, threadFactory, name, in, out);
     }
   }
   

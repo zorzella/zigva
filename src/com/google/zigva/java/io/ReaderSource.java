@@ -18,6 +18,7 @@ package com.google.zigva.java.io;
 
 import com.google.inject.Inject;
 import com.google.zigva.collections.CircularBuffer;
+import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.io.DataNotReadyException;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
@@ -51,13 +52,13 @@ public class ReaderSource implements Source<Character> {
     private static final int DEFAULT_CAPACITY = 100;
     private static final int DEFAULT_CLOSE_TIMEOUT = 500;
     
-    private final ThreadFactory threadFactory;
+    private final ZigvaThreadFactory threadFactory;
     private final int capacity;
     private final int closeTimeout;
     private final Object lock;
     
     public Builder(
-        ThreadFactory threadFactory,
+        ZigvaThreadFactory threadFactory,
         int capacity, 
         int closeTimeout, 
         Object lock
@@ -70,7 +71,7 @@ public class ReaderSource implements Source<Character> {
     }
 
     @Inject
-    public Builder(ThreadFactory threadFactory) {
+    public Builder(ZigvaThreadFactory threadFactory) {
       this(threadFactory, DEFAULT_CAPACITY, DEFAULT_CLOSE_TIMEOUT, 
           new StringBuilder("LOCK"));
     }
@@ -112,12 +113,12 @@ public class ReaderSource implements Source<Character> {
    * 
    * There should be tests for each.
    */
-  private ReaderSource(ThreadFactory threadFactory, 
+  private ReaderSource(ZigvaThreadFactory threadFactory, 
       final Reader in, int capacity, int closeTimeout, Object lock) {
     this.closeTimeout = closeTimeout;
     this.lock = lock;
     this.queue = new CircularBuffer<Integer>(capacity, lock);
-    this.producer = threadFactory.newThread(new NamedRunnable() {
+    this.producer = threadFactory.newDaemonThread(new NamedRunnable() {
       @Override
       public void run() {
         try {

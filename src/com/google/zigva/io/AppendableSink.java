@@ -16,9 +16,13 @@
 
 package com.google.zigva.io;
 
+import com.google.inject.Inject;
 import com.google.zigva.collections.CircularBuffer;
+import com.google.zigva.guice.ZigvaThreadFactory;
+import com.google.zigva.lang.NamedRunnable;
 import com.google.zigva.lang.ZigvaInterruptedException;
 
+import java.io.BufferedWriter;
 import java.io.Closeable;
 import java.io.Flushable;
 import java.io.IOException;
@@ -34,15 +38,54 @@ public class AppendableSink implements Sink<Character> {
   private final int closeTimeout;
   private final Object lock;
 
-  
   private boolean isClosed;
 
-  public AppendableSink(final Appendable out) {
-    this(out, DEFAULT_CAPACITY, DEFAULT_CLOSE_TIMEOUT, "LOCK");
+  public static final class Builder {
+    
+    private final ZigvaThreadFactory threadFactory;
+    private final int capacity;
+    private final int closeTimeout;
+    private final Object lock;
+
+    public AppendableSink create(Appendable out) {
+      return new AppendableSink(
+          threadFactory, 
+          out, 
+          capacity, 
+          closeTimeout, 
+          lock);
+    }
+    
+    @Inject
+    public Builder(ZigvaThreadFactory threadFactory) {
+      this(threadFactory, DEFAULT_CLOSE_TIMEOUT, 
+          DEFAULT_CAPACITY, 
+          new StringBuilder("LOCK"));
+    }
+
+    public Builder(
+        ZigvaThreadFactory threadFactory, 
+        int capacity,
+        int closeTimeout, 
+        Object lock) {
+      this.threadFactory = threadFactory;
+      this.capacity = capacity;
+      this.closeTimeout = closeTimeout;
+      this.lock = lock;
+    }
+
+    public Builder withCombo(
+        int capacity, 
+        int closeTimeout, 
+        Object lock) {
+      return new Builder(threadFactory, capacity, closeTimeout, lock);
+    }
   }
   
-  
-  
+  //TODO: kill
+  public AppendableSink(final Appendable out) {
+    this(new ZigvaThreadFactory(), out, DEFAULT_CAPACITY, DEFAULT_CLOSE_TIMEOUT, "LOCK");
+  }
   
   /*
    * There are 2 possible ways for the Producer to end:
@@ -57,11 +100,14 @@ public class AppendableSink implements Sink<Character> {
    * 
    * There should be tests for each.
    */
-  public AppendableSink(final Appendable out, int capacity, int closeTimeout, Object lock) {
+  //TODO: make private
+  private AppendableSink(
+      final ZigvaThreadFactory threadFactory,
+      final Appendable out, int capacity, int closeTimeout, Object lock) {
     this.closeTimeout = closeTimeout;
     this.lock = lock;
     this.queue = new CircularBuffer<Character>(capacity, lock);
-    this.consumer = new Thread (new Runnable() {
+    this.consumer = threadFactory.newDaemonThread (new NamedRunnable() {
       @Override
       public void run() {
         try {
@@ -91,7 +137,12 @@ public class AppendableSink implements Sink<Character> {
           }
         }
       }
-    }, "WriterSink Thread");
+
+      @Override
+      public String getName() {
+        return "AppendableSink Thread";
+      }
+    });
     this.consumer.start();
   }
 

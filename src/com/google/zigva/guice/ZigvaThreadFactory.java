@@ -27,4 +27,9 @@ public class ZigvaThreadFactory implements ThreadFactory {
     return new ZThread(r);
   }
 
+  public ZThread newDaemonThread(Runnable r) {
+    ZThread result = new ZThread(r);
+    result.setDaemon(true);
+    return result;
+  }
 }

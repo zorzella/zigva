@@ -64,7 +64,7 @@ class CompoundZivaTask implements ZigvaTask {
     Collection<RuntimeException> exceptions = Lists.newArrayList();
     
     for (ZigvaTask zivaTask : zivaTasks) {
-      ZThread thread = this.threadFactory.newThread(zivaTask);
+      ZThread thread = this.threadFactory.newDaemonThread(zivaTask);
       allThreads.add(thread);
       thread.start();
     }

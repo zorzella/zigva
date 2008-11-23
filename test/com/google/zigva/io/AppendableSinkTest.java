@@ -16,6 +16,8 @@
 
 package com.google.zigva.io;
 
+import com.google.zigva.guice.ZigvaThreadFactory;
+
 import junit.framework.TestCase;
 
 import java.io.StringWriter;
@@ -26,7 +28,7 @@ public class AppendableSinkTest extends TestCase {
     
     StringWriter out = new StringWriter();
     
-    Sink<Character> sink = new AppendableSink(out);
+    Sink<Character> sink = new AppendableSink.Builder(new ZigvaThreadFactory()).create(out);
     
     String expected = "foo";
     

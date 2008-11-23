@@ -129,7 +129,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
       WaitableZivaTask result = new SyncZivaTask(new CompoundZivaTask(
           threadFactory, errMonitor, allTasksExecuted));
       
-      threadFactory.newThread(result).start();
+      threadFactory.newDaemonThread(result).start();
       return result;
     }
 

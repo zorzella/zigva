@@ -76,10 +76,12 @@ public final class RootZystemProvider implements Provider<Zystem> {
       .create(Readers.buffered(FileDescriptor.in));
 
   private static final AppendableSink OUT_WRITER_SINK = 
-    new AppendableSink(Writers.buffered(FileDescriptor.out), 100, 500, OUT_LOCK);
+    new AppendableSink.Builder(ROOT_THREAD_FACTORY).withCombo( 
+        100, 500, OUT_LOCK).create(Writers.buffered(FileDescriptor.out));
 
   private static final AppendableSink ERR_WRITER_SINK = 
-    new AppendableSink(Writers.buffered(FileDescriptor.out), 100, 500, ERR_LOCK);
+    new AppendableSink.Builder(ROOT_THREAD_FACTORY).withCombo( 
+        100, 500, ERR_LOCK).create(Writers.buffered(FileDescriptor.out));
   
   //TODO: package private constructor?
   
