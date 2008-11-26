@@ -104,10 +104,10 @@ public final class RootZystemProvider implements Provider<Zystem> {
 
       @Override
       public Source<Character> buildIn() {
-    	  if (false) {
-        return new SpecialSourceSource<Character>(IN_READER_SOURCE, IN_LOCK);
-    	  }
-    	return new SourceAtEOS<Character>();
+        if (false) {
+          return new SpecialSourceSource<Character>(IN_READER_SOURCE, IN_LOCK);
+        }
+        return new SourceAtEOS<Character>();
       }
 
       @Override

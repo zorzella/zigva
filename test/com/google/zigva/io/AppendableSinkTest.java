@@ -24,7 +24,7 @@ import java.io.StringWriter;
 
 public class AppendableSinkTest extends TestCase {
 
-  public void testFoo() {
+  public void testSimpleScenario() {
     
     StringWriter out = new StringWriter();
     
@@ -41,11 +41,4 @@ public class AppendableSinkTest extends TestCase {
     
     assertEquals(expected, out.toString());
   }
-  
-  public void testBar() {
-    System.out.println("foo");
-    System.out.close();
-    System.out.println("bar");
-  }
-  
 }
