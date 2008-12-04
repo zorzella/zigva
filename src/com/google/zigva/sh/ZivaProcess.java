@@ -6,6 +6,7 @@ import com.google.zigva.lang.ZigvaInterruptedException;
 
 import java.io.IOException;
 
+// TODO(zorzella): make this private once BlockingOs etc are killed
 public class ZivaProcess {
 
   private final Process process;
