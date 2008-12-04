@@ -159,58 +159,9 @@ public class ShellCommand implements Command {
     return Join.join(" ", this.shellCommand);
   }
 
-  private static class JavaProcess {
-
-    private final Process process;
-    private final Thread in;
-    private final Thread out;
-    private final Thread err;
-
+  private static class JavaProcess extends ZivaProcess {
     public JavaProcess(Process process, Thread in, Thread out, Thread err) {
-      this.process = process;
-      this.in = in;
-      this.out = out;
-      this.err = err;
-    }
-      
-    public void waitFor() {
-      try {
-        process.waitFor();
-        out.join();
-        if (err != null) {
-          err.join();
-        }
-        if (in != null) {
-          if (in.getState() != Thread.State.TERMINATED) {
-            in.interrupt();
-          }
-          in.join();
-        }
-      } catch (InterruptedException e) {
-        throw new ZigvaInterruptedException(e);
-      }
-    }
-
-    public int exitValue(){
-      return this.process.exitValue();
-    }
-    
-    public Process process() {
-      return this.process;
-    }
-
-    //TODO: Close input stream also?
-    public void kill() {
-      try {
-        //TODO: why do we need to do this?
-        this.process.getErrorStream().close();
-        this.process.getOutputStream().close();
-      } catch (IOException e) {
-        throw new Killable.FailedToKillException(e);
-      }
-      this.process.destroy();
-//      out.interrupt();
-//      err.interrupt();
+      super(process, in, out, err);
     }
   }
 }
