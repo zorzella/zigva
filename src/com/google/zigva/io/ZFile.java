@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Deprecated
 public class ZFile {
 
   public enum FileCreationFailurePolicy {
