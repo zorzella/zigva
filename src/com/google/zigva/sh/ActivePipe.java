@@ -99,6 +99,13 @@ public class ActivePipe implements NamedRunnable {
           out);
     }
 
+    public ActivePipe comboCreate(String name, Source<Character> in, Sink<Character> out) {
+      return new ActivePipe(
+          name, 
+          in, 
+          out);
+    }
+    
     public Builder withtName(String name) {
       this.name = name;
       return new Builder(readerSourceBuilder, appendableSinkBuilder, threadFactory, name, in, out);

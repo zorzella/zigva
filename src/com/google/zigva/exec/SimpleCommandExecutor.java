@@ -97,14 +97,14 @@ public class SimpleCommandExecutor implements CommandExecutor {
       SinkToString errMonitor = new SinkToString();
       @SuppressWarnings("unchecked")
       Sink<Character> forkedErr = new ForkingSink<Character>(
-          zystem.ioFactory().buildErr(), 
+          zystem.ioFactory().buildErr(null), 
           errMonitor);
       Zystem localZystem = new ZystemSelfBuilder(zystem).withErr(forkedErr);
       
       Source<Character> nextIn = localZystem.ioFactory().buildIn();
       Sink<Character> nextOut;
       
-      List<ZigvaTask> allTasksExecuted = Lists.newArrayList();
+      List<ZigvaTask> allTasksToBeExecuted = Lists.newArrayList();
       
       Iterator<? extends Command> iterator = commands.iterator();
       while (iterator.hasNext()) {
@@ -114,20 +114,20 @@ public class SimpleCommandExecutor implements CommandExecutor {
           zivaPipe = new ZigvaPipe();
           nextOut = zivaPipe.in();
         } else {
-          nextOut = localZystem.ioFactory().buildOut();
+          nextOut = localZystem.ioFactory().buildOut(nextIn);
         }
         ZystemSelfBuilder tempZystem = 
           new ZystemSelfBuilder(localZystem)
             .withIn(nextIn)
             .withOut(nextOut);
         CommandExecutor.Builder temp = cmdExecutorBuilder.with(tempZystem);
-        allTasksExecuted.add(new SyncZivaTask(command.buildTask(temp, tempZystem)));
+        allTasksToBeExecuted.add(new SyncZivaTask(command.buildTask(temp, tempZystem)));
         if (iterator.hasNext()) {
           nextIn = zivaPipe.out();
         }
       }
       WaitableZivaTask result = new SyncZivaTask(new CompoundZivaTask(
-          threadFactory, errMonitor, allTasksExecuted));
+          threadFactory, errMonitor, allTasksToBeExecuted));
       
       threadFactory.newDaemonThread(result).start();
       return result;

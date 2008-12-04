@@ -19,8 +19,13 @@ package com.google.zigva.sh;
 import com.google.common.base.Join;
 import com.google.inject.Inject;
 import com.google.zigva.exec.CommandExecutor;
+import com.google.zigva.exec.Killable;
 import com.google.zigva.exec.ZigvaTask;
 import com.google.zigva.exec.CommandExecutor.Command;
+import com.google.zigva.guice.ZigvaThreadFactory;
+import com.google.zigva.java.io.ReaderSource;
+import com.google.zigva.java.io.Readers;
+import com.google.zigva.lang.ZigvaInterruptedException;
 import com.google.zigva.lang.Zystem;
 
 import java.io.IOException;
@@ -61,6 +66,8 @@ public class ShellCommand implements Command {
     private final String[] shellCommand;
     private final ActivePipe.Builder activePipeBuilder;
 
+    private JavaProcess process;
+    
     public JavaProcessZivaTask(
         Zystem zystem, 
         String[] shellCommand,
@@ -72,26 +79,27 @@ public class ShellCommand implements Command {
 
     @Override
     public void kill() {
+      process.kill();
     }
 
     @Override
     public String getName() {
-      return null;
+      return "JavaProcess";
     }
 
     @Override
     public void run() {
-      ZivaProcess process = buildZivaTask(zystem, shellCommand);
+      process = startProcess(zystem, shellCommand);
       process.waitFor();
       if (process.exitValue() != 0) {
         throw new RuntimeException(String.format(
             "Process '%s' exited with status '%d'.", 
-            process.getName(), process.exitValue()));
+            getName(), process.exitValue()));
       }
     }
 
-  private ZivaProcess buildZivaTask(Zystem zystem, String... shellCommand) {
-    return buildZivaTask(zystem, buildProcessBuilder(zystem, shellCommand));
+  private JavaProcess startProcess(Zystem zystem, String... shellCommand) {
+    return startProcess(zystem, buildProcessBuilder(zystem, shellCommand));
   }
 
   private static ProcessBuilder buildProcessBuilder(Zystem zystem, String... shellCommand) {
@@ -104,34 +112,41 @@ public class ShellCommand implements Command {
     
     processBuilder.directory(zystem.getCurrentDir().toFile());
     processBuilder.command(shellCommand);
-    //TODO: implement a reasonable "equals" method here
-    if (zystem.ioFactory().buildOut().equals(zystem.ioFactory().buildErr())) {
+    if (zystem.ioFactory().redirectErrToOut()) {
       processBuilder.redirectErrorStream(true);
     }
     return processBuilder;
   }
 
-  private ZivaProcess buildZivaTask(Zystem zystem, ProcessBuilder processBuilder) {
+  private JavaProcess startProcess(Zystem zystem, ProcessBuilder processBuilder) {
     try {
 
       Process process = processBuilder.start();
 
+      ReaderSource outSource = 
+        new ReaderSource.Builder(new ZigvaThreadFactory())
+        .create(Readers.buffered(process.getInputStream()));
       Thread outS = activePipeBuilder.comboCreate("ShellCommand - out", 
-          process.getInputStream(), 
-          zystem.ioFactory().buildOut())
+          outSource, 
+          zystem.ioFactory().buildOut(
+              outSource))
             .start();
       Thread errS;
       if (!processBuilder.redirectErrorStream()) {
+        ReaderSource errSource = new ReaderSource.Builder(new ZigvaThreadFactory())
+          .create(Readers.buffered(process.getErrorStream()));
         errS = activePipeBuilder.comboCreate("ShellCommand - err", 
-            process.getErrorStream(), 
-            zystem.ioFactory().buildErr())
+            errSource, 
+            zystem.ioFactory().buildErr(
+                errSource
+                ))
               .start();
       } else {
         errS = null;
       }
       Thread inS = activePipeBuilder.comboCreate("ShellCommand - in", 
           zystem.ioFactory().buildIn(), process.getOutputStream()).start();
-      ZivaProcess temp = new ZivaProcess(process, inS, outS, errS);
+      JavaProcess temp = new JavaProcess(process, inS, outS, errS);
       return temp;
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -142,5 +157,60 @@ public class ShellCommand implements Command {
   @Override
   public String toString() {
     return Join.join(" ", this.shellCommand);
+  }
+
+  private static class JavaProcess {
+
+    private final Process process;
+    private final Thread in;
+    private final Thread out;
+    private final Thread err;
+
+    public JavaProcess(Process process, Thread in, Thread out, Thread err) {
+      this.process = process;
+      this.in = in;
+      this.out = out;
+      this.err = err;
+    }
+      
+    public void waitFor() {
+      try {
+        process.waitFor();
+        out.join();
+        if (err != null) {
+          err.join();
+        }
+        if (in != null) {
+          if (in.getState() != Thread.State.TERMINATED) {
+            in.interrupt();
+          }
+          in.join();
+        }
+      } catch (InterruptedException e) {
+        throw new ZigvaInterruptedException(e);
+      }
+    }
+
+    public int exitValue(){
+      return this.process.exitValue();
+    }
+    
+    public Process process() {
+      return this.process;
+    }
+
+    //TODO: Close input stream also?
+    public void kill() {
+      try {
+        //TODO: why do we need to do this?
+        this.process.getErrorStream().close();
+        this.process.getOutputStream().close();
+      } catch (IOException e) {
+        throw new Killable.FailedToKillException(e);
+      }
+      this.process.destroy();
+//      out.interrupt();
+//      err.interrupt();
+    }
   }
 }

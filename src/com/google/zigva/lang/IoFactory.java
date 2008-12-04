@@ -16,14 +16,10 @@
 
 package com.google.zigva.lang;
 
-import com.google.zigva.io.Sink;
-import com.google.zigva.io.Source;
 
-public interface IoFactory {
+public interface IoFactory extends IoFactoryMisc, InFactory, OutFactory, ErrFactory {
 
-  Source<Character> buildIn();
+  public interface ErrorHandler {}
   
-  Sink<Character> buildOut();
   
-  Sink<Character> buildErr();
 }

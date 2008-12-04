@@ -30,6 +30,7 @@ import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
 import com.google.zigva.java.io.Writers;
 import com.google.zigva.lang.IoFactory;
+import com.google.zigva.lang.IoFactorySelfBuilder;
 import com.google.zigva.lang.Zystem;
 
 import java.io.File;
@@ -98,7 +99,7 @@ public final class RootZystemProvider implements Provider<Zystem> {
     return new IoFactory() {
 
       @Override
-      public Sink<Character> buildErr() {
+      public Sink<Character> buildErr(Source<Character> source) {
         return new SpecialSinkSink<Character>(ERR_WRITER_SINK);
       }
 
@@ -111,10 +112,14 @@ public final class RootZystemProvider implements Provider<Zystem> {
       }
 
       @Override
-      public Sink<Character> buildOut() {
+      public Sink<Character> buildOut(Source<Character> source) {
         return new SpecialSinkSink<Character>(OUT_WRITER_SINK);
       }
-      
+
+      @Override
+      public boolean redirectErrToOut() {
+        return false;
+      }
     };
   }
 

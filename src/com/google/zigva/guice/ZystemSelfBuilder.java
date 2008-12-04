@@ -22,7 +22,9 @@ import com.google.zigva.io.FilePath;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
 import com.google.zigva.java.RealZystem;
+import com.google.zigva.lang.ErrFactory;
 import com.google.zigva.lang.IoFactory;
+import com.google.zigva.lang.IoFactorySelfBuilder;
 import com.google.zigva.lang.Propertiez;
 import com.google.zigva.lang.Zystem;
 
@@ -99,67 +101,32 @@ public final class ZystemSelfBuilder implements Zystem {
   private static IoFactory getForIn(
       final IoFactory ioFactory, 
       final Source<Character> otherIn) {
-    return new IoFactory() {
-
-      @Override
-      public Sink<Character> buildErr() {
-        return ioFactory.buildErr();
-      }
-
-      @Override
-      public Source<Character> buildIn() {
-        return otherIn;
-      }
-
-      @Override
-      public Sink<Character> buildOut() {
-        return ioFactory.buildOut();
-      }
-    };
+    
+    return new IoFactorySelfBuilder(
+        IoFactorySelfBuilder.in(otherIn), 
+        ioFactory, 
+        ioFactory, 
+        ioFactory);
   }
 
   private static IoFactory getForOut(
       final IoFactory ioFactory, 
       final Sink<Character> otherOut) {
-    return new IoFactory() {
-
-      @Override
-      public Sink<Character> buildErr() {
-        return ioFactory.buildErr();
-      }
-
-      @Override
-      public Source<Character> buildIn() {
-        return ioFactory.buildIn();
-      }
-
-      @Override
-      public Sink<Character> buildOut() {
-        return otherOut;
-      }
-    };
+    return new IoFactorySelfBuilder(
+        ioFactory, 
+        IoFactorySelfBuilder.out(otherOut), 
+        ioFactory, 
+        ioFactory);
   }
 
   private static IoFactory getForErr(
       final IoFactory ioFactory, 
       final Sink<Character> otherErr) {
-    return new IoFactory() {
-
-      @Override
-      public Sink<Character> buildErr() {
-        return otherErr;
-      }
-
-      @Override
-      public Source<Character> buildIn() {
-        return ioFactory.buildIn();
-      }
-
-      @Override
-      public Sink<Character> buildOut() {
-        return ioFactory.buildOut();
-      }
-    };
+    return new IoFactorySelfBuilder(
+        ioFactory, 
+        ioFactory, 
+        IoFactorySelfBuilder.err(otherErr), 
+        ioFactory);
   }
   
   public ZystemSelfBuilder withIn(Source<Character> otherIn) {
@@ -180,6 +147,19 @@ public final class ZystemSelfBuilder implements Zystem {
             zystem.env()));
   }
 
+  public ZystemSelfBuilder withErr(ErrFactory otherErr) {
+    return new ZystemSelfBuilder(
+        new RealZystem(
+            new IoFactorySelfBuilder(
+                zystem.ioFactory(), 
+                zystem.ioFactory(), 
+                otherErr, 
+                zystem.ioFactory()), 
+            zystem.getCurrentDir(), 
+            zystem.getHomeDir(), 
+            zystem.env()));
+  }
+  
   public ZystemSelfBuilder withErr(Sink<Character> otherErr) {
     return new ZystemSelfBuilder(
         new RealZystem(
