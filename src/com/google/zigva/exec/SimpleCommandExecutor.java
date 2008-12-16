@@ -15,6 +15,7 @@ import com.google.zigva.io.ForkingSinkFactory;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.SinkToString;
 import com.google.zigva.io.Source;
+import com.google.zigva.lang.SinkFactory;
 import com.google.zigva.lang.ZigvaInterruptedException;
 import com.google.zigva.lang.Zystem;
 import com.google.zigva.sh.ShellCommand;
@@ -102,7 +103,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
       Zystem localZystem = new ZystemSelfBuilder(zystem).withErr(forkedErrFactory);
       
       Source<Character> nextIn = localZystem.ioFactory().in().build();
-      Sink<Character> nextOut;
+      SinkFactory<Character> nextOut;
       
       List<ZigvaTask> allTasksToBeExecuted = Lists.newArrayList();
       
@@ -114,7 +115,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
           zivaPipe = new ZigvaPipe();
           nextOut = zivaPipe.in();
         } else {
-          nextOut = localZystem.ioFactory().out().build(nextIn);
+          nextOut = localZystem.ioFactory().out();
         }
         ZystemSelfBuilder tempZystem = 
           new ZystemSelfBuilder(localZystem)
@@ -218,8 +219,14 @@ public class SimpleCommandExecutor implements CommandExecutor {
     private final MySource reader = new MySource();
     private final Sink<Character> sink = new MySink();
 
-    public Sink<Character> in() {
-      return sink;
+    public SinkFactory<Character> in() {
+      return new SinkFactory<Character>(){
+      
+        @Override
+        public Sink<Character> build(Source<Character> source) {
+          return sink;
+        }
+      };
     }
     
     public Source<Character> out() {
