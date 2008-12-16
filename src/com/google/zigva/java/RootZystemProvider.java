@@ -43,7 +43,7 @@ public final class RootZystemProvider implements Provider<Zystem> {
 
   private static final class RootIoFactory implements IoFactory {
     
-    private final SourceFactory in = new SourceFactory() {
+    private final SourceFactory<Character> in = new SourceFactory<Character>() {
     
       @Override
       public Source<Character> build() {
@@ -54,7 +54,7 @@ public final class RootZystemProvider implements Provider<Zystem> {
       }
     };
 
-    private final SinkFactory out = new SinkFactory() {
+    private final SinkFactory<Character> out = new SinkFactory<Character>() {
     
       @Override
       public Sink<Character> build(Source<Character> source) {
@@ -62,7 +62,7 @@ public final class RootZystemProvider implements Provider<Zystem> {
       }
     };
 
-    private final SinkFactory err = new SinkFactory() {
+    private final SinkFactory<Character> err = new SinkFactory<Character>() {
       
       @Override
       public Sink<Character> build(Source<Character> source) {
@@ -76,17 +76,17 @@ public final class RootZystemProvider implements Provider<Zystem> {
     }
 
     @Override
-    public SourceFactory in() {
+    public SourceFactory<Character> in() {
       return in;
     }
 
     @Override
-    public SinkFactory out() {
+    public SinkFactory<Character> out() {
       return out;
     }
     
     @Override
-    public SinkFactory err() {
+    public SinkFactory<Character> err() {
       return err;
     }
   }

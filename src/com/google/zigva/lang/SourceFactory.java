@@ -5,8 +5,8 @@ package com.google.zigva.lang;
 
 import com.google.zigva.io.Source;
 
-public interface SourceFactory {
+public interface SourceFactory<T> {
   
-  Source<Character> build();
+  Source<T> build();
 
 }

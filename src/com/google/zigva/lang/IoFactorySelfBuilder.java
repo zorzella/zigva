@@ -7,9 +7,9 @@ import com.google.zigva.io.Source;
 @Immutable
 public class IoFactorySelfBuilder implements IoFactory {
 
-  private final SourceFactory inFactory; 
-  private final SinkFactory outFactory; 
-  private final SinkFactory errFactory;
+  private final SourceFactory<Character> inFactory; 
+  private final SinkFactory<Character> outFactory; 
+  private final SinkFactory<Character> errFactory;
   private final IoFactoryMisc misc;
 
   public IoFactorySelfBuilder(IoFactory ioFactory, IoFactoryMisc misc) {
@@ -17,9 +17,9 @@ public class IoFactorySelfBuilder implements IoFactory {
   }
   
   public IoFactorySelfBuilder(
-      SourceFactory inFactory, 
-      SinkFactory outFactory, 
-      SinkFactory errFactory, IoFactoryMisc misc) {
+      SourceFactory<Character> inFactory, 
+      SinkFactory<Character> outFactory, 
+      SinkFactory<Character> errFactory, IoFactoryMisc misc) {
     this.inFactory = inFactory;
     this.outFactory = outFactory;
     this.errFactory = errFactory;
@@ -38,8 +38,8 @@ public class IoFactorySelfBuilder implements IoFactory {
     return new IoFactorySelfBuilder(this.in(), this.out(), err(err), misc);
   }
 
-  public static SinkFactory err(final Sink<Character> err) {
-    return new SinkFactory() {
+  public static SinkFactory<Character> err(final Sink<Character> err) {
+    return new SinkFactory<Character>() {
     
       @Override
       public Sink<Character> build(Source<Character> source) {
@@ -48,8 +48,8 @@ public class IoFactorySelfBuilder implements IoFactory {
     };
   }
 
-  public static SinkFactory out(final Sink<Character> out) {
-    return new SinkFactory() {
+  public static SinkFactory<Character> out(final Sink<Character> out) {
+    return new SinkFactory<Character>() {
     
       @Override
       public Sink<Character> build(Source<Character> source) {
@@ -58,8 +58,8 @@ public class IoFactorySelfBuilder implements IoFactory {
     };
   }
 
-  public static SourceFactory in(final Source<Character> in) {
-    return new SourceFactory() {
+  public static SourceFactory<Character> in(final Source<Character> in) {
+    return new SourceFactory<Character>() {
       @Override
       public Source<Character> build() {
         return in;
@@ -73,17 +73,17 @@ public class IoFactorySelfBuilder implements IoFactory {
   }
 
   @Override
-  public SourceFactory in() {
+  public SourceFactory<Character> in() {
     return inFactory;
   }
 
   @Override
-  public SinkFactory out() {
+  public SinkFactory<Character> out() {
     return outFactory;
   }
 
   @Override
-  public SinkFactory err() {
+  public SinkFactory<Character> err() {
     return errFactory;
   }
 }
