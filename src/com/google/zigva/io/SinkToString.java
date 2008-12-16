@@ -45,7 +45,7 @@ public class SinkToString implements Sink<Character> {
   public void flush() {
   }
   
-  public SinkFactory<Character> asErrFactory() {
+  public SinkFactory<Character> asSinkFactory() {
     return new SinkFactory<Character>(){
       @Override
       public Sink<Character> build(Source<Character> source) {
@@ -53,14 +53,4 @@ public class SinkToString implements Sink<Character> {
       }
     };
   }
-
-  public SinkFactory<Character> asOutFactory() {
-    return new SinkFactory<Character>(){
-      @Override
-      public Sink<Character> build(Source<Character> source) {
-        return SinkToString.this;
-      }
-    };
-  }
-
 }

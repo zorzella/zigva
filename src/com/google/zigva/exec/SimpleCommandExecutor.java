@@ -11,7 +11,7 @@ import com.google.zigva.guice.ZystemSelfBuilder;
 import com.google.zigva.io.DataNotReadyException;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
-import com.google.zigva.io.ForkingSink;
+import com.google.zigva.io.ForkingSinkFactory;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.SinkToString;
 import com.google.zigva.io.Source;
@@ -96,10 +96,10 @@ public class SimpleCommandExecutor implements CommandExecutor {
     public WaitableZivaTask execute() {
       SinkToString errMonitor = new SinkToString();
       @SuppressWarnings("unchecked")
-      Sink<Character> forkedErr = new ForkingSink<Character>(
-          zystem.ioFactory().err().build(null), 
-          errMonitor);
-      Zystem localZystem = new ZystemSelfBuilder(zystem).withErr(forkedErr);
+      ForkingSinkFactory<Character> forkedErrFactory = new ForkingSinkFactory<Character>(
+          zystem.ioFactory().err(), 
+          errMonitor.asSinkFactory());
+      Zystem localZystem = new ZystemSelfBuilder(zystem).withErr(forkedErrFactory);
       
       Source<Character> nextIn = localZystem.ioFactory().in().build();
       Sink<Character> nextOut;
