@@ -18,6 +18,7 @@ package com.google.zigva.java;
 
 import com.google.inject.Provider;
 import com.google.zigva.guice.ZigvaThreadFactory;
+import com.google.zigva.io.AppendableSink;
 import com.google.zigva.io.DataNotReadyException;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
@@ -25,12 +26,13 @@ import com.google.zigva.io.FilePath;
 import com.google.zigva.io.RealFileSpec;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
-import com.google.zigva.io.AppendableSink;
 import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
 import com.google.zigva.java.io.Writers;
+import com.google.zigva.lang.ErrFactory;
+import com.google.zigva.lang.InFactory;
 import com.google.zigva.lang.IoFactory;
-import com.google.zigva.lang.IoFactorySelfBuilder;
+import com.google.zigva.lang.OutFactory;
 import com.google.zigva.lang.Zystem;
 
 import java.io.File;
@@ -39,6 +41,56 @@ import java.io.FileDescriptor;
 public final class RootZystemProvider implements Provider<Zystem> {
 
 	private static final ZigvaThreadFactory ROOT_THREAD_FACTORY = new ZigvaThreadFactory();
+
+  private static final class RootIoFactory implements IoFactory {
+    
+    private final InFactory in = new InFactory() {
+    
+      @Override
+      public Source<Character> buildIn() {
+        if (false) {
+          return new SpecialSourceSource<Character>(IN_READER_SOURCE, IN_LOCK);
+        }
+        return new SourceAtEOS<Character>();
+      }
+    };
+
+    private final OutFactory out = new OutFactory() {
+    
+      @Override
+      public Sink<Character> buildOut(Source<Character> source) {
+        return new SpecialSinkSink<Character>(OUT_WRITER_SINK);
+      }
+    };
+
+    private final ErrFactory err = new ErrFactory() {
+      
+      @Override
+      public Sink<Character> buildErr(Source<Character> source) {
+        return new SpecialSinkSink<Character>(ERR_WRITER_SINK);
+      }
+    };
+    
+    @Override
+    public boolean redirectErrToOut() {
+      return false;
+    }
+
+    @Override
+    public InFactory in() {
+      return in;
+    }
+
+    @Override
+    public OutFactory out() {
+      return out;
+    }
+    
+    @Override
+    public ErrFactory err() {
+      return err;
+    }
+  }
 
   /**
 	 * A {@link Source} that is already at its end of stream.
@@ -96,31 +148,7 @@ public final class RootZystemProvider implements Provider<Zystem> {
   }
   
   private static IoFactory buildIoFactory() {
-    return new IoFactory() {
-
-      @Override
-      public Sink<Character> buildErr(Source<Character> source) {
-        return new SpecialSinkSink<Character>(ERR_WRITER_SINK);
-      }
-
-      @Override
-      public Source<Character> buildIn() {
-        if (false) {
-          return new SpecialSourceSource<Character>(IN_READER_SOURCE, IN_LOCK);
-        }
-        return new SourceAtEOS<Character>();
-      }
-
-      @Override
-      public Sink<Character> buildOut(Source<Character> source) {
-        return new SpecialSinkSink<Character>(OUT_WRITER_SINK);
-      }
-
-      @Override
-      public boolean redirectErrToOut() {
-        return false;
-      }
-    };
+    return new RootIoFactory();
   }
 
   private static RealFileSpec getCurrentDir() {

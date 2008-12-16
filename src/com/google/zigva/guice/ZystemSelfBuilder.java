@@ -104,8 +104,8 @@ public final class ZystemSelfBuilder implements Zystem {
     
     return new IoFactorySelfBuilder(
         IoFactorySelfBuilder.in(otherIn), 
-        ioFactory, 
-        ioFactory, 
+        ioFactory.out(), 
+        ioFactory.err(), 
         ioFactory);
   }
 
@@ -113,9 +113,9 @@ public final class ZystemSelfBuilder implements Zystem {
       final IoFactory ioFactory, 
       final Sink<Character> otherOut) {
     return new IoFactorySelfBuilder(
-        ioFactory, 
+        ioFactory.in(), 
         IoFactorySelfBuilder.out(otherOut), 
-        ioFactory, 
+        ioFactory.err(), 
         ioFactory);
   }
 
@@ -123,8 +123,8 @@ public final class ZystemSelfBuilder implements Zystem {
       final IoFactory ioFactory, 
       final Sink<Character> otherErr) {
     return new IoFactorySelfBuilder(
-        ioFactory, 
-        ioFactory, 
+        ioFactory.in(), 
+        ioFactory.out(), 
         IoFactorySelfBuilder.err(otherErr), 
         ioFactory);
   }
@@ -151,8 +151,8 @@ public final class ZystemSelfBuilder implements Zystem {
     return new ZystemSelfBuilder(
         new RealZystem(
             new IoFactorySelfBuilder(
-                zystem.ioFactory(), 
-                zystem.ioFactory(), 
+                zystem.ioFactory().in(), 
+                zystem.ioFactory().out(), 
                 otherErr, 
                 zystem.ioFactory()), 
             zystem.getCurrentDir(), 

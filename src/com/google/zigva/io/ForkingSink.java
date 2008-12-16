@@ -3,6 +3,7 @@ package com.google.zigva.io;
 
 import com.google.zigva.lang.ZigvaInterruptedException;
 
+//TODO: rename to ForkingSinkFactory
 public class ForkingSink<T> implements Sink<T> {
 
   private final Sink<T>[] sinks;
@@ -41,5 +42,4 @@ public class ForkingSink<T> implements Sink<T> {
       sink.write(data);
     }
   }
-
 }

@@ -13,7 +13,7 @@ public class IoFactorySelfBuilder implements IoFactory {
   private final IoFactoryMisc misc;
 
   public IoFactorySelfBuilder(IoFactory ioFactory, IoFactoryMisc misc) {
-    this(ioFactory, ioFactory, ioFactory, ioFactory);
+    this(ioFactory.in(), ioFactory.out(), ioFactory.err(), ioFactory);
   }
   
   public IoFactorySelfBuilder(
@@ -26,31 +26,16 @@ public class IoFactorySelfBuilder implements IoFactory {
     this.misc = misc;
   }
   
-  @Override
-  public Sink<Character> buildErr(Source<Character> source) {
-    return errFactory.buildErr(source);
-  }
-
-  @Override
-  public Source<Character> buildIn() {
-    return inFactory.buildIn();
-  }
-
-  @Override
-  public Sink<Character> buildOut(Source<Character> source) {
-    return outFactory.buildOut(source);
-  }
-
   public IoFactorySelfBuilder withIn(final Source<Character> in) {
-    return new IoFactorySelfBuilder(in(in), this, this, misc);
+    return new IoFactorySelfBuilder(in(in), this.out(), this.err(), misc);
   }
 
   public IoFactorySelfBuilder withOut(final Sink<Character> out) {
-    return new IoFactorySelfBuilder(this, out(out), this, misc);
+    return new IoFactorySelfBuilder(this.in(), out(out), this.err(), misc);
   }
 
   public IoFactorySelfBuilder withErr(final Sink<Character> err) {
-    return new IoFactorySelfBuilder(this, this, err(err), misc);
+    return new IoFactorySelfBuilder(this.in(), this.out(), err(err), misc);
   }
 
   public static ErrFactory err(final Sink<Character> err) {
@@ -85,5 +70,20 @@ public class IoFactorySelfBuilder implements IoFactory {
   @Override
   public boolean redirectErrToOut() {
     return misc.redirectErrToOut();
+  }
+
+  @Override
+  public InFactory in() {
+    return inFactory;
+  }
+
+  @Override
+  public OutFactory out() {
+    return outFactory;
+  }
+
+  @Override
+  public ErrFactory err() {
+    return errFactory;
   }
 }

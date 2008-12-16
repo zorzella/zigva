@@ -17,9 +17,14 @@
 package com.google.zigva.lang;
 
 
-public interface IoFactory extends IoFactoryMisc, InFactory, OutFactory, ErrFactory {
+public interface IoFactory extends IoFactoryMisc {
 
   public interface ErrorHandler {}
   
+  InFactory in();
+  
+  OutFactory out();
+  
+  ErrFactory err();
   
 }

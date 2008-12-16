@@ -97,11 +97,11 @@ public class SimpleCommandExecutor implements CommandExecutor {
       SinkToString errMonitor = new SinkToString();
       @SuppressWarnings("unchecked")
       Sink<Character> forkedErr = new ForkingSink<Character>(
-          zystem.ioFactory().buildErr(null), 
+          zystem.ioFactory().err().buildErr(null), 
           errMonitor);
       Zystem localZystem = new ZystemSelfBuilder(zystem).withErr(forkedErr);
       
-      Source<Character> nextIn = localZystem.ioFactory().buildIn();
+      Source<Character> nextIn = localZystem.ioFactory().in().buildIn();
       Sink<Character> nextOut;
       
       List<ZigvaTask> allTasksToBeExecuted = Lists.newArrayList();
@@ -114,7 +114,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
           zivaPipe = new ZigvaPipe();
           nextOut = zivaPipe.in();
         } else {
-          nextOut = localZystem.ioFactory().buildOut(nextIn);
+          nextOut = localZystem.ioFactory().out().buildOut(nextIn);
         }
         ZystemSelfBuilder tempZystem = 
           new ZystemSelfBuilder(localZystem)

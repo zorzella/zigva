@@ -19,13 +19,11 @@ package com.google.zigva.sh;
 import com.google.common.base.Join;
 import com.google.inject.Inject;
 import com.google.zigva.exec.CommandExecutor;
-import com.google.zigva.exec.Killable;
 import com.google.zigva.exec.ZigvaTask;
 import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
-import com.google.zigva.lang.ZigvaInterruptedException;
 import com.google.zigva.lang.Zystem;
 
 import java.io.IOException;
@@ -128,7 +126,7 @@ public class ShellCommand implements Command {
         .create(Readers.buffered(process.getInputStream()));
       Thread outS = activePipeBuilder.comboCreate("ShellCommand - out", 
           outSource, 
-          zystem.ioFactory().buildOut(
+          zystem.ioFactory().out().buildOut(
               outSource))
             .start();
       Thread errS;
@@ -137,7 +135,7 @@ public class ShellCommand implements Command {
           .create(Readers.buffered(process.getErrorStream()));
         errS = activePipeBuilder.comboCreate("ShellCommand - err", 
             errSource, 
-            zystem.ioFactory().buildErr(
+            zystem.ioFactory().err().buildErr(
                 errSource
                 ))
               .start();
@@ -145,7 +143,7 @@ public class ShellCommand implements Command {
         errS = null;
       }
       Thread inS = activePipeBuilder.comboCreate("ShellCommand - in", 
-          zystem.ioFactory().buildIn(), process.getOutputStream()).start();
+          zystem.ioFactory().in().buildIn(), process.getOutputStream()).start();
       JavaProcess temp = new JavaProcess(process, inS, outS, errS);
       return temp;
     } catch (IOException e) {
