@@ -138,6 +138,7 @@ public final class ZystemSelfBuilder implements Zystem {
             zystem.env()));
   }
 
+  @Deprecated
   public ZystemSelfBuilder withOut(Sink<Character> otherOut) {
     return new ZystemSelfBuilder(
         new RealZystem(
@@ -147,7 +148,20 @@ public final class ZystemSelfBuilder implements Zystem {
             zystem.env()));
   }
 
-  public ZystemSelfBuilder withErr(SinkFactory otherErr) {
+  public ZystemSelfBuilder withOut(SinkFactory<Character> otherOut) {
+    return new ZystemSelfBuilder(
+        new RealZystem(
+            new IoFactorySelfBuilder(
+                zystem.ioFactory().in(),
+                otherOut,
+                zystem.ioFactory().err(), 
+                zystem.ioFactory()), 
+            zystem.getCurrentDir(), 
+            zystem.getHomeDir(), 
+            zystem.env()));
+  }
+
+  public ZystemSelfBuilder withErr(SinkFactory<Character> otherErr) {
     return new ZystemSelfBuilder(
         new RealZystem(
             new IoFactorySelfBuilder(
@@ -160,6 +174,7 @@ public final class ZystemSelfBuilder implements Zystem {
             zystem.env()));
   }
   
+  @Deprecated
   public ZystemSelfBuilder withErr(Sink<Character> otherErr) {
     return new ZystemSelfBuilder(
         new RealZystem(
@@ -169,15 +184,6 @@ public final class ZystemSelfBuilder implements Zystem {
             zystem.env()));
   }
 
-//  @Override
-//  public Appendable getAppendable() {
-//    return zystem.out();
-//  }
-//
-//  @Override
-//  public Reader getReader() {
-//    return zystem.in();
-//  }      
   @Override
   public String toString() {
     return zystem.toString();
