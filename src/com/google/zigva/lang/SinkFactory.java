@@ -8,6 +8,6 @@ import com.google.zigva.io.Source;
 
 public interface SinkFactory<T> {
   
-  Sink<T> build(Source<Character> source);
+  Sink<T> build(Source<T> source);
 
 }
