@@ -29,10 +29,9 @@ import com.google.zigva.io.Source;
 import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
 import com.google.zigva.java.io.Writers;
-import com.google.zigva.lang.ErrFactory;
-import com.google.zigva.lang.InFactory;
+import com.google.zigva.lang.SourceFactory;
 import com.google.zigva.lang.IoFactory;
-import com.google.zigva.lang.OutFactory;
+import com.google.zigva.lang.SinkFactory;
 import com.google.zigva.lang.Zystem;
 
 import java.io.File;
@@ -44,10 +43,10 @@ public final class RootZystemProvider implements Provider<Zystem> {
 
   private static final class RootIoFactory implements IoFactory {
     
-    private final InFactory in = new InFactory() {
+    private final SourceFactory in = new SourceFactory() {
     
       @Override
-      public Source<Character> buildIn() {
+      public Source<Character> build() {
         if (false) {
           return new SpecialSourceSource<Character>(IN_READER_SOURCE, IN_LOCK);
         }
@@ -55,18 +54,18 @@ public final class RootZystemProvider implements Provider<Zystem> {
       }
     };
 
-    private final OutFactory out = new OutFactory() {
+    private final SinkFactory out = new SinkFactory() {
     
       @Override
-      public Sink<Character> buildOut(Source<Character> source) {
+      public Sink<Character> build(Source<Character> source) {
         return new SpecialSinkSink<Character>(OUT_WRITER_SINK);
       }
     };
 
-    private final ErrFactory err = new ErrFactory() {
+    private final SinkFactory err = new SinkFactory() {
       
       @Override
-      public Sink<Character> buildErr(Source<Character> source) {
+      public Sink<Character> build(Source<Character> source) {
         return new SpecialSinkSink<Character>(ERR_WRITER_SINK);
       }
     };
@@ -77,17 +76,17 @@ public final class RootZystemProvider implements Provider<Zystem> {
     }
 
     @Override
-    public InFactory in() {
+    public SourceFactory in() {
       return in;
     }
 
     @Override
-    public OutFactory out() {
+    public SinkFactory out() {
       return out;
     }
     
     @Override
-    public ErrFactory err() {
+    public SinkFactory err() {
       return err;
     }
   }

@@ -42,8 +42,8 @@ public class Cat implements Command {
 
     @Override
     public void run() {
-      Source<Character> in = toKill.add(ioFactory.in().buildIn());
-      Sink<Character> out = toKill.add(ioFactory.out().buildOut(in));
+      Source<Character> in = toKill.add(ioFactory.in().build());
+      Sink<Character> out = toKill.add(ioFactory.out().build(in));
       while (!in.isEndOfStream()) {
         out.write(in.read());
       }

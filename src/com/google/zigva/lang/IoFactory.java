@@ -21,10 +21,10 @@ public interface IoFactory extends IoFactoryMisc {
 
   public interface ErrorHandler {}
   
-  InFactory in();
+  SourceFactory in();
   
-  OutFactory out();
+  SinkFactory out();
   
-  ErrFactory err();
+  SinkFactory err();
   
 }

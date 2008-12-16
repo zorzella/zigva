@@ -6,8 +6,8 @@ package com.google.zigva.lang;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
 
-public interface ErrFactory {
+public interface SinkFactory {
   
-  Sink<Character> buildErr(Source<Character> source);
+  Sink<Character> build(Source<Character> source);
 
 }

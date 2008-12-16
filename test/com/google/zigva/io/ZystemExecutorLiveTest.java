@@ -242,7 +242,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
       return new StubZigvaTask() {
         @Override
         public void run() {
-          zystem.ioFactory().out().buildOut(new CharacterSource("z")).write('z');
+          zystem.ioFactory().out().build(new CharacterSource("z")).write('z');
         }
       };
     }

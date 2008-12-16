@@ -126,7 +126,7 @@ public class ShellCommand implements Command {
         .create(Readers.buffered(process.getInputStream()));
       Thread outS = activePipeBuilder.comboCreate("ShellCommand - out", 
           outSource, 
-          zystem.ioFactory().out().buildOut(
+          zystem.ioFactory().out().build(
               outSource))
             .start();
       Thread errS;
@@ -135,7 +135,7 @@ public class ShellCommand implements Command {
           .create(Readers.buffered(process.getErrorStream()));
         errS = activePipeBuilder.comboCreate("ShellCommand - err", 
             errSource, 
-            zystem.ioFactory().err().buildErr(
+            zystem.ioFactory().err().build(
                 errSource
                 ))
               .start();
@@ -143,7 +143,7 @@ public class ShellCommand implements Command {
         errS = null;
       }
       Thread inS = activePipeBuilder.comboCreate("ShellCommand - in", 
-          zystem.ioFactory().in().buildIn(), process.getOutputStream()).start();
+          zystem.ioFactory().in().build(), process.getOutputStream()).start();
       JavaProcess temp = new JavaProcess(process, inS, outS, errS);
       return temp;
     } catch (IOException e) {

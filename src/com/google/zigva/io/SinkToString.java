@@ -16,8 +16,7 @@
 
 package com.google.zigva.io;
 
-import com.google.zigva.lang.ErrFactory;
-import com.google.zigva.lang.OutFactory;
+import com.google.zigva.lang.SinkFactory;
 
 public class SinkToString implements Sink<Character> {
 
@@ -46,19 +45,19 @@ public class SinkToString implements Sink<Character> {
   public void flush() {
   }
   
-  public ErrFactory asErrFactory() {
-    return new ErrFactory(){
+  public SinkFactory asErrFactory() {
+    return new SinkFactory(){
       @Override
-      public Sink<Character> buildErr(Source<Character> source) {
+      public Sink<Character> build(Source<Character> source) {
         return SinkToString.this;
       }
     };
   }
 
-  public OutFactory asOutFactory() {
-    return new OutFactory(){
+  public SinkFactory asOutFactory() {
+    return new SinkFactory(){
       @Override
-      public Sink<Character> buildOut(Source<Character> source) {
+      public Sink<Character> build(Source<Character> source) {
         return SinkToString.this;
       }
     };
