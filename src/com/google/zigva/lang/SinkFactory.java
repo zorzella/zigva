@@ -3,12 +3,11 @@
 
 package com.google.zigva.lang;
 
-import com.google.zigva.io.NewSink;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
 
 public interface SinkFactory<T> {
   
-  NewSink newBuild(Source<T> source);
+  Sink build(Source<T> source);
   
 }

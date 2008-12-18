@@ -25,34 +25,34 @@ public class ForkingSinkFactory<T> implements SinkFactory<T> {
   }
   
   @Override
-  public NewSink newBuild(final Source<T> source) {
+  public Sink build(final Source<T> source) {
 
     Collection<Source<T>> sources = 
       MultiplexedSource.sources(source, sinkFactories.length);
     Iterator<Source<T>> sourcesIt = sources.iterator();
     
-    final List<NewSink> sinks = new ArrayList<NewSink>(sinkFactories.length);
+    final List<Sink> sinks = new ArrayList<Sink>(sinkFactories.length);
     
     for (SinkFactory<T> sinkFactory : sinkFactories) {
-      sinks.add(sinkFactory.newBuild(sourcesIt.next()));
+      sinks.add(sinkFactory.build(sourcesIt.next()));
     }
     
     return new ASink(sinkFactories, sinks, source);
   }
   
-  private final class ASink implements NewSink {
+  private final class ASink implements Sink {
     
-    private final List<NewSink> sinks;
+    private final List<Sink> sinks;
     private final Source<T> source;
 
-    private ASink(SinkFactory<T>[] factories, List<NewSink> sinks, Source<T> source) {
+    private ASink(SinkFactory<T>[] factories, List<Sink> sinks, Source<T> source) {
       this.sinks = sinks;
       this.source = source;
     }
 
     @Override
     public void kill() {
-      for (NewSink sink : sinks) {
+      for (Sink sink : sinks) {
         sink.kill();
       }
     }
@@ -61,7 +61,7 @@ public class ForkingSinkFactory<T> implements SinkFactory<T> {
     public void run() {
       try {
         Collection<Thread> threads = new ArrayList<Thread>(sinks.size());
-        for (NewSink sink : sinks) {
+        for (Sink sink : sinks) {
           threads.add(zigvaThreadFactory.newDaemonThread(sink).ztart());
         }
         //TODO: this is naive, and assumes threads are not reused!
@@ -229,31 +229,31 @@ public class ForkingSinkFactory<T> implements SinkFactory<T> {
     }
   }
   
-  private static final class MySink<T> implements Sink<T> {
-    private final Collection<Sink<T>> sinks;
+  private static final class MySink<T> implements PassiveSink<T> {
+    private final Collection<PassiveSink<T>> sinks;
    
     
-    public MySink(List<Sink<T>> sinks) {
+    public MySink(List<PassiveSink<T>> sinks) {
       this.sinks = sinks;
     }
 
     @Override
     public void close() {
-      for (Sink<T> sink : sinks) {
+      for (PassiveSink<T> sink : sinks) {
         sink.close();
       }
     }
 
     @Override
     public void flush() throws ZigvaInterruptedException {
-      for (Sink<T> sink : sinks) {
+      for (PassiveSink<T> sink : sinks) {
         sink.flush();
       }
     }
 
     @Override
     public boolean isReady() throws DataSourceClosedException {
-      for (Sink<T> sink : sinks) {
+      for (PassiveSink<T> sink : sinks) {
         if (!sink.isReady()) {
           return false;
         }
@@ -263,7 +263,7 @@ public class ForkingSinkFactory<T> implements SinkFactory<T> {
 
     @Override
     public void write(T data) throws DataSourceClosedException, ZigvaInterruptedException {
-      for (Sink<T> sink : sinks) {
+      for (PassiveSink<T> sink : sinks) {
         sink.write(data);
       }
     }

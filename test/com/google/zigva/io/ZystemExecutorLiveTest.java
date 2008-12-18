@@ -165,7 +165,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   // executor().source("foo").sink(bar).execute();
   
   public void testWithParams() throws Exception {
-    Sink<Character> out = new SinkToString();
+    PassiveSink<Character> out = new SinkToString();
     Zystem localZystem = zystem
       .withOut(out);
     commandExecutorBuilder.with(localZystem).create().command("echo", "-n", "foo")
@@ -174,7 +174,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   }
 
   public void testExistingCommandErr() throws Exception {
-    Sink<Character> out = new SinkToString();
+    PassiveSink<Character> out = new SinkToString();
     Zystem localZystem = zystem
       .withOut(out);
     try {
@@ -189,7 +189,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   }
   
   public void testNonExistingCommandErr() throws Exception {
-    Sink<Character> out = new SinkToString();
+    PassiveSink<Character> out = new SinkToString();
     Zystem localZystem = zystem
       .withOut(out);
     try {
@@ -202,7 +202,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   }
 
   public void testComplexCommand() throws Exception {
-    Sink<Character> out = new SinkToString();
+    PassiveSink<Character> out = new SinkToString();
     Zystem localZystem = zystem
       .withOut(out);
     commandExecutorBuilder
@@ -243,7 +243,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
       return new StubZigvaTask() {
         @Override
         public void run() {
-          zystem.ioFactory().out().newBuild(new CharacterSource("z")).run();
+          zystem.ioFactory().out().build(new CharacterSource("z")).run();
         }
       };
     }

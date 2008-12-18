@@ -18,15 +18,15 @@ package com.google.zigva.java;
 
 import com.google.inject.Provider;
 import com.google.zigva.guice.ZigvaThreadFactory;
-import com.google.zigva.io.AppendableSink;
+import com.google.zigva.io.AppendablePassiveSink;
 import com.google.zigva.io.DataNotReadyException;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.FilePath;
-import com.google.zigva.io.NewSink;
+import com.google.zigva.io.Sink;
 import com.google.zigva.io.RealFileSpec;
 import com.google.zigva.io.SimpleSink;
-import com.google.zigva.io.Sink;
+import com.google.zigva.io.PassiveSink;
 import com.google.zigva.io.Source;
 import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
@@ -58,25 +58,17 @@ public final class RootZystemProvider implements Provider<Zystem> {
 
     private final SinkFactory<Character> out = new SinkFactory<Character>() {
     
-      public Sink<Character> build(Source<Character> source) {
-        return new SpecialSinkSink<Character>(OUT_WRITER_SINK);
-      }
-
       @Override
-      public NewSink newBuild(Source<Character> source) {
-        return new SimpleSink<Character>(source, build(source));
+      public Sink build(Source<Character> source) {
+        return new SimpleSink<Character>(source, new SpecialSinkSink<Character>(OUT_WRITER_SINK));
       }
     };
 
     private final SinkFactory<Character> err = new SinkFactory<Character>() {
       
-      public Sink<Character> build(Source<Character> source) {
-        return new SpecialSinkSink<Character>(ERR_WRITER_SINK);
-      }
-
       @Override
-      public NewSink newBuild(Source<Character> source) {
-        return new SimpleSink<Character>(source, build(source));
+      public Sink build(Source<Character> source) {
+        return new SimpleSink<Character>(source, new SpecialSinkSink<Character>(ERR_WRITER_SINK));
       }
     };
     
@@ -137,12 +129,12 @@ public final class RootZystemProvider implements Provider<Zystem> {
     new ReaderSource.Builder(ROOT_THREAD_FACTORY).withCombo(100, 500, IN_LOCK)
       .create(Readers.buffered(FileDescriptor.in));
 
-  private static final AppendableSink OUT_WRITER_SINK = 
-    new AppendableSink.Builder(ROOT_THREAD_FACTORY).withCombo( 
+  private static final AppendablePassiveSink OUT_WRITER_SINK = 
+    new AppendablePassiveSink.Builder(ROOT_THREAD_FACTORY).withCombo( 
         100, 500, OUT_LOCK).create(Writers.buffered(FileDescriptor.out));
 
-  private static final AppendableSink ERR_WRITER_SINK = 
-    new AppendableSink.Builder(ROOT_THREAD_FACTORY).withCombo( 
+  private static final AppendablePassiveSink ERR_WRITER_SINK = 
+    new AppendablePassiveSink.Builder(ROOT_THREAD_FACTORY).withCombo( 
         100, 500, ERR_LOCK).create(Writers.buffered(FileDescriptor.out));
   
   //TODO: package private constructor?

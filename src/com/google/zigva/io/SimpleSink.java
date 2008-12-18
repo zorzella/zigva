@@ -3,13 +3,13 @@ package com.google.zigva.io;
 
 import com.google.zigva.exec.KillableCollector;
 
-public class SimpleSink<T> implements NewSink {
+public class SimpleSink<T> implements Sink {
 
-  private final Sink<T> sink;
+  private final PassiveSink<T> sink;
   private final Source<T> source;
   private final KillableCollector toKill = new KillableCollector();
 
-  public SimpleSink(Source<T> source, Sink<T> sink) {
+  public SimpleSink(Source<T> source, PassiveSink<T> sink) {
     this.sink = sink;
     this.source = source;
   }
@@ -17,7 +17,7 @@ public class SimpleSink<T> implements NewSink {
   @Override
   public void run() {
     Source<T> in = toKill.add(source);
-    Sink<T> out = toKill.add(sink);
+    PassiveSink<T> out = toKill.add(sink);
     while (!in.isEndOfStream()) {
       out.write(in.read());
     }

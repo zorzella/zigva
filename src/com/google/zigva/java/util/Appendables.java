@@ -19,7 +19,7 @@ package com.google.zigva.java.util;
 import java.util.Formatter;
 import java.util.Locale;
 
-import com.google.zigva.io.Sink;
+import com.google.zigva.io.PassiveSink;
 
 public class Appendables {
   
@@ -41,7 +41,7 @@ public class Appendables {
     formatter.format(locale, format, args);
   }
   
-  public static Appendable from(final Sink<Character> sink) {
+  public static Appendable from(final PassiveSink<Character> sink) {
     return new AppendableFromLite(new AppendableLite() {
 
       @Override

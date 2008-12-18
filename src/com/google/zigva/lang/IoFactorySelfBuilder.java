@@ -1,9 +1,9 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
 package com.google.zigva.lang;
 
-import com.google.zigva.io.NewSink;
-import com.google.zigva.io.SimpleSink;
 import com.google.zigva.io.Sink;
+import com.google.zigva.io.SimpleSink;
+import com.google.zigva.io.PassiveSink;
 import com.google.zigva.io.Source;
 
 @Immutable
@@ -32,37 +32,29 @@ public class IoFactorySelfBuilder implements IoFactory {
     return new IoFactorySelfBuilder(in(in), this.out(), this.err(), misc);
   }
 
-  public IoFactorySelfBuilder withOut(final Sink<Character> out) {
+  public IoFactorySelfBuilder withOut(final PassiveSink<Character> out) {
     return new IoFactorySelfBuilder(this.in(), out(out), this.err(), misc);
   }
 
-  public IoFactorySelfBuilder withErr(final Sink<Character> err) {
+  public IoFactorySelfBuilder withErr(final PassiveSink<Character> err) {
     return new IoFactorySelfBuilder(this.in(), this.out(), err(err), misc);
   }
 
-  public static SinkFactory<Character> err(final Sink<Character> err) {
+  public static SinkFactory<Character> err(final PassiveSink<Character> err) {
     return new SinkFactory<Character>() {
     
-      public Sink<Character> build(Source<Character> source) {
-        return err;
-      }
-
       @Override
-      public NewSink newBuild(Source<Character> source) {
+      public Sink build(Source<Character> source) {
         return new SimpleSink<Character>(source, err);
       }
     };
   }
 
-  public static SinkFactory<Character> out(final Sink<Character> out) {
+  public static SinkFactory<Character> out(final PassiveSink<Character> out) {
     return new SinkFactory<Character>() {
     
-      public Sink<Character> build(Source<Character> source) {
-        return out;
-      }
-
       @Override
-      public NewSink newBuild(Source<Character> source) {
+      public Sink build(Source<Character> source) {
         return new SimpleSink<Character>(source, out);
       }
     };

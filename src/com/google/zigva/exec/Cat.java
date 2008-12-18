@@ -42,7 +42,7 @@ public class Cat implements Command {
     @Override
     public void run() {
       Source<Character> in = ioFactory.in().build();
-      toKill.add(ioFactory.out().newBuild(in)).run();
+      toKill.add(ioFactory.out().build(in)).run();
     }
 
     @Override

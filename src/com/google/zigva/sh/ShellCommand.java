@@ -141,7 +141,7 @@ public class ShellCommand implements Command {
       
       Thread outS = 
         zigvaThreadFactory.newThread(
-            zystem.ioFactory().out().newBuild(outSource))
+            zystem.ioFactory().out().build(outSource))
             .ztart();
       
       Thread errS;
@@ -156,7 +156,7 @@ public class ShellCommand implements Command {
 //                ))
 //              .start();
           zigvaThreadFactory.newThread(
-              zystem.ioFactory().err().newBuild(errSource))
+              zystem.ioFactory().err().build(errSource))
               .ztart();
       } else {
         errS = null;

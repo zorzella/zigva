@@ -22,10 +22,10 @@ public class ForkingSinkTest extends TestCase {
     SinkToString sink2 = new SinkToString();
     
     @SuppressWarnings("unchecked")
-    NewSink sink = new ForkingSinkFactory<Character>(
+    Sink sink = new ForkingSinkFactory<Character>(
         new ZigvaThreadFactory(),
         sink1.asSinkFactory(), 
-        sink2.asSinkFactory()).newBuild(source);
+        sink2.asSinkFactory()).build(source);
     
     sink.run();
     

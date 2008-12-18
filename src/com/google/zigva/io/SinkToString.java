@@ -18,7 +18,7 @@ package com.google.zigva.io;
 
 import com.google.zigva.lang.SinkFactory;
 
-public class SinkToString implements Sink<Character> {
+public class SinkToString implements PassiveSink<Character> {
 
   private final StringBuilder data = new StringBuilder();
 
@@ -48,13 +48,9 @@ public class SinkToString implements Sink<Character> {
   public SinkFactory<Character> asSinkFactory() {
     return new SinkFactory<Character>(){
 
-      public Sink<Character> build(Source<Character> source) {
-        return SinkToString.this;
-      }
-
       @Override
-      public NewSink newBuild(Source<Character> source) {
-        return new SimpleSink<Character>(source, build(source));
+      public Sink build(Source<Character> source) {
+        return new SimpleSink<Character>(source, SinkToString.this);
       }
     };
   }

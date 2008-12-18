@@ -28,7 +28,7 @@ public class AppendableSinkTest extends TestCase {
     
     StringWriter out = new StringWriter();
     
-    Sink<Character> sink = new AppendableSink.Builder(new ZigvaThreadFactory()).create(out);
+    PassiveSink<Character> sink = new AppendablePassiveSink.Builder(new ZigvaThreadFactory()).create(out);
     
     String expected = "foo";
     

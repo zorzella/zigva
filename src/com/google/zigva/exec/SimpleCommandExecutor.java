@@ -5,14 +5,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.zigva.collections.CircularBuffer;
-import com.google.zigva.exec.CommandExecutor.Builder;
 import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.guice.ZystemSelfBuilder;
 import com.google.zigva.io.DataNotReadyException;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.ForkingSinkFactory;
-import com.google.zigva.io.NewSink;
+import com.google.zigva.io.PassiveSink;
 import com.google.zigva.io.SimpleSink;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.SinkToString;
@@ -155,7 +154,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
   
   public static class ZigvaPipe {
    
-    private final class MySink implements Sink<Character> {
+    private final class MySink implements PassiveSink<Character> {
       @Override
       public void write(Character data) throws DataSourceClosedException {
         buffer.enq(data);
@@ -223,17 +222,13 @@ public class SimpleCommandExecutor implements CommandExecutor {
     }
     
     private final MySource reader = new MySource();
-    private final Sink<Character> sink = new MySink();
+    private final PassiveSink<Character> sink = new MySink();
 
     public SinkFactory<Character> in() {
       return new SinkFactory<Character>(){
       
-        public Sink<Character> build(Source<Character> source) {
-          return sink;
-        }
-
         @Override
-        public NewSink newBuild(Source<Character> source) {
+        public Sink build(Source<Character> source) {
           return new SimpleSink<Character>(source, sink);
         }
       };

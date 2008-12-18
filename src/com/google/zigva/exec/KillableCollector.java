@@ -17,7 +17,7 @@
 package com.google.zigva.exec;
 
 import com.google.common.collect.Lists;
-import com.google.zigva.io.Sink;
+import com.google.zigva.io.PassiveSink;
 import com.google.zigva.io.Source;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class KillableCollector {
     return source;
   }
 
-  public <T> Sink<T> add(Sink<T> sink) {
+  public <T> PassiveSink<T> add(PassiveSink<T> sink) {
     toKill.add(Killables.of(sink));
     return sink;
   }
