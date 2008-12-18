@@ -12,6 +12,8 @@ import com.google.zigva.io.DataNotReadyException;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.ForkingSinkFactory;
+import com.google.zigva.io.NewSink;
+import com.google.zigva.io.SimpleSink;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.SinkToString;
 import com.google.zigva.io.Source;
@@ -97,9 +99,13 @@ public class SimpleCommandExecutor implements CommandExecutor {
     public WaitableZivaTask execute() {
       SinkToString errMonitor = new SinkToString();
       @SuppressWarnings("unchecked")
-      ForkingSinkFactory<Character> forkedErrFactory = new ForkingSinkFactory<Character>(
-          zystem.ioFactory().err(), 
-          errMonitor.asSinkFactory());
+      SinkFactory<Character> forkedErrFactory =
+        //TODO reinstate the Forking Factory
+//        zystem.ioFactory().err();
+        new ForkingSinkFactory<Character>(
+            threadFactory, 
+            zystem.ioFactory().err(), 
+            errMonitor.asSinkFactory());
       Zystem localZystem = new ZystemSelfBuilder(zystem).withErr(forkedErrFactory);
       
       Source<Character> nextIn = localZystem.ioFactory().in().build();
@@ -222,9 +228,13 @@ public class SimpleCommandExecutor implements CommandExecutor {
     public SinkFactory<Character> in() {
       return new SinkFactory<Character>(){
       
-        @Override
         public Sink<Character> build(Source<Character> source) {
           return sink;
+        }
+
+        @Override
+        public NewSink newBuild(Source<Character> source) {
+          return new SimpleSink<Character>(source, sink);
         }
       };
     }

@@ -33,29 +33,36 @@ public class ShellCommand implements Command {
   
   private final String[] shellCommand;
   private final ActivePipe.Builder activePipeBuilder;
+  private final ZigvaThreadFactory zigvaThreadFactory;
 
   public static class Builder {
     
     private final ActivePipe.Builder activePipeBuilder;
+    private final ZigvaThreadFactory zigvaThreadFactory;
 
     @Inject
-    public Builder (ActivePipe.Builder activePipeBuilder) {
+    public Builder (ActivePipe.Builder activePipeBuilder, 
+        ZigvaThreadFactory zigvaThreadFactory) {
       this.activePipeBuilder = activePipeBuilder;
+      this.zigvaThreadFactory = zigvaThreadFactory;
     }
     
     public ShellCommand build(String... shellCommand) {
-      return new ShellCommand(activePipeBuilder, shellCommand);
+      return new ShellCommand(activePipeBuilder, zigvaThreadFactory, shellCommand);
     }
   }
   
-  private ShellCommand(ActivePipe.Builder activePipeBuilder, String... shellCommand) {
+  private ShellCommand(ActivePipe.Builder activePipeBuilder, 
+      ZigvaThreadFactory zigvaThreadFactory, 
+      String... shellCommand) {
     this.activePipeBuilder = activePipeBuilder;
     this.shellCommand = shellCommand;
+    this.zigvaThreadFactory = zigvaThreadFactory;
   }
 
   @Override
   public ZigvaTask buildTask(CommandExecutor.Builder cmdExecutorBuilder, Zystem zystem) {
-    return new JavaProcessZivaTask(zystem, shellCommand, activePipeBuilder);
+    return new JavaProcessZivaTask(zystem, shellCommand, activePipeBuilder, zigvaThreadFactory);
   }
   
   private static final class JavaProcessZivaTask implements ZigvaTask {
@@ -63,16 +70,18 @@ public class ShellCommand implements Command {
     private final Zystem zystem;
     private final String[] shellCommand;
     private final ActivePipe.Builder activePipeBuilder;
+    private final ZigvaThreadFactory zigvaThreadFactory;
 
     private JavaProcess process;
     
     public JavaProcessZivaTask(
         Zystem zystem, 
         String[] shellCommand,
-        ActivePipe.Builder activePipeBuilder) {
+        ActivePipe.Builder activePipeBuilder, ZigvaThreadFactory zigvaThreadFactory) {
       this.zystem = zystem;
       this.shellCommand = shellCommand;
       this.activePipeBuilder = activePipeBuilder;
+      this.zigvaThreadFactory = zigvaThreadFactory;
     }
 
     @Override
@@ -124,25 +133,36 @@ public class ShellCommand implements Command {
       ReaderSource outSource = 
         new ReaderSource.Builder(new ZigvaThreadFactory())
         .create(Readers.buffered(process.getInputStream()));
-      Thread outS = activePipeBuilder.comboCreate("ShellCommand - out", 
-          outSource, 
-          zystem.ioFactory().out().build(
-              outSource))
-            .start();
+//      Thread outS = activePipeBuilder.comboCreate("ShellCommand - out", 
+//          outSource, 
+//          zystem.ioFactory().out().build(
+//              outSource))
+//            .start();
+      
+      Thread outS = 
+        zigvaThreadFactory.newThread(
+            zystem.ioFactory().out().newBuild(outSource))
+            .ztart();
+      
       Thread errS;
       if (!processBuilder.redirectErrorStream()) {
         ReaderSource errSource = new ReaderSource.Builder(new ZigvaThreadFactory())
           .create(Readers.buffered(process.getErrorStream()));
-        errS = activePipeBuilder.comboCreate("ShellCommand - err", 
-            errSource, 
-            zystem.ioFactory().err().build(
-                errSource
-                ))
-              .start();
+        errS = 
+//          activePipeBuilder.comboCreate("ShellCommand - err", 
+//            errSource, 
+//            zystem.ioFactory().err().build(
+//                errSource
+//                ))
+//              .start();
+          zigvaThreadFactory.newThread(
+              zystem.ioFactory().err().newBuild(errSource))
+              .ztart();
       } else {
         errS = null;
       }
-      Thread inS = activePipeBuilder.comboCreate("ShellCommand - in", 
+      Thread inS = 
+        activePipeBuilder.comboCreate("ShellCommand - in", 
           zystem.ioFactory().in().build(), process.getOutputStream()).start();
       JavaProcess temp = new JavaProcess(process, inS, outS, errS);
       return temp;

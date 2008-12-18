@@ -102,7 +102,7 @@ public class CircularBuffer<T> {
   }
   
   /**
-   * Blocks the current thread until
+   * Blocks the current thread until this buffer is empty
    */
   public void blockUntilEmpty() throws ZigvaInterruptedException {
     synchronized(lock) {

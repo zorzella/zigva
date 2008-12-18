@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.concurrent.ThreadFactory;
 
+//TODO: this is not thread safe. I'm not sure I want to make it thread safe or not
 /**
  * Implementation of {@link Source} backed by a {@link Reader}.
  * 
@@ -181,20 +182,31 @@ public class ReaderSource implements Source<Character> {
 
   @Override
   public boolean isEndOfStream() throws DataSourceClosedException {
-    throwIfClosed();
-    if (nextDataPoint != null) {
+    synchronized(this.lock) {
+      throwIfClosed();
+      try {
+        while (queue.size() == 0 && nextDataPoint == null && !isClosed) {
+          try {
+            this.lock.wait();
+          } catch (InterruptedException e) {
+            throw new ZigvaInterruptedException(e);
+          }
+        }
+        if (isClosed) {
+          throw new DataSourceClosedException();
+        }
+        if (nextDataPoint == null) {
+          nextDataPoint = queue.deq();
+        }
+      } catch (ZigvaInterruptedException e) {
+        if (!isClosed) {
+          throw e;
+        }
+        // We have closed this Source while a thread was blocked on "take"
+        throw new DataSourceClosedException();
+      }
       return nextDataPoint == -1;
     }
-    try {
-        nextDataPoint = queue.deq();
-    } catch (ZigvaInterruptedException e) {
-      if (!isClosed) {
-        throw e;
-      }
-      // We have closed this Source while a thread was blocked on "take"
-      throw new DataSourceClosedException();
-    }
-    return nextDataPoint == -1;
   }
 
   @Override
@@ -205,17 +217,19 @@ public class ReaderSource implements Source<Character> {
 
   @Override
   public Character read() throws DataNotReadyException, DataSourceClosedException, EndOfDataException {
-    throwIfClosed();
-    if (!isReady()) {
-      throw new DataNotReadyException();
+    synchronized(this.lock) {
+      throwIfClosed();
+      if (!isReady()) {
+        throw new DataNotReadyException();
+      }
+      if (isEndOfStream()) {
+        throw new EndOfDataException();
+      }
+      //TODO: ugly
+      Character result = Character.toChars(nextDataPoint)[0];
+      nextDataPoint = null;
+      return result;
     }
-    if (isEndOfStream()) {
-      throw new EndOfDataException();
-    }
-    //TODO: ugly
-    Character result = Character.toChars(nextDataPoint)[0];
-    nextDataPoint = null;
-    return result;
   }
 
   private void throwIfClosed() {

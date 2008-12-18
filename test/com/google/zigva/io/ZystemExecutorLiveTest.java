@@ -183,7 +183,8 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
       fail();
     } catch (RuntimeException expected) {
       //TODO brittle UNIXism
-      assertTrue(expected.getMessage().contains("ls: /idontexist: No such file or directory"));
+      assertTrue(expected.getMessage(),
+          expected.getMessage().contains("ls: /idontexist: No such file or directory"));
     }
   }
   
@@ -242,7 +243,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
       return new StubZigvaTask() {
         @Override
         public void run() {
-          zystem.ioFactory().out().build(new CharacterSource("z")).write('z');
+          zystem.ioFactory().out().newBuild(new CharacterSource("z")).run();
         }
       };
     }

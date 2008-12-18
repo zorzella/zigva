@@ -23,7 +23,9 @@ import com.google.zigva.io.DataNotReadyException;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.FilePath;
+import com.google.zigva.io.NewSink;
 import com.google.zigva.io.RealFileSpec;
+import com.google.zigva.io.SimpleSink;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
 import com.google.zigva.java.io.ReaderSource;
@@ -56,17 +58,25 @@ public final class RootZystemProvider implements Provider<Zystem> {
 
     private final SinkFactory<Character> out = new SinkFactory<Character>() {
     
-      @Override
       public Sink<Character> build(Source<Character> source) {
         return new SpecialSinkSink<Character>(OUT_WRITER_SINK);
+      }
+
+      @Override
+      public NewSink newBuild(Source<Character> source) {
+        return new SimpleSink<Character>(source, build(source));
       }
     };
 
     private final SinkFactory<Character> err = new SinkFactory<Character>() {
       
-      @Override
       public Sink<Character> build(Source<Character> source) {
         return new SpecialSinkSink<Character>(ERR_WRITER_SINK);
+      }
+
+      @Override
+      public NewSink newBuild(Source<Character> source) {
+        return new SimpleSink<Character>(source, build(source));
       }
     };
     

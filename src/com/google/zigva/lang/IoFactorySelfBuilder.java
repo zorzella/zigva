@@ -1,6 +1,8 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
 package com.google.zigva.lang;
 
+import com.google.zigva.io.NewSink;
+import com.google.zigva.io.SimpleSink;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
 
@@ -41,9 +43,13 @@ public class IoFactorySelfBuilder implements IoFactory {
   public static SinkFactory<Character> err(final Sink<Character> err) {
     return new SinkFactory<Character>() {
     
-      @Override
       public Sink<Character> build(Source<Character> source) {
         return err;
+      }
+
+      @Override
+      public NewSink newBuild(Source<Character> source) {
+        return new SimpleSink<Character>(source, err);
       }
     };
   }
@@ -51,9 +57,13 @@ public class IoFactorySelfBuilder implements IoFactory {
   public static SinkFactory<Character> out(final Sink<Character> out) {
     return new SinkFactory<Character>() {
     
-      @Override
       public Sink<Character> build(Source<Character> source) {
         return out;
+      }
+
+      @Override
+      public NewSink newBuild(Source<Character> source) {
+        return new SimpleSink<Character>(source, out);
       }
     };
   }

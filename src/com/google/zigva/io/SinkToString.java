@@ -47,9 +47,14 @@ public class SinkToString implements Sink<Character> {
   
   public SinkFactory<Character> asSinkFactory() {
     return new SinkFactory<Character>(){
-      @Override
+
       public Sink<Character> build(Source<Character> source) {
         return SinkToString.this;
+      }
+
+      @Override
+      public NewSink newBuild(Source<Character> source) {
+        return new SimpleSink<Character>(source, build(source));
       }
     };
   }

@@ -18,7 +18,6 @@ package com.google.zigva.exec;
 
 import com.google.zigva.exec.CommandExecutor.Builder;
 import com.google.zigva.exec.CommandExecutor.Command;
-import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.IoFactory;
 import com.google.zigva.lang.NamedRunnable;
@@ -28,7 +27,7 @@ public class Cat implements Command {
 
   private final class MyZivaTask implements ZigvaTask, NamedRunnable {
     
-    private KillableCollector toKill = new KillableCollector();
+    private final KillableCollector toKill = new KillableCollector();
     private final IoFactory ioFactory;
 
     private MyZivaTask(Zystem zystem) {
@@ -42,14 +41,8 @@ public class Cat implements Command {
 
     @Override
     public void run() {
-      Source<Character> in = toKill.add(ioFactory.in().build());
-      Sink<Character> out = toKill.add(ioFactory.out().build(in));
-      while (!in.isEndOfStream()) {
-        out.write(in.read());
-      }
-      out.flush();
-      out.close();
-      in.close();
+      Source<Character> in = ioFactory.in().build();
+      toKill.add(ioFactory.out().newBuild(in)).run();
     }
 
     @Override

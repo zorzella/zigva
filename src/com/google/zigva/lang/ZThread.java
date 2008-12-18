@@ -77,5 +77,10 @@ public class ZThread extends Thread {
   public RuntimeException getException() {
     return exception;
   }
+
+  public ZThread ztart() {
+    start();
+    return this;
+  }
   
 }
