@@ -60,7 +60,7 @@ public final class RootZystemProvider implements Provider<Zystem> {
     
       @Override
       public Sink build(Source<Character> source) {
-        return new SimpleSink<Character>(source, new SpecialSinkSink<Character>(OUT_WRITER_SINK));
+        return new SimpleSink<Character>(source, new SpecialPassiveSinkSink<Character>(OUT_WRITER_SINK));
       }
     };
 
@@ -68,7 +68,7 @@ public final class RootZystemProvider implements Provider<Zystem> {
       
       @Override
       public Sink build(Source<Character> source) {
-        return new SimpleSink<Character>(source, new SpecialSinkSink<Character>(ERR_WRITER_SINK));
+        return new SimpleSink<Character>(source, new SpecialPassiveSinkSink<Character>(ERR_WRITER_SINK));
       }
     };
     

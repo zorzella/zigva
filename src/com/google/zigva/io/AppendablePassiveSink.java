@@ -27,8 +27,7 @@ import java.io.Closeable;
 import java.io.Flushable;
 import java.io.IOException;
 
-// TODO: rename to AppendableSink, add Builder
-public class AppendableSink implements Sink<Character> {
+public class AppendablePassiveSink implements PassiveSink<Character> {
 
   private static final int DEFAULT_CAPACITY = 100;
   private static final int DEFAULT_CLOSE_TIMEOUT = 500;
@@ -47,8 +46,8 @@ public class AppendableSink implements Sink<Character> {
     private final int closeTimeout;
     private final Object lock;
 
-    public AppendableSink create(Appendable out) {
-      return new AppendableSink(
+    public AppendablePassiveSink create(Appendable out) {
+      return new AppendablePassiveSink(
           threadFactory, 
           out, 
           capacity, 
@@ -83,7 +82,7 @@ public class AppendableSink implements Sink<Character> {
   }
   
   //TODO: kill
-  public AppendableSink(final Appendable out) {
+  public AppendablePassiveSink(final Appendable out) {
     this(new ZigvaThreadFactory(), out, DEFAULT_CAPACITY, DEFAULT_CLOSE_TIMEOUT, "LOCK");
   }
   
@@ -101,7 +100,7 @@ public class AppendableSink implements Sink<Character> {
    * There should be tests for each.
    */
   //TODO: make private
-  private AppendableSink(
+  private AppendablePassiveSink(
       final ZigvaThreadFactory threadFactory,
       final Appendable out, int capacity, int closeTimeout, Object lock) {
     this.closeTimeout = closeTimeout;
@@ -113,7 +112,7 @@ public class AppendableSink implements Sink<Character> {
         try {
           int dataPoint;
           while (queue.size() > 0 || !isClosed)  {
-            synchronized(AppendableSink.this.lock) {
+            synchronized(AppendablePassiveSink.this.lock) {
               out.append(queue.deq());
             }
           }

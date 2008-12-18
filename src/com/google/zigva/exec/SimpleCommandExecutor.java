@@ -14,7 +14,7 @@ import com.google.zigva.io.ForkingSinkFactory;
 import com.google.zigva.io.PassiveSink;
 import com.google.zigva.io.SimpleSink;
 import com.google.zigva.io.Sink;
-import com.google.zigva.io.SinkToString;
+import com.google.zigva.io.PassiveSinkToString;
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.SinkFactory;
 import com.google.zigva.lang.ZigvaInterruptedException;
@@ -96,7 +96,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
     
     @Override
     public WaitableZivaTask execute() {
-      SinkToString errMonitor = new SinkToString();
+      PassiveSinkToString errMonitor = new PassiveSinkToString();
       @SuppressWarnings("unchecked")
       SinkFactory<Character> forkedErrFactory =
         //TODO reinstate the Forking Factory
@@ -154,7 +154,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
   
   public static class ZigvaPipe {
    
-    private final class MySink implements PassiveSink<Character> {
+    private final class MyPassiveSink implements PassiveSink<Character> {
       @Override
       public void write(Character data) throws DataSourceClosedException {
         buffer.enq(data);
@@ -222,7 +222,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
     }
     
     private final MySource reader = new MySource();
-    private final PassiveSink<Character> sink = new MySink();
+    private final PassiveSink<Character> sink = new MyPassiveSink();
 
     public SinkFactory<Character> in() {
       return new SinkFactory<Character>(){

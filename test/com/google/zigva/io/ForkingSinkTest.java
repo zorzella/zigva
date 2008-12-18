@@ -18,8 +18,8 @@ public class ForkingSinkTest extends TestCase {
     String expected = "foo bar baz";
     Source<Character> source = new CharacterSource(expected);
 
-    SinkToString sink1 = new SinkToString();
-    SinkToString sink2 = new SinkToString();
+    PassiveSinkToString sink1 = new PassiveSinkToString();
+    PassiveSinkToString sink2 = new PassiveSinkToString();
     
     @SuppressWarnings("unchecked")
     Sink sink = new ForkingSinkFactory<Character>(

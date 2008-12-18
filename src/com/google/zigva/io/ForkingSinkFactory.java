@@ -228,44 +228,4 @@ public class ForkingSinkFactory<T> implements SinkFactory<T> {
       return "multiplexed:" + source.toString();
     }
   }
-  
-  private static final class MySink<T> implements PassiveSink<T> {
-    private final Collection<PassiveSink<T>> sinks;
-   
-    
-    public MySink(List<PassiveSink<T>> sinks) {
-      this.sinks = sinks;
-    }
-
-    @Override
-    public void close() {
-      for (PassiveSink<T> sink : sinks) {
-        sink.close();
-      }
-    }
-
-    @Override
-    public void flush() throws ZigvaInterruptedException {
-      for (PassiveSink<T> sink : sinks) {
-        sink.flush();
-      }
-    }
-
-    @Override
-    public boolean isReady() throws DataSourceClosedException {
-      for (PassiveSink<T> sink : sinks) {
-        if (!sink.isReady()) {
-          return false;
-        }
-      }
-      return true;
-    }
-
-    @Override
-    public void write(T data) throws DataSourceClosedException, ZigvaInterruptedException {
-      for (PassiveSink<T> sink : sinks) {
-        sink.write(data);
-      }
-    }
-  }
 }

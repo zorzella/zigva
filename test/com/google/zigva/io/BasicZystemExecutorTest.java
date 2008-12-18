@@ -45,7 +45,7 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
   }
 
   public void testSwappedRootZystem() throws Exception {
-    SinkToString out = new SinkToString();
+    PassiveSinkToString out = new PassiveSinkToString();
     Provider<Zystem> rootZystem = 
       Providers.of(
           new ZystemSelfBuilder(new RootZystemProvider().get())
@@ -64,7 +64,7 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
     private CommandExecutor.Builder commandExecutorBuilder;
     
     public String go() {
-      SinkToString out = new SinkToString();
+      PassiveSinkToString out = new PassiveSinkToString();
       Zystem modifiedZystem = zystem.withOut(out);
 
       Waitable process =
@@ -106,7 +106,7 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
 
       @Override
       public void run() {
-        SinkToString sink = new SinkToString();
+        PassiveSinkToString sink = new PassiveSinkToString();
         Source<Character> source = new CharacterSource("foo");
         ZystemSelfBuilder modifiedZystem = new ZystemSelfBuilder(zystem)
           .withIn(source)

@@ -14,44 +14,41 @@
  * limitations under the License.
  */
 
-package com.google.zigva.io;
+package com.google.zigva.java;
 
-import com.google.zigva.lang.SinkFactory;
+import com.google.zigva.io.DataSourceClosedException;
+import com.google.zigva.io.PassiveSink;
 
-public class SinkToString implements PassiveSink<Character> {
+public class SpecialPassiveSinkSink<T> implements PassiveSink<T> {
 
-  private final StringBuilder data = new StringBuilder();
-
+  private final PassiveSink<T> sink;
+//  private final Object lock;
+  
+  public SpecialPassiveSinkSink(PassiveSink<T> sink) { //, Object lock) {
+    this.sink = sink;
+//    this.lock = lock;
+  }
+  
   @Override
   public void close() {
+//    synchronized (lock) {
+//      lock.notifyAll();
+//    }
   }
 
   @Override
   public boolean isReady() throws DataSourceClosedException {
-    return true;
+    return sink.isReady();
   }
 
   @Override
-  public void write(Character c) throws DataSourceClosedException {
-    data.append(c);
-  }
-  
-  @Override
-  public String toString() {
-    return data.toString();
+  public void write(T data) throws DataSourceClosedException {
+    sink.write(data);
   }
 
   @Override
   public void flush() {
+    sink.flush();
   }
-  
-  public SinkFactory<Character> asSinkFactory() {
-    return new SinkFactory<Character>(){
 
-      @Override
-      public Sink build(Source<Character> source) {
-        return new SimpleSink<Character>(source, SinkToString.this);
-      }
-    };
-  }
 }

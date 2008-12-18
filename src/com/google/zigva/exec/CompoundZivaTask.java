@@ -18,7 +18,7 @@ package com.google.zigva.exec;
 
 import com.google.common.collect.Lists;
 import com.google.zigva.guice.ZigvaThreadFactory;
-import com.google.zigva.io.SinkToString;
+import com.google.zigva.io.PassiveSinkToString;
 import com.google.zigva.lang.ExceptionCollection;
 import com.google.zigva.lang.ZThread;
 import com.google.zigva.lang.ZigvaInterruptedException;
@@ -31,9 +31,9 @@ class CompoundZivaTask implements ZigvaTask {
   private final Collection<ZThread> allThreads = Lists.newArrayList();
   private final ZigvaThreadFactory threadFactory;
   private final List<ZigvaTask> zivaTasks;
-  private final SinkToString errMonitor;
+  private final PassiveSinkToString errMonitor;
 
-  public CompoundZivaTask(ZigvaThreadFactory threadFactory, SinkToString errMonitor, 
+  public CompoundZivaTask(ZigvaThreadFactory threadFactory, PassiveSinkToString errMonitor, 
       ZigvaTask... zivaTasks) {
     this.threadFactory = threadFactory;
     this.errMonitor = errMonitor;
@@ -41,7 +41,7 @@ class CompoundZivaTask implements ZigvaTask {
   }
   
   public CompoundZivaTask(ZigvaThreadFactory threadFactory, 
-      SinkToString errMonitor, List<ZigvaTask> zivaTasks) {
+      PassiveSinkToString errMonitor, List<ZigvaTask> zivaTasks) {
     this.threadFactory = threadFactory;
     this.errMonitor = errMonitor;
     this.zivaTasks = zivaTasks;
