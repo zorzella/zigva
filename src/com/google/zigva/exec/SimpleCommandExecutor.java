@@ -99,8 +99,6 @@ public class SimpleCommandExecutor implements CommandExecutor {
       PassiveSinkToString errMonitor = new PassiveSinkToString();
       @SuppressWarnings("unchecked")
       SinkFactory<Character> forkedErrFactory =
-        //TODO reinstate the Forking Factory
-//        zystem.ioFactory().err();
         new ForkingSinkFactory<Character>(
             threadFactory, 
             zystem.ioFactory().err(), 
