@@ -8,13 +8,6 @@ import junit.framework.TestCase;
 public class ForkingSinkTest extends TestCase {
 
   public void testSimple() throws Exception {
-  for (int i=0; i< 1000; i++ ){
-    System.out.println(i);
-    dotestSimple();
-  }
-  }
-  
-  public void dotestSimple() throws Exception {
     String expected = "foo bar baz";
     Source<Character> source = new CharacterSource(expected);
 
