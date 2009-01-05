@@ -16,7 +16,6 @@
 
 package com.google.zigva.lang;
 
-
 public interface IoFactory extends IoFactoryMisc {
 
   public interface ErrorHandler {}
