@@ -146,6 +146,9 @@ public class ForkingSinkFactory<T> implements SinkFactory<T> {
       @Override
       public void close() throws ZigvaInterruptedException {
         isClosed = true;
+        synchronized (lock) {
+          lock.notifyAll();
+        }
       }
 
       @Override

@@ -184,7 +184,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     } catch (RuntimeException expected) {
       //TODO brittle UNIXism
       assertTrue(expected.getMessage(),
-          expected.getMessage().contains("ls: /idontexist: No such file or directory"));
+          expected.getMessage().contains("ls: cannot access /idontexist: No such file or directory"));
     }
   }
   
