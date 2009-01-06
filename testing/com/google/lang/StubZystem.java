@@ -19,6 +19,7 @@ package com.google.lang;
 import com.google.zigva.io.FilePath;
 import com.google.zigva.lang.IoFactory;
 import com.google.zigva.lang.Propertiez;
+import com.google.zigva.lang.UserInfo;
 import com.google.zigva.lang.Zystem;
 
 import java.util.Map;
@@ -52,6 +53,11 @@ public class StubZystem implements Zystem {
 
   @Override
   public IoFactory ioFactory() {
+    return null;
+  }
+
+  @Override
+  public UserInfo userInfo() {
     return null;
   }
 }

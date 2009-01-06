@@ -34,6 +34,7 @@ import com.google.zigva.java.io.Writers;
 import com.google.zigva.lang.SourceFactory;
 import com.google.zigva.lang.IoFactory;
 import com.google.zigva.lang.SinkFactory;
+import com.google.zigva.lang.UserInfo;
 import com.google.zigva.lang.Zystem;
 
 import java.io.File;
@@ -144,6 +145,7 @@ public final class RootZystemProvider implements Provider<Zystem> {
         buildIoFactory(), 
         getCurrentDir(), 
         getHomeDir(),
+        new UserInfo(System.getProperty("user.name")), 
         System.getenv()
         );
   }

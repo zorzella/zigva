@@ -19,6 +19,7 @@ package com.google.zigva.java;
 import com.google.zigva.io.FilePath;
 import com.google.zigva.lang.IoFactory;
 import com.google.zigva.lang.Propertiez;
+import com.google.zigva.lang.UserInfo;
 import com.google.zigva.lang.Zystem;
 
 import java.net.UnknownHostException;
@@ -29,16 +30,19 @@ public class RealZystem implements Zystem {
   private final IoFactory ioFactory;
   private final FilePath currentDir;
   private final FilePath homeDir;
+  private final UserInfo userInfo;
   private final Map<String, String> env;
   
   public RealZystem(
       IoFactory ioFactory,
       FilePath currentDir,
       FilePath homeDir,
+      UserInfo userInfo,
       Map<String, String> env) {
     this.ioFactory = ioFactory;
     this.currentDir = currentDir;
     this.homeDir = homeDir;
+    this.userInfo = userInfo;
     this.env = env;
   }
   
@@ -80,5 +84,10 @@ public class RealZystem implements Zystem {
   @Override
   public IoFactory ioFactory() {
     return ioFactory;
+  }
+
+  @Override
+  public UserInfo userInfo() {
+    return userInfo;
   }
 }

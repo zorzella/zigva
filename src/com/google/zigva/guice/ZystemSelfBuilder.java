@@ -26,6 +26,7 @@ import com.google.zigva.lang.IoFactory;
 import com.google.zigva.lang.IoFactorySelfBuilder;
 import com.google.zigva.lang.SinkFactory;
 import com.google.zigva.lang.Propertiez;
+import com.google.zigva.lang.UserInfo;
 import com.google.zigva.lang.Zystem;
 
 import java.util.Map;
@@ -71,6 +72,7 @@ public final class ZystemSelfBuilder implements Zystem {
             zystem.ioFactory(),
             dir, 
             zystem.getHomeDir(), 
+            zystem.userInfo(), 
             zystem.env()));
   }
   
@@ -80,6 +82,7 @@ public final class ZystemSelfBuilder implements Zystem {
             zystem.ioFactory(),
             zystem.getCurrentDir(), 
             zystem.getHomeDir(), 
+            zystem.userInfo(), 
             otherEnv));
   }
 
@@ -135,6 +138,7 @@ public final class ZystemSelfBuilder implements Zystem {
             getForIn(zystem.ioFactory(), otherIn),
             zystem.getCurrentDir(), 
             zystem.getHomeDir(), 
+            zystem.userInfo(), 
             zystem.env()));
   }
 
@@ -145,6 +149,7 @@ public final class ZystemSelfBuilder implements Zystem {
             getForOut(zystem.ioFactory(), otherOut), 
             zystem.getCurrentDir(), 
             zystem.getHomeDir(), 
+            zystem.userInfo(), 
             zystem.env()));
   }
 
@@ -158,6 +163,7 @@ public final class ZystemSelfBuilder implements Zystem {
                 zystem.ioFactory()), 
             zystem.getCurrentDir(), 
             zystem.getHomeDir(), 
+            zystem.userInfo(), 
             zystem.env()));
   }
 
@@ -171,6 +177,7 @@ public final class ZystemSelfBuilder implements Zystem {
                 zystem.ioFactory()), 
             zystem.getCurrentDir(), 
             zystem.getHomeDir(), 
+            zystem.userInfo(), 
             zystem.env()));
   }
   
@@ -181,11 +188,17 @@ public final class ZystemSelfBuilder implements Zystem {
             getForErr(zystem.ioFactory(), otherErr), 
             zystem.getCurrentDir(), 
             zystem.getHomeDir(), 
+            zystem.userInfo(), 
             zystem.env()));
   }
 
   @Override
   public String toString() {
     return zystem.toString();
+  }
+
+  @Override
+  public UserInfo userInfo() {
+    return zystem.userInfo();
   }
 }

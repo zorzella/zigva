@@ -35,4 +35,7 @@ public interface Zystem {
   FilePath getHomeDir();
   
   IoFactory ioFactory();
+  
+  UserInfo userInfo();
+  
 }
