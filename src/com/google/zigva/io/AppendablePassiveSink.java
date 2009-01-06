@@ -103,6 +103,9 @@ public class AppendablePassiveSink implements PassiveSink<Character> {
   private AppendablePassiveSink(
       final ZigvaThreadFactory threadFactory,
       final Appendable out, int capacity, int closeTimeout, Object lock) {
+    if (out == null) {
+      throw new IllegalArgumentException("The appendable should not be 'null'");
+    }
     this.closeTimeout = closeTimeout;
     this.lock = lock;
     this.queue = new CircularBuffer<Character>(capacity, lock);
@@ -123,7 +126,16 @@ public class AppendablePassiveSink implements PassiveSink<Character> {
           // "Normal" code path -- we have either interrupted a blocked read or 
           // put by closing this Source (cases "b" and "d" above).
         } catch (IOException e) {
+          //TODO: does this make sense? Test!
+          if (!isClosed) {
+            close();
+          }
           throw new RuntimeException(e);
+        } catch (Exception e) {
+          //TODO: test!
+          if (!isClosed) {
+            close();
+          }
         } finally {
           try {
             if (out instanceof Flushable) {

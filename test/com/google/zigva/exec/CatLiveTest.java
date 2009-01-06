@@ -42,7 +42,8 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
   public void testSunnycase() {
     Injector injector = Guice.createInjector(new ZigvaModule());
     Cat cat = new Cat();
-    SinkFactory<Character> sink = new PassiveSinkToString().asSinkFactory();
+    PassiveSinkToString passive = new PassiveSinkToString();
+    SinkFactory<Character> sink = passive.asSinkFactory();
     Source<Character> source = new CharacterSource("foo");
     Zystem modifiedZystem = 
       zystem
@@ -53,13 +54,14 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
       .command(cat)
       .execute()
       .waitFor();
-    assertEquals("foo", sink.toString());
+    assertEquals("foo", passive.toString());
   }
 
   public void testPipe() {
     Injector injector = Guice.createInjector(new ZigvaModule());
     Cat cat = new Cat();
-    SinkFactory<Character> sink = new PassiveSinkToString().asSinkFactory();
+    PassiveSinkToString passive = new PassiveSinkToString();
+    SinkFactory<Character> sink = passive.asSinkFactory();
     Source<Character> source = new CharacterSource("foo");
     Zystem modifiedZystem = 
       zystem
@@ -70,13 +72,14 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
       .pipe(cat)
       .execute()
       .waitFor();
-    assertEquals("foo", sink.toString());
+    assertEquals("foo", passive.toString());
   }
 
   public void testMultipePipes() {
     Injector injector = Guice.createInjector(new ZigvaModule());
     Cat cat = new Cat();
-    SinkFactory<Character> sink = new PassiveSinkToString().asSinkFactory();
+    PassiveSinkToString passive = new PassiveSinkToString();
+    SinkFactory<Character> sink = passive.asSinkFactory();
     Source<Character> source = new CharacterSource("foo");
     Zystem modifiedZystem = zystem
       .withIn(source)
@@ -93,6 +96,6 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
       .pipe(cat)
       .execute()
       .waitFor();
-    assertEquals("foo", sink.toString());
+    assertEquals("foo", passive.toString());
   }
 }

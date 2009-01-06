@@ -22,7 +22,7 @@ import junit.framework.TestCase;
 
 import java.io.StringWriter;
 
-public class AppendableSinkTest extends TestCase {
+public class AppendablePassiveSinkTest extends TestCase {
 
   public void testSimpleScenario() {
     
@@ -40,5 +40,13 @@ public class AppendableSinkTest extends TestCase {
     sink.close();
     
     assertEquals(expected, out.toString());
+  }
+
+  public void testAppendableNullIsNotAcceptabler() {
+    try {
+      new AppendablePassiveSink.Builder(new ZigvaThreadFactory()).create(null);
+      fail();
+    } catch (IllegalArgumentException expected) {
+    }
   }
 }
