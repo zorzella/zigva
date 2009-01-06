@@ -22,6 +22,7 @@ import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.lang.NamedRunnable;
 import com.google.zigva.lang.ZigvaInterruptedException;
 
+import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -30,6 +31,7 @@ public class OutputStreamPassiveSink implements PassiveSink<Character> {
   private static final int DEFAULT_CAPACITY = 100;
   private static final int DEFAULT_CLOSE_TIMEOUT = 500;
   
+  private final OutputStream out;
   private final Thread consumer;
   private final CircularBuffer<Character> queue;
   private final int closeTimeout;
@@ -99,6 +101,7 @@ public class OutputStreamPassiveSink implements PassiveSink<Character> {
     if (out == null) {
       throw new IllegalArgumentException("The appendable should not be 'null'");
     }
+    this.out = out;
     this.closeTimeout = closeTimeout;
     this.lock = lock;
     this.queue = new CircularBuffer<Character>(capacity, lock);
@@ -176,5 +179,11 @@ public class OutputStreamPassiveSink implements PassiveSink<Character> {
   @Override
   public void flush() {
     this.queue.blockUntilEmpty();
+    //TODO:test
+    try {
+      out.flush();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

@@ -31,6 +31,7 @@ public class AppendablePassiveSink implements PassiveSink<Character> {
   private static final int DEFAULT_CAPACITY = 100;
   private static final int DEFAULT_CLOSE_TIMEOUT = 500;
   
+  private final Appendable out;
   private final Thread consumer;
   private final CircularBuffer<Character> queue;
   private final int closeTimeout;
@@ -109,6 +110,7 @@ public class AppendablePassiveSink implements PassiveSink<Character> {
     if (out == null) {
       throw new IllegalArgumentException("The appendable should not be 'null'");
     }
+    this.out = out;
     this.closeTimeout = closeTimeout;
     this.lock = lock;
     this.queue = new CircularBuffer<Character>(capacity, lock);
@@ -119,7 +121,8 @@ public class AppendablePassiveSink implements PassiveSink<Character> {
           int dataPoint;
           while (queue.size() > 0 || !isClosed)  {
             synchronized(AppendablePassiveSink.this.lock) {
-              out.append(queue.deq());
+              Character value = queue.deq();
+              out.append(value);
             }
           }
         } catch (ZigvaInterruptedException e) {
@@ -189,5 +192,12 @@ public class AppendablePassiveSink implements PassiveSink<Character> {
   @Override
   public void flush() {
     this.queue.blockUntilEmpty();
+    if (out instanceof Flushable) {
+      try {
+        ((Flushable)out).flush();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
   }
 }
