@@ -22,11 +22,10 @@ import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.lang.NamedRunnable;
 import com.google.zigva.lang.ZigvaInterruptedException;
 
-import java.io.Closeable;
-import java.io.Flushable;
 import java.io.IOException;
+import java.io.OutputStream;
 
-public class AppendablePassiveSink implements PassiveSink<Character> {
+public class OutputStreamPassiveSink implements PassiveSink<Character> {
 
   private static final int DEFAULT_CAPACITY = 100;
   private static final int DEFAULT_CLOSE_TIMEOUT = 500;
@@ -45,8 +44,8 @@ public class AppendablePassiveSink implements PassiveSink<Character> {
     private final int closeTimeout;
     private final Object lock;
 
-    public AppendablePassiveSink create(Appendable out) {
-      return new AppendablePassiveSink(
+    public OutputStreamPassiveSink create(OutputStream out) {
+      return new OutputStreamPassiveSink(
           threadFactory, 
           out, 
           capacity, 
@@ -80,15 +79,6 @@ public class AppendablePassiveSink implements PassiveSink<Character> {
     }
   }
   
-  //TODO: kill
-  public AppendablePassiveSink(final Appendable out) {
-    this(new ZigvaThreadFactory(), 
-        out, 
-        DEFAULT_CAPACITY, 
-        DEFAULT_CLOSE_TIMEOUT, 
-        "LOCK");
-  }
-  
   /*
    * There are 2 possible ways for the Producer to end:
    * 
@@ -103,9 +93,9 @@ public class AppendablePassiveSink implements PassiveSink<Character> {
    * There should be tests for each.
    */
   //TODO: make private
-  private AppendablePassiveSink(
+  private OutputStreamPassiveSink(
       final ZigvaThreadFactory threadFactory,
-      final Appendable out, int capacity, int closeTimeout, Object lock) {
+      final OutputStream out, int capacity, int closeTimeout, Object lock) {
     if (out == null) {
       throw new IllegalArgumentException("The appendable should not be 'null'");
     }
@@ -118,8 +108,8 @@ public class AppendablePassiveSink implements PassiveSink<Character> {
         try {
           int dataPoint;
           while (queue.size() > 0 || !isClosed)  {
-            synchronized(AppendablePassiveSink.this.lock) {
-              out.append(queue.deq());
+            synchronized(OutputStreamPassiveSink.this.lock) {
+              out.write(queue.deq());
             }
           }
         } catch (ZigvaInterruptedException e) {
@@ -141,11 +131,8 @@ public class AppendablePassiveSink implements PassiveSink<Character> {
           }
         } finally {
           try {
-            if (out instanceof Flushable) {
-              ((Flushable)out).flush();
-            }
-            if (out instanceof Closeable)
-              ((Closeable)out).close();
+              out.flush();
+              out.close();
           } catch (IOException e) {
             throw new RuntimeException(e);
           }

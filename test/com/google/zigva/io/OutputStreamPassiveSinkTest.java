@@ -20,16 +20,16 @@ import com.google.zigva.guice.ZigvaThreadFactory;
 
 import junit.framework.TestCase;
 
-import java.io.StringWriter;
+import java.io.ByteArrayOutputStream;
 
-public class AppendablePassiveSinkTest extends TestCase {
+public class OutputStreamPassiveSinkTest extends TestCase {
 
   public void testSimpleScenario() {
     
-    StringWriter out = new StringWriter();
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
     
     PassiveSink<Character> sink = 
-      new AppendablePassiveSink.Builder(new ZigvaThreadFactory()).create(out);
+      new OutputStreamPassiveSink.Builder(new ZigvaThreadFactory()).create(out);
     
     String expected = "foo";
     
