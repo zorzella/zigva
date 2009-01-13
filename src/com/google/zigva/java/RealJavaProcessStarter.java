@@ -14,10 +14,24 @@
  * limitations under the License.
  */
 
-package com.google.zigva.sh;
+package com.google.zigva.java;
 
-public interface JavaProcessExecutor {
+import com.google.common.base.Join;
 
-  Process start(ProcessBuilder processBuilder);
-  
+import java.io.IOException;
+
+public class RealJavaProcessStarter implements JavaProcessStarter {
+
+  @Override
+  public Process start(ProcessBuilder processBuilder) {
+    try {
+      return processBuilder.start();
+    } catch (IOException e) {
+      throw new RuntimeException(String.format(
+          "Failed to start process '%s' in '%s' with env '%s'.", 
+          Join.join(" ", processBuilder.command()), 
+          processBuilder.directory().toString(),
+          processBuilder.environment()), e);
+    }
+  }
 }

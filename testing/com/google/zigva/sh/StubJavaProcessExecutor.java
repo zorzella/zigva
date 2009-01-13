@@ -16,9 +16,9 @@
 
 package com.google.zigva.sh;
 
-import com.google.zigva.sh.JavaProcessExecutor;
+import com.google.zigva.java.JavaProcessStarter;
 
-public class StubJavaProcessExecutor implements JavaProcessExecutor {
+public class StubJavaProcessExecutor implements JavaProcessStarter {
 
   public Process result = new StubProcess();
   

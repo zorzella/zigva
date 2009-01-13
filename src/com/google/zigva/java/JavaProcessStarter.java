@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-package com.google.zigva.sh;
+package com.google.zigva.java;
 
-import java.io.IOException;
+public interface JavaProcessStarter {
 
-public class RealJavaProcessExecutor implements JavaProcessExecutor {
-
-  @Override
-  public Process start(ProcessBuilder processBuilder) {
-    try {
-      return processBuilder.start();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
+  Process start(ProcessBuilder processBuilder);
+  
 }

@@ -22,11 +22,11 @@ import com.google.inject.Scopes;
 import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.exec.SimpleCommandExecutor;
 import com.google.zigva.io.FileRepository;
+import com.google.zigva.java.JavaProcessStarter;
 import com.google.zigva.java.RealFileRepository;
+import com.google.zigva.java.RealJavaProcessStarter;
 import com.google.zigva.java.RootZystemProvider;
 import com.google.zigva.lang.Zystem;
-import com.google.zigva.sh.JavaProcessExecutor;
-import com.google.zigva.sh.RealJavaProcessExecutor;
 
 public class ZigvaModule extends AbstractModule {
 
@@ -46,7 +46,7 @@ public class ZigvaModule extends AbstractModule {
 //    ZystemScopeHelper zystemScopeHelper = new ZystemScopeHelper(rootZystem);
     bind(FileRepository.class).to(RealFileRepository.class);
     bind(Zystem.class).toProvider(zystemProvider).in(Scopes.SINGLETON);
-    bind(JavaProcessExecutor.class).to(RealJavaProcessExecutor.class);
+    bind(JavaProcessStarter.class).to(RealJavaProcessStarter.class);
 //    bind(ZystemScopeHelper.class).toInstance(zystemScopeHelper);
     bind(CommandExecutor.Builder.class).to(SimpleCommandExecutor.Builder.class);
   }

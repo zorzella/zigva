@@ -23,7 +23,6 @@ import com.google.inject.testing.guiceberry.junit3.GuiceBerryJunit3TestCase;
 import com.google.zigva.ZigvaEnvs;
 import com.google.zigva.exec.Cat;
 import com.google.zigva.exec.CommandExecutor;
-import com.google.zigva.exec.SyncZivaTask;
 import com.google.zigva.exec.WaitableZivaTask;
 import com.google.zigva.exec.ZigvaTask;
 import com.google.zigva.exec.CommandExecutor.Builder;
@@ -31,6 +30,7 @@ import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.guice.ZystemSelfBuilder;
 import com.google.zigva.lang.Waitable;
 import com.google.zigva.lang.Zystem;
+import com.google.zigva.sh.SystemCommand;
 
 import java.util.Map;
 
@@ -42,6 +42,9 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   
   @Inject
   private CommandExecutor.Builder commandExecutorBuilder;
+
+  @Inject
+  private SystemCommand.Builder systemCmdBuilder;
   
   @Override
   protected void setUp() throws Exception {
@@ -63,13 +66,15 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     String envName = "FOOBARBAZ";
     fooBarBazIsZ.put(envName, expected);
     
+    Command printenv = systemCmdBuilder.build("printenv", envName);
+
     Zystem localZystem = 
       zystem
         .withEnv(fooBarBazIsZ)
-        .withOut(out);
-
+        .withOut(out.asSinkFactory());
+    
     Waitable process = commandExecutorBuilder.with(localZystem).create()
-      .command("printenv", envName).execute();
+      .command(printenv).execute();
     process.waitFor();
     assertEquals(expected, out.toString().trim());
   }
@@ -79,13 +84,15 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     PassiveSinkToString out = new PassiveSinkToString();
     String expected = "ziva rules";
     
+    Command cat = systemCmdBuilder.build("cat");
+
     Zystem localZystem =
       zystem
         .withIn(new CharacterSource(expected))
-        .withOut(out);
-
+        .withOut(out.asSinkFactory());
+    
     Waitable process = commandExecutorBuilder.with(localZystem).create()
-      .command("cat").execute();
+      .command(cat).execute();
     process.waitFor();
     assertEquals(expected, out.toString().trim());
   }
@@ -95,7 +102,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     PassiveSinkToString actual = new PassiveSinkToString();
     Zystem localZystem = 
       zystem
-        .withOut(actual);
+        .withOut(actual.asSinkFactory());
     WaitableZivaTask task = commandExecutorBuilder.with(localZystem).create()
       .command(myCommand).execute();
     task.waitFor();
@@ -109,7 +116,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     
     Zystem localZystem = 
       zystem
-        .withOut(out);
+        .withOut(out.asSinkFactory());
 
     String expected = "foo";
     Waitable process = commandExecutorBuilder.with(localZystem).create()
@@ -126,7 +133,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     
     Zystem localZystem = 
       zystem
-        .withOut(out);
+        .withOut(out.asSinkFactory());
 
     String expected = "foo";
     Waitable process = commandExecutorBuilder.with(localZystem).create()
@@ -146,7 +153,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     
     Zystem localZystem = 
       zystem
-        .withOut(out);
+        .withOut(out.asSinkFactory());
 
     String expected = "foo";
     Waitable process = commandExecutorBuilder.with(localZystem).create()
@@ -165,18 +172,18 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   // executor().source("foo").sink(bar).execute();
   
   public void testWithParams() throws Exception {
-    PassiveSink<Character> out = new PassiveSinkToString();
+    PassiveSinkToString out = new PassiveSinkToString();
     Zystem localZystem = zystem
-      .withOut(out);
+      .withOut(out.asSinkFactory());
     commandExecutorBuilder.with(localZystem).create().command("echo", "-n", "foo")
       .execute().waitFor();
     assertEquals("foo", out.toString());
   }
 
   public void testExistingCommandErr() throws Exception {
-    PassiveSink<Character> out = new PassiveSinkToString();
+    PassiveSinkToString out = new PassiveSinkToString();
     Zystem localZystem = zystem
-      .withOut(out);
+      .withOut(out.asSinkFactory());
     try {
       commandExecutorBuilder.with(localZystem).create().command("ls", "/idontexist")
         .execute().waitFor();
@@ -189,9 +196,9 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   }
   
   public void testNonExistingCommandErr() throws Exception {
-    PassiveSink<Character> out = new PassiveSinkToString();
+    PassiveSinkToString out = new PassiveSinkToString();
     Zystem localZystem = zystem
-      .withOut(out);
+      .withOut(out.asSinkFactory());
     try {
       commandExecutorBuilder.with(localZystem).create().command("/idontexist")
         .execute().waitFor();
@@ -202,9 +209,9 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   }
 
   public void testComplexCommand() throws Exception {
-    PassiveSink<Character> out = new PassiveSinkToString();
+    PassiveSinkToString out = new PassiveSinkToString();
     Zystem localZystem = zystem
-      .withOut(out);
+      .withOut(out.asSinkFactory());
     commandExecutorBuilder
       .with(localZystem)
       .create()

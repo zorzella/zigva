@@ -63,10 +63,14 @@ public class SyncZivaTask implements WaitableZivaTask {
   
   @Override
   public void waitFor(long timeout) {
+    long now = System.currentTimeMillis();
     while(!done) {
       try {
         synchronized(this) {
           wait(timeout);
+          if (now + timeout > System.currentTimeMillis() && !done) {
+            return;
+          }
         }
       } catch (InterruptedException e) {
         throw new ZigvaInterruptedException(e);
