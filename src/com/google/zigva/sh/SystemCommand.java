@@ -17,7 +17,6 @@
 package com.google.zigva.sh;
 
 import com.google.common.base.Join;
-import com.google.inject.Inject;
 import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.exec.Killable;
 import com.google.zigva.exec.ZigvaTask;
@@ -36,44 +35,19 @@ import com.google.zigva.lang.Zystem;
 import java.io.IOException;
 import java.util.Map;
 
-public class SystemCommand implements Command {
+class SystemCommand implements Command {
   
-  public static class Builder {
-    
-    private final ZigvaThreadFactory zigvaThreadFactory;
-    private final OutputStreamPassiveSink.Builder outputStreamPassiveSinkBuilder;
-    private final JavaProcessStarter javaProcessStarter;
-
-    @Inject
-    public Builder ( 
-        ZigvaThreadFactory zigvaThreadFactory, 
-        OutputStreamPassiveSink.Builder outputStreamPassiveSinkBuilder, 
-        JavaProcessStarter javaProcessStarter) {
-      this.zigvaThreadFactory = zigvaThreadFactory;
-      this.outputStreamPassiveSinkBuilder = outputStreamPassiveSinkBuilder;
-      this.javaProcessStarter = javaProcessStarter;
-    }
-    
-    public SystemCommand build(String... command) {
-      return new SystemCommand(
-          zigvaThreadFactory, 
-          outputStreamPassiveSinkBuilder, 
-          javaProcessStarter, 
-          command);
-    }
-  }
-  
-  private final String[] command;
   private final ZigvaThreadFactory zigvaThreadFactory;
   private final OutputStreamPassiveSink.Builder outputStreamPassiveSinkBuilder;
   private final JavaProcessStarter javaProcessStarter;
+  private final String[] command;
 
-  private SystemCommand(
+  SystemCommand(
       ZigvaThreadFactory zigvaThreadFactory, 
       OutputStreamPassiveSink.Builder outputStreamPassiveSinkBuilder,
       JavaProcessStarter javaProcessStarter,
-      String... shellCommand) {
-    this.command = shellCommand;
+      String... command) {
+    this.command = command;
     this.zigvaThreadFactory = zigvaThreadFactory;
     this.outputStreamPassiveSinkBuilder = outputStreamPassiveSinkBuilder;
     this.javaProcessStarter = javaProcessStarter;

@@ -21,25 +21,30 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
-import com.google.zigva.exec.Cat;
 import com.google.zigva.exec.CommandExecutor;
+import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.guice.Providers;
 import com.google.zigva.guice.ZigvaModule;
 import com.google.zigva.guice.ZystemSelfBuilder;
 import com.google.zigva.java.RootZystemProvider;
-import com.google.zigva.lang.NamedRunnable;
 import com.google.zigva.lang.Waitable;
 import com.google.zigva.lang.Zystem;
+import com.google.zigva.sh.OS;
 
 public class BasicZystemExecutorTest extends TearDownTestCase {
   
   private static final class EchoFoo implements Runnable {
+    
     @Inject
     private CommandExecutor.Builder commandExecutorBuilder;
     
+    @Inject
+    private OS os;
+    
     public void run() {
+      Command echoFoo = os.command("echo", "foo");
       Waitable process = 
-        commandExecutorBuilder.create().command("echo", "foo").execute();
+        commandExecutorBuilder.create().command(echoFoo).execute();
       process.waitFor();
     }
   }
@@ -49,7 +54,7 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
     Provider<Zystem> rootZystem = 
       Providers.of(
           new ZystemSelfBuilder(new RootZystemProvider().get())
-          .withOut(out));
+          .withOut(out.asSinkFactory()));
     Injector injector = Guice.createInjector(new ZigvaModule(rootZystem));
     EchoFoo task = injector.getInstance(EchoFoo.class);
     task.run();
@@ -61,16 +66,20 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
     private ZystemSelfBuilder zystem;
     
     @Inject
+    private OS os;
+
+    @Inject
     private CommandExecutor.Builder commandExecutorBuilder;
     
     public String go() {
       PassiveSinkToString out = new PassiveSinkToString();
-      Zystem modifiedZystem = zystem.withOut(out);
-
+      Zystem modifiedZystem = zystem.withOut(out.asSinkFactory());
+      Command echoFoo = os.command("echo", "foo");
+      
       Waitable process =
         commandExecutorBuilder
           .with(modifiedZystem).create()
-          .command("echo", "foo").execute();
+          .command(echoFoo).execute();
       process.waitFor();
       return out.toString();
     }
@@ -81,42 +90,5 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
     MyApp myApp = injector.getInstance(MyApp.class);
     String result = myApp.go();
     assertEquals("foo", result.trim());
-  }
-  
-  public void testInheritingThreadLocalSemantics() {
-    Injector injector = Guice.createInjector(new ZigvaModule());
-    
-    injector.getInstance(OtherApp.class);
-  }
-  
-  private static final class OtherApp {
-    
-    private static final class Task implements NamedRunnable {
-
-      @Inject
-      private ZystemSelfBuilder zystem;
-
-      @Inject
-      private CommandExecutor.Builder commandExecutorBuilder;
-      
-      @Override
-      public String getName() {
-        return "NamedRunnable";
-      }
-
-      @Override
-      public void run() {
-        PassiveSinkToString sink = new PassiveSinkToString();
-        Source<Character> source = new CharacterSource("foo");
-        ZystemSelfBuilder modifiedZystem = new ZystemSelfBuilder(zystem)
-          .withIn(source)
-          .withOut(sink);
-        
-        commandExecutorBuilder.with(modifiedZystem).create()
-          .command(new Cat())
-          .execute()
-          .waitFor();
-      }
-    }
   }
 }

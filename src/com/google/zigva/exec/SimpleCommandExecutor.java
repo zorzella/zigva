@@ -19,7 +19,7 @@ import com.google.zigva.io.Source;
 import com.google.zigva.lang.SinkFactory;
 import com.google.zigva.lang.ZigvaInterruptedException;
 import com.google.zigva.lang.Zystem;
-import com.google.zigva.sh.SystemCommand;
+import com.google.zigva.sh.OS;
 
 import java.util.Iterator;
 import java.util.List;
@@ -28,7 +28,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
 
   private final ZigvaThreadFactory threadFactory;
   private final Zystem zystem;
-  private final SystemCommand.Builder shellCommandBuilder;
+  private final OS shellCommandBuilder;
   private final CommandExecutor.Builder cmdExecutorBuilder;
 
 //TODO: make this an ImmutableSelfBuilder?
@@ -37,7 +37,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
       Zystem zystem,
       ZigvaThreadFactory threadFactory,
       CommandExecutor.Builder cmdExecutorBuilder,
-      SystemCommand.Builder shellCommandBuilder) {
+      OS shellCommandBuilder) {
     this.zystem = zystem;
     this.threadFactory = threadFactory;
     this.cmdExecutorBuilder = cmdExecutorBuilder;
@@ -51,7 +51,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
         cmdExecutorBuilder, 
         shellCommandBuilder, 
         zystem, 
-        shellCommandBuilder.build(shellCommand));
+        shellCommandBuilder.command(shellCommand));
     return pc;
   }
 
@@ -70,14 +70,14 @@ public class SimpleCommandExecutor implements CommandExecutor {
 
     private final ZigvaThreadFactory threadFactory;
     private final CommandExecutor.Builder cmdExecutorBuilder;
-    private final SystemCommand.Builder shellCommandBuilder;
+    private final OS shellCommandBuilder;
     private final Zystem zystem;
     private final List<Command> commands;
 
     public SimplePreparedCommand(
         ZigvaThreadFactory threadFactory,
         CommandExecutor.Builder cmdExecutorBuilder,
-        SystemCommand.Builder shellCommandBuilder,
+        OS shellCommandBuilder,
         Zystem zystem, 
         Command command) {
       Preconditions.checkNotNull(command);
@@ -139,7 +139,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
 
     @Override
     public PreparedCommand pipe(String... shellCommand) {
-      commands.add(shellCommandBuilder.build(shellCommand));
+      commands.add(shellCommandBuilder.command(shellCommand));
       return this;
     }
 
@@ -241,13 +241,13 @@ public class SimpleCommandExecutor implements CommandExecutor {
  public static final class Builder implements CommandExecutor.Builder {
     
     private final Zystem zystem;
-    private final SystemCommand.Builder shellCommandBuilder;
+    private final OS shellCommandBuilder;
     private final ZigvaThreadFactory threadFactory;
 
     @Inject
     Builder(
         Zystem zystem, 
-        SystemCommand.Builder shellCommandBuilder, 
+        OS shellCommandBuilder, 
         ZigvaThreadFactory threadFactory) {
       this.zystem = zystem;
       this.shellCommandBuilder = shellCommandBuilder;

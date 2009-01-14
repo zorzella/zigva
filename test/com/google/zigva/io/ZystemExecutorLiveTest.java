@@ -30,7 +30,7 @@ import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.guice.ZystemSelfBuilder;
 import com.google.zigva.lang.Waitable;
 import com.google.zigva.lang.Zystem;
-import com.google.zigva.sh.SystemCommand;
+import com.google.zigva.sh.OS;
 
 import java.util.Map;
 
@@ -44,7 +44,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   private CommandExecutor.Builder commandExecutorBuilder;
 
   @Inject
-  private SystemCommand.Builder systemCmdBuilder;
+  private OS os;
   
   @Override
   protected void setUp() throws Exception {
@@ -66,7 +66,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     String envName = "FOOBARBAZ";
     fooBarBazIsZ.put(envName, expected);
     
-    Command printenv = systemCmdBuilder.build("printenv", envName);
+    Command printenv = os.command("printenv", envName);
 
     Zystem localZystem = 
       zystem
@@ -84,7 +84,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     PassiveSinkToString out = new PassiveSinkToString();
     String expected = "ziva rules";
     
-    Command cat = systemCmdBuilder.build("cat");
+    Command cat = os.command("cat");
 
     Zystem localZystem =
       zystem
@@ -114,14 +114,17 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   public void testPipe() throws Exception {
     PassiveSinkToString out = new PassiveSinkToString();
     
+    String expected = "foo";
+    Command echoFoo = os.command("echo", expected);
+    Command cat = os.command("cat");
+
     Zystem localZystem = 
       zystem
         .withOut(out.asSinkFactory());
-
-    String expected = "foo";
+    
     Waitable process = commandExecutorBuilder.with(localZystem).create()
-      .command("echo", expected)
-      .pipe("cat")
+      .command(echoFoo)
+      .pipe(cat)
       .execute();
     process.waitFor();
     assertEquals(expected, out.toString().trim());
@@ -130,18 +133,22 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   // $ echo foo | cat | cat | cat | grep foo
   public void testMultiplePipes() throws Exception {
     PassiveSinkToString out = new PassiveSinkToString();
+
+    String expected = "foo";
+    Command cat = os.command("cat");
+    Command grepFoo = os.command("grep", expected);
+    Command echoFoo = os.command("echo", expected);
     
     Zystem localZystem = 
       zystem
         .withOut(out.asSinkFactory());
 
-    String expected = "foo";
     Waitable process = commandExecutorBuilder.with(localZystem).create()
-      .command("echo", expected)
-      .pipe("cat")
-      .pipe("cat")
-      .pipe("cat")
-      .pipe("grep", "foo")
+      .command(echoFoo)
+      .pipe(cat)
+      .pipe(cat)
+      .pipe(cat)
+      .pipe(grepFoo)
       .execute();
     process.waitFor();
     assertEquals(expected, out.toString().trim());
@@ -151,17 +158,21 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   public void testMixOsAndJava() throws Exception {
     PassiveSinkToString out = new PassiveSinkToString();
     
+    String expected = "foo";
+    Command cat = os.command("cat");
+    Command grepFoo = os.command("grep", expected);
+    Command echoFoo = os.command("echo", expected);
+
     Zystem localZystem = 
       zystem
         .withOut(out.asSinkFactory());
 
-    String expected = "foo";
     Waitable process = commandExecutorBuilder.with(localZystem).create()
-      .command("echo", expected)
-      .pipe("cat")
+      .command(echoFoo)
+      .pipe(cat)
       .pipe(new Cat())
-      .pipe("cat")
-      .pipe("grep", "foo")
+      .pipe(cat)
+      .pipe(grepFoo)
       .execute();
     process.waitFor();
     assertEquals(expected, out.toString().trim());
@@ -173,34 +184,46 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   
   public void testWithParams() throws Exception {
     PassiveSinkToString out = new PassiveSinkToString();
+    String expected = "foo";
+    Command echoDashNFoo = os.command("echo", "-n", expected);
+
     Zystem localZystem = zystem
       .withOut(out.asSinkFactory());
-    commandExecutorBuilder.with(localZystem).create().command("echo", "-n", "foo")
+    commandExecutorBuilder.with(localZystem).create()
+      .command(echoDashNFoo)
       .execute().waitFor();
-    assertEquals("foo", out.toString());
+    assertEquals(expected, out.toString());
   }
 
   public void testExistingCommandErr() throws Exception {
     PassiveSinkToString out = new PassiveSinkToString();
+    
+    Command lsIDontExist = os.command("ls", "/idontexist");
+
     Zystem localZystem = zystem
       .withOut(out.asSinkFactory());
     try {
-      commandExecutorBuilder.with(localZystem).create().command("ls", "/idontexist")
+      commandExecutorBuilder.with(localZystem).create()
+        .command(lsIDontExist)
         .execute().waitFor();
       fail();
     } catch (RuntimeException expected) {
       //TODO brittle UNIXism
       assertTrue(expected.getMessage(),
-          expected.getMessage().contains("ls: cannot access /idontexist: No such file or directory"));
+          expected.getMessage().contains(
+              "ls: cannot access /idontexist: No such file or directory"));
     }
   }
   
   public void testNonExistingCommandErr() throws Exception {
     PassiveSinkToString out = new PassiveSinkToString();
+    Command iDontExist = os.command("/idontexist");
+
     Zystem localZystem = zystem
       .withOut(out.asSinkFactory());
     try {
-      commandExecutorBuilder.with(localZystem).create().command("/idontexist")
+      commandExecutorBuilder.with(localZystem).create()
+        .command(iDontExist)
         .execute().waitFor();
       fail();
     } catch (RuntimeException expected) {
@@ -225,17 +248,20 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   /**
    * This class internally calls echo -n foo | cat | grep foo
    */
-  private static final class MyComplexCommand implements Command {
+  private final class MyComplexCommand implements Command {
 
     @Override
     public ZigvaTask buildTask(final Builder cmdExecutorBuilder, final Zystem zystem) {
       return new StubZigvaTask() {
         @Override
         public void run() throws RuntimeException {
+          Command echoFoo = os.command("echo", "-n", "foo");
+          Command cat = os.command("cat");
+          Command grepFoo = os.command("grep", "foo");
           cmdExecutorBuilder.create()
-            .command("echo", "foo")
-            .pipe("cat")
-            .pipe("grep", "foo")
+            .command(echoFoo)
+            .pipe(cat)
+            .pipe(grepFoo)
             .execute()
             .waitFor();
         }

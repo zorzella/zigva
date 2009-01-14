@@ -22,7 +22,6 @@ import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.lang.NamedRunnable;
 import com.google.zigva.lang.ZigvaInterruptedException;
 
-import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
 
