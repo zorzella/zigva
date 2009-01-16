@@ -68,7 +68,9 @@ public class SpecialSourceSource<T> implements Source<T> {
   public T read() throws DataNotReadyException, DataSourceClosedException, EndOfDataException {
     return source.read();
   }
-  
-  
 
+  @Override
+  public boolean isClosed() {
+    return isClosed;
+  }
 }

@@ -86,4 +86,9 @@ public interface Source<T> {
    * {@link Source}.
    */
   void close() throws ZigvaInterruptedException;
+  
+  /**
+   * Returns true if this {@link Source} has been closed, false otherwise.
+   */
+  boolean isClosed();
 }

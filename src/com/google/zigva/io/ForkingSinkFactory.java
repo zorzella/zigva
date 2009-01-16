@@ -224,6 +224,11 @@ public class ForkingSinkFactory<T> implements SinkFactory<T> {
           return result;
         }
       }
+
+      @Override
+      public boolean isClosed() {
+        return isClosed;
+      }
     }
     
     @Override

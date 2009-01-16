@@ -12,14 +12,13 @@ import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.ForkingSinkFactory;
 import com.google.zigva.io.PassiveSink;
+import com.google.zigva.io.PassiveSinkToString;
 import com.google.zigva.io.SimpleSink;
 import com.google.zigva.io.Sink;
-import com.google.zigva.io.PassiveSinkToString;
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.SinkFactory;
 import com.google.zigva.lang.ZigvaInterruptedException;
 import com.google.zigva.lang.Zystem;
-import com.google.zigva.sh.OS;
 
 import java.util.Iterator;
 import java.util.List;
@@ -28,7 +27,6 @@ public class SimpleCommandExecutor implements CommandExecutor {
 
   private final ZigvaThreadFactory threadFactory;
   private final Zystem zystem;
-  private final OS shellCommandBuilder;
   private final CommandExecutor.Builder cmdExecutorBuilder;
 
 //TODO: make this an ImmutableSelfBuilder?
@@ -36,31 +34,17 @@ public class SimpleCommandExecutor implements CommandExecutor {
   public SimpleCommandExecutor(
       Zystem zystem,
       ZigvaThreadFactory threadFactory,
-      CommandExecutor.Builder cmdExecutorBuilder,
-      OS shellCommandBuilder) {
+      CommandExecutor.Builder cmdExecutorBuilder) {
     this.zystem = zystem;
     this.threadFactory = threadFactory;
     this.cmdExecutorBuilder = cmdExecutorBuilder;
-    this.shellCommandBuilder = shellCommandBuilder;
   }
   
-  @Override
-  public PreparedCommand command(String... shellCommand) {
-    SimplePreparedCommand pc = new SimplePreparedCommand(
-        threadFactory, 
-        cmdExecutorBuilder, 
-        shellCommandBuilder, 
-        zystem, 
-        shellCommandBuilder.command(shellCommand));
-    return pc;
-  }
-
   @Override
   public PreparedCommand command(Command command) {
     SimplePreparedCommand pc = new SimplePreparedCommand(
         threadFactory,
         cmdExecutorBuilder, 
-        shellCommandBuilder, 
         zystem, 
         command);
     return pc;
@@ -70,20 +54,17 @@ public class SimpleCommandExecutor implements CommandExecutor {
 
     private final ZigvaThreadFactory threadFactory;
     private final CommandExecutor.Builder cmdExecutorBuilder;
-    private final OS shellCommandBuilder;
     private final Zystem zystem;
     private final List<Command> commands;
 
     public SimplePreparedCommand(
         ZigvaThreadFactory threadFactory,
         CommandExecutor.Builder cmdExecutorBuilder,
-        OS shellCommandBuilder,
         Zystem zystem, 
         Command command) {
       Preconditions.checkNotNull(command);
       this.threadFactory = threadFactory;
       this.cmdExecutorBuilder = cmdExecutorBuilder;
-      this.shellCommandBuilder = shellCommandBuilder;
       this.zystem = zystem;
       //TODO: make it immutable?
       this.commands = Lists.newArrayList(command);
@@ -125,7 +106,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
             .withIn(nextIn)
             .withOut(nextOut);
         CommandExecutor.Builder temp = cmdExecutorBuilder.with(tempZystem);
-        allTasksToBeExecuted.add(new SyncZivaTask(command.buildTask(temp, tempZystem)));
+        allTasksToBeExecuted.add(new SyncZivaTask(command.buildTask(tempZystem)));
         if (iterator.hasNext()) {
           nextIn = zivaPipe.out();
         }
@@ -135,12 +116,6 @@ public class SimpleCommandExecutor implements CommandExecutor {
       
       threadFactory.newDaemonThread(result).start();
       return result;
-    }
-
-    @Override
-    public PreparedCommand pipe(String... shellCommand) {
-      commands.add(shellCommandBuilder.command(shellCommand));
-      return this;
     }
 
     @Override
@@ -180,6 +155,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
     private final class MySource implements Source<Character> {
       
       boolean isEOS = false;
+      private boolean isClosed;
       
       @Override
       public Character read() throws DataNotReadyException, DataSourceClosedException,
@@ -208,6 +184,12 @@ public class SimpleCommandExecutor implements CommandExecutor {
 
       @Override
       public void close() {
+        isClosed = true;
+      }
+
+      @Override
+      public boolean isClosed() {
+        return isClosed;
       }
     }
 
@@ -241,25 +223,22 @@ public class SimpleCommandExecutor implements CommandExecutor {
  public static final class Builder implements CommandExecutor.Builder {
     
     private final Zystem zystem;
-    private final OS shellCommandBuilder;
     private final ZigvaThreadFactory threadFactory;
 
     @Inject
     Builder(
         Zystem zystem, 
-        OS shellCommandBuilder, 
         ZigvaThreadFactory threadFactory) {
       this.zystem = zystem;
-      this.shellCommandBuilder = shellCommandBuilder;
       this.threadFactory = threadFactory;
     }
     
     public CommandExecutor create() {
-      return new SimpleCommandExecutor(zystem, threadFactory, this, shellCommandBuilder);
+      return new SimpleCommandExecutor(zystem, threadFactory, this);
     }
     
     public Builder with(Zystem zystem) {
-      return new Builder(zystem, shellCommandBuilder, threadFactory);
+      return new Builder(zystem, threadFactory);
     }
     
   }

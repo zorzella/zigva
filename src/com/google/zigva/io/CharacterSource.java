@@ -58,4 +58,8 @@ public class CharacterSource implements Source<Character> {
     return string.charAt(pos++);
   }
 
+  @Override
+  public boolean isClosed() {
+    return isClosed;
+  }
 }

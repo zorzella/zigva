@@ -16,11 +16,14 @@
 
 package com.google.zigva.sh;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.io.OutputStreamPassiveSink;
 import com.google.zigva.java.JavaProcessStarter;
+
+import com.sun.xml.internal.bind.v2.TODO;
 
 public class OS {
   
@@ -38,12 +41,20 @@ public class OS {
     this.javaProcessStarter = javaProcessStarter;
   }
   
+  public Command command(Iterable<String> command) {
+    return new SystemCommand(
+        zigvaThreadFactory, 
+        outputStreamPassiveSinkBuilder, 
+        javaProcessStarter, 
+        Lists.newArrayList(command));
+  }
+
   public Command command(String... command) {
     return new SystemCommand(
         zigvaThreadFactory, 
         outputStreamPassiveSinkBuilder, 
         javaProcessStarter, 
-        command);
+        Lists.newArrayList(command));
   }
   
   /**
@@ -75,6 +86,6 @@ public class OS {
         outputStreamPassiveSinkBuilder, 
         javaProcessStarter, 
         // TODO @Inject this!
-        new String[]{"/bin/bash", "-c", command});
+        Lists.newArrayList("/bin/bash", "-c", command));
   }
 }

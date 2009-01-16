@@ -16,11 +16,12 @@
 
 package com.google.zigva.exec;
 
-import com.google.zigva.exec.CommandExecutor.Builder;
 import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.io.Source;
+import com.google.zigva.java.SourceAtEOS;
 import com.google.zigva.lang.IoFactory;
 import com.google.zigva.lang.NamedRunnable;
+import com.google.zigva.lang.OutErr;
 import com.google.zigva.lang.Zystem;
 
 public class Cat implements Command {
@@ -52,8 +53,13 @@ public class Cat implements Command {
   }
 
   @Override
-  public ZigvaTask buildTask(Builder cmdExecutorBuilder, final Zystem zystem) {
+  public ZigvaTask buildTask(final Zystem zystem) {
     ZigvaTask result = new SyncZivaTask(new MyZivaTask(zystem));
     return result;
+  }
+
+  @Override
+  public OutErr go(Source<Character> in) {
+    return OutErr.forOut(in);
   }
 }

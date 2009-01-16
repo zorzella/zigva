@@ -30,7 +30,6 @@ import com.google.zigva.lang.ZigvaInterruptedException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.ThreadFactory;
 
 /**
  * Implementation of {@link Source} backed by an {@link InputStream}.
@@ -215,6 +214,11 @@ public class InputStreamSource implements Source<Integer> {
     Integer result = nextDataPoint;
     nextDataPoint = null;
     return result;
+  }
+
+  @Override
+  public boolean isClosed() {
+    return isClosed;
   }
 
   private void throwIfClosed() {

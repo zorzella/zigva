@@ -29,7 +29,6 @@ import com.google.zigva.lang.ZigvaInterruptedException;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.concurrent.ThreadFactory;
 
 //TODO: this is not thread safe. I'm not sure I want to make it thread safe or not
 /**
@@ -230,6 +229,11 @@ public class ReaderSource implements Source<Character> {
       nextDataPoint = null;
       return result;
     }
+  }
+
+  @Override
+  public boolean isClosed() {
+    return isClosed;
   }
 
   private void throwIfClosed() {

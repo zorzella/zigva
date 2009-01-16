@@ -16,7 +16,9 @@
 
 package com.google.zigva.exec;
 
+import com.google.zigva.io.Source;
 import com.google.zigva.lang.Immutable;
+import com.google.zigva.lang.OutErr;
 import com.google.zigva.lang.Zystem;
 
 public interface CommandExecutor {
@@ -32,7 +34,9 @@ public interface CommandExecutor {
   public interface Command {
     
     // DOCUMENT that the Builder passed matches the zystem passed?
-    ZigvaTask buildTask(Builder cmdExecutorBuilder, Zystem zystem);
+    ZigvaTask buildTask(Zystem zystem);
+    
+    OutErr go(Source<Character> in);
   }
   
   public interface PreparedCommand {
@@ -40,12 +44,7 @@ public interface CommandExecutor {
     WaitableZivaTask execute();
 
     PreparedCommand pipe(Command command);
-
-    PreparedCommand pipe(String... shellCommand);
   }
 
   PreparedCommand command(Command command);
-
-  PreparedCommand command(String... shellCommand);
-  
 }

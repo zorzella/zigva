@@ -19,9 +19,6 @@ package com.google.zigva.java;
 import com.google.inject.Provider;
 import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.io.AppendablePassiveSink;
-import com.google.zigva.io.DataNotReadyException;
-import com.google.zigva.io.DataSourceClosedException;
-import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.FilePath;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.RealFileSpec;
@@ -93,34 +90,6 @@ public final class RootZystemProvider implements Provider<Zystem> {
       return err;
     }
   }
-
-  /**
-	 * A {@link Source} that is already at its end of stream.
-	 * @author zorzella
-	 *
-	 * @param <T>
-	 */
-  private static final class SourceAtEOS<T> implements Source<T> {
-		@Override
-		public void close() {
-		}
-
-		@Override
-		public boolean isEndOfStream() throws DataSourceClosedException {
-			return true;
-		}
-
-		@Override
-		public boolean isReady() throws DataSourceClosedException {
-			return true;
-		}
-
-		@Override
-		public T read() throws DataNotReadyException,
-				DataSourceClosedException, EndOfDataException {
-			return null;
-		}
-	}
 
   private static final Object IN_LOCK = new StringBuilder("System in lock");
   private static final Object OUT_LOCK = new StringBuilder("System out lock");

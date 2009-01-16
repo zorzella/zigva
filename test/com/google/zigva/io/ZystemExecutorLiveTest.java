@@ -28,6 +28,7 @@ import com.google.zigva.exec.ZigvaTask;
 import com.google.zigva.exec.CommandExecutor.Builder;
 import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.guice.ZystemSelfBuilder;
+import com.google.zigva.lang.OutErr;
 import com.google.zigva.lang.Waitable;
 import com.google.zigva.lang.Zystem;
 import com.google.zigva.sh.OS;
@@ -238,7 +239,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     commandExecutorBuilder
       .with(localZystem)
       .create()
-      .command(new MyComplexCommand())
+      .command(new MyComplexCommand(os, commandExecutorBuilder))
       .execute()
       .waitFor();
     // TODO jthomas why "\n"?
@@ -248,11 +249,23 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   /**
    * This class internally calls echo -n foo | cat | grep foo
    */
-  private final class MyComplexCommand implements Command {
+  private static final class MyComplexCommand implements Command {
+
+    private final OS os;
+    private final CommandExecutor.Builder cmdExecutorBuilder;
+
+    public MyComplexCommand(
+        OS os, 
+        CommandExecutor.Builder cmdExecutorBuilder) {
+      this.os = os;
+      this.cmdExecutorBuilder = cmdExecutorBuilder;
+    }
 
     @Override
-    public ZigvaTask buildTask(final Builder cmdExecutorBuilder, final Zystem zystem) {
+    public ZigvaTask buildTask(
+        final Zystem zystem) {
       return new StubZigvaTask() {
+
         @Override
         public void run() throws RuntimeException {
           Command echoFoo = os.command("echo", "-n", "foo");
@@ -267,18 +280,30 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
         }
       };
     }
+
+    @Override
+    public OutErr go(Source<Character> in) {
+      return null;
+    }
   }
 
   private static final class MyCommand implements Command {
 
     @Override
-    public ZigvaTask buildTask(Builder cmdExecutorBuilder, final Zystem zystem) {
+    public ZigvaTask buildTask(
+        final Zystem zystem) {
       return new StubZigvaTask() {
         @Override
         public void run() {
           zystem.ioFactory().out().build(new CharacterSource("z")).run();
         }
       };
+    }
+
+    @Override
+    public OutErr go(Source<Character> in) {
+      in.close();
+      return OutErr.forOut(new CharacterSource("z"));
     }
   }
 }

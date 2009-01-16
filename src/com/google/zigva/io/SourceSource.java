@@ -45,6 +45,8 @@ public class SourceSource<T> implements Source<T> {
     return source.read();
   }
   
-  
-
+  @Override
+  public boolean isClosed() {
+    return source.isClosed();
+  }
 }
