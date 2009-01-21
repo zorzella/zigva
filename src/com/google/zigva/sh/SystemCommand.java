@@ -283,11 +283,16 @@ class SystemCommand implements Command {
 //        processStdErrThread);
 
     
-    Waitable waitable = waitables.from(new NaiveWaitable() {
+    final Waitable waitable = waitables.from(new NaiveWaitable() {
       @Override
       public void waitFor() {
         try {
           process.waitFor();
+          if (process.exitValue() != 0) {
+            throw new RuntimeException(String.format(
+                "Process exited with status '%d'.", 
+                process.exitValue()));
+          }
         } catch (InterruptedException e) {
           throw new ZigvaInterruptedException(e);
         }
