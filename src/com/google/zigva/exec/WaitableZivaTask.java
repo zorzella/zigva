@@ -16,10 +16,10 @@
 
 package com.google.zigva.exec;
 
-import com.google.zigva.lang.Waitable;
+import com.google.zigva.lang.ConvenienceWaitable;
 
-public interface WaitableZivaTask extends ZigvaTask, Waitable {
+public interface WaitableZivaTask extends ZigvaTask, ConvenienceWaitable {
 
-  RuntimeException getException();
+//  RuntimeException getException();
   
 }

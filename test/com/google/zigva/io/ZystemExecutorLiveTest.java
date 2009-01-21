@@ -16,6 +16,7 @@
 
 package com.google.zigva.io;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.testing.guiceberry.GuiceBerryEnv;
@@ -28,11 +29,14 @@ import com.google.zigva.exec.ZigvaTask;
 import com.google.zigva.exec.CommandExecutor.Builder;
 import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.guice.ZystemSelfBuilder;
-import com.google.zigva.lang.OutErr;
+import com.google.zigva.lang.ConvenienceWaitable;
+import com.google.zigva.lang.CommandResponse;
+import com.google.zigva.lang.SinkFactory;
 import com.google.zigva.lang.Waitable;
 import com.google.zigva.lang.Zystem;
 import com.google.zigva.sh.OS;
 
+import java.util.List;
 import java.util.Map;
 
 @GuiceBerryEnv(ZigvaEnvs.REGULAR)
@@ -74,7 +78,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
         .withEnv(fooBarBazIsZ)
         .withOut(out.asSinkFactory());
     
-    Waitable process = commandExecutorBuilder.with(localZystem).create()
+    ConvenienceWaitable process = commandExecutorBuilder.with(localZystem).create()
       .command(printenv).execute();
     process.waitFor();
     assertEquals(expected, out.toString().trim());
@@ -92,7 +96,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
         .withIn(new CharacterSource(expected))
         .withOut(out.asSinkFactory());
     
-    Waitable process = commandExecutorBuilder.with(localZystem).create()
+    ConvenienceWaitable process = commandExecutorBuilder.with(localZystem).create()
       .command(cat).execute();
     process.waitFor();
     assertEquals(expected, out.toString().trim());
@@ -123,10 +127,13 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
       zystem
         .withOut(out.asSinkFactory());
     
-    Waitable process = commandExecutorBuilder.with(localZystem).create()
-      .command(echoFoo)
-      .pipe(cat)
-      .execute();
+    ConvenienceWaitable process = 
+      commandExecutorBuilder
+        .with(localZystem)
+        .create()
+        .command(echoFoo)
+        .pipe(cat)
+        .execute();
     process.waitFor();
     assertEquals(expected, out.toString().trim());
   }
@@ -144,13 +151,15 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
       zystem
         .withOut(out.asSinkFactory());
 
-    Waitable process = commandExecutorBuilder.with(localZystem).create()
-      .command(echoFoo)
-      .pipe(cat)
-      .pipe(cat)
-      .pipe(cat)
-      .pipe(grepFoo)
-      .execute();
+    ConvenienceWaitable process = 
+      commandExecutorBuilder
+        .with(localZystem).create()
+        .command(echoFoo)
+        .pipe(cat)
+        .pipe(cat)
+        .pipe(cat)
+        .pipe(grepFoo)
+        .execute();
     process.waitFor();
     assertEquals(expected, out.toString().trim());
   }
@@ -168,13 +177,15 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
       zystem
         .withOut(out.asSinkFactory());
 
-    Waitable process = commandExecutorBuilder.with(localZystem).create()
-      .command(echoFoo)
-      .pipe(cat)
-      .pipe(new Cat())
-      .pipe(cat)
-      .pipe(grepFoo)
-      .execute();
+    ConvenienceWaitable process = 
+      commandExecutorBuilder
+        .with(localZystem).create()
+        .command(echoFoo)
+        .pipe(cat)
+        .pipe(new Cat())
+        .pipe(cat)
+        .pipe(grepFoo)
+        .execute();
     process.waitFor();
     assertEquals(expected, out.toString().trim());
   }
@@ -236,8 +247,10 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     PassiveSinkToString out = new PassiveSinkToString();
     Zystem localZystem = zystem
       .withOut(out.asSinkFactory());
+    commandExecutorBuilder = commandExecutorBuilder
+      .with(localZystem);
+    
     commandExecutorBuilder
-      .with(localZystem)
       .create()
       .command(new MyComplexCommand(os, commandExecutorBuilder))
       .execute()
@@ -282,8 +295,50 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     }
 
     @Override
-    public OutErr go(Source<Character> in) {
-      return null;
+    public CommandResponse go(Zystem zystem, Source<Character> in) {
+
+      final List<Source<Character>> temp = Lists.newArrayList();
+      
+      SinkFactory<Character> foo = new SinkFactory<Character> () {
+      
+        @Override
+        public Sink build(Source<Character> source) {
+          temp.add(source);
+          return new Sink() {
+          
+            @Override
+            public void kill() {
+            }
+          
+            @Override
+            public void run() {
+            }
+          };
+        }
+      };
+      
+      ZystemSelfBuilder localZystem = 
+        new ZystemSelfBuilder(zystem)
+          .withOut(foo);
+      
+      Command echoFoo = os.command("echo", "-n", "foo");
+      Command cat = os.command("cat");
+      Command grepFoo = os.command("grep", "foo");
+      cmdExecutorBuilder
+        .with(localZystem)
+        .create()
+        .command(echoFoo)
+        .pipe(cat)
+        .pipe(grepFoo)
+        .execute()
+        .waitFor()
+        ;
+
+      
+      
+      
+      
+      return CommandResponse.forOut(temp.get(0));
     }
   }
 
@@ -301,9 +356,9 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     }
 
     @Override
-    public OutErr go(Source<Character> in) {
+    public CommandResponse go(Zystem zystem, Source<Character> in) {
       in.close();
-      return OutErr.forOut(new CharacterSource("z"));
+      return CommandResponse.forOut(new CharacterSource("z"));
     }
   }
 }

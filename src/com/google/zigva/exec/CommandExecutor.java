@@ -18,7 +18,8 @@ package com.google.zigva.exec;
 
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.Immutable;
-import com.google.zigva.lang.OutErr;
+import com.google.zigva.lang.CommandResponse;
+import com.google.zigva.lang.Waitable;
 import com.google.zigva.lang.Zystem;
 
 public interface CommandExecutor {
@@ -31,12 +32,14 @@ public interface CommandExecutor {
     public Builder with(Zystem zystem);
   }
   
-  public interface Command {
+  public interface Command { //extends Waitable {
     
     // DOCUMENT that the Builder passed matches the zystem passed?
     ZigvaTask buildTask(Zystem zystem);
     
-    OutErr go(Source<Character> in);
+    CommandResponse go(Zystem zystem, Source<Character> in);
+    
+    
   }
   
   public interface PreparedCommand {

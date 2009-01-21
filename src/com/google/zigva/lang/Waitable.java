@@ -18,10 +18,15 @@ package com.google.zigva.lang;
 
 public interface Waitable {
 
-  boolean isFinished();
+//  // TODO: delete in favor of returning a boolean in waitFor(long)?
+//  boolean isFinished();
   
-  void waitFor();
 
-  void waitFor(long timeout);
+  /**
+   * 
+   * @return false if it returned because of the timeout; true if the 
+   * {@link Waitable} actually completed. 
+   */
+  boolean waitFor(long timeoutInMillis);
   
 }

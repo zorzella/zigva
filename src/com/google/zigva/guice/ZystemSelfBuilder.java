@@ -142,17 +142,6 @@ public final class ZystemSelfBuilder implements Zystem {
             zystem.env()));
   }
 
-  @Deprecated
-  public ZystemSelfBuilder withOut(PassiveSink<Character> otherOut) {
-    return new ZystemSelfBuilder(
-        new RealZystem(
-            getForOut(zystem.ioFactory(), otherOut), 
-            zystem.getCurrentDir(), 
-            zystem.getHomeDir(), 
-            zystem.userInfo(), 
-            zystem.env()));
-  }
-
   public ZystemSelfBuilder withOut(SinkFactory<Character> otherOut) {
     return new ZystemSelfBuilder(
         new RealZystem(
@@ -161,6 +150,17 @@ public final class ZystemSelfBuilder implements Zystem {
                 otherOut,
                 zystem.ioFactory().err(), 
                 zystem.ioFactory()), 
+            zystem.getCurrentDir(), 
+            zystem.getHomeDir(), 
+            zystem.userInfo(), 
+            zystem.env()));
+  }
+
+  @Deprecated
+  public ZystemSelfBuilder withOut(PassiveSink<Character> otherOut) {
+    return new ZystemSelfBuilder(
+        new RealZystem(
+            getForOut(zystem.ioFactory(), otherOut), 
             zystem.getCurrentDir(), 
             zystem.getHomeDir(), 
             zystem.userInfo(), 

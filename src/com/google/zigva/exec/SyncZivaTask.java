@@ -62,14 +62,17 @@ public class SyncZivaTask implements WaitableZivaTask {
   }
   
   @Override
-  public void waitFor(long timeout) {
+  public boolean waitFor(long timeoutInMillis) {
+    if (timeoutInMillis < 0) { 
+      throw new IllegalArgumentException("Timeout must be non-negative.");
+    }
     long now = System.currentTimeMillis();
     while(!done) {
       try {
         synchronized(this) {
-          wait(timeout);
-          if (now + timeout > System.currentTimeMillis() && !done) {
-            return;
+          wait(timeoutInMillis);
+          if (now + timeoutInMillis > System.currentTimeMillis() && !done) {
+            return false;
           }
         }
       } catch (InterruptedException e) {
@@ -79,14 +82,15 @@ public class SyncZivaTask implements WaitableZivaTask {
     if (exception != null) {
       throw exception;
     }
+    return true;
   }
   
   public RuntimeException getException() {
     return exception;
   }
 
-  @Override
-  public boolean isFinished() {
-    return done;
-  }
+//  @Override
+//  public boolean isFinished() {
+//    return done;
+//  }
 }

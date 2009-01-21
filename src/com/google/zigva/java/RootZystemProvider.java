@@ -70,10 +70,10 @@ public final class RootZystemProvider implements Provider<Zystem> {
       }
     };
     
-    @Override
-    public boolean redirectErrToOut() {
-      return false;
-    }
+//    @Override
+//    public boolean redirectErrToOut() {
+//      return false;
+//    }
 
     @Override
     public SourceFactory<Character> in() {

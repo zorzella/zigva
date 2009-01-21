@@ -69,10 +69,10 @@ public class IoFactorySelfBuilder implements IoFactory {
     };
   }
 
-  @Override
-  public boolean redirectErrToOut() {
-    return misc.redirectErrToOut();
-  }
+//  @Override
+//  public boolean redirectErrToOut() {
+//    return misc.redirectErrToOut();
+//  }
 
   @Override
   public SourceFactory<Character> in() {

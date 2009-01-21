@@ -16,7 +16,11 @@ import com.google.zigva.io.PassiveSinkToString;
 import com.google.zigva.io.SimpleSink;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
+import com.google.zigva.lang.CommandResponse;
+import com.google.zigva.lang.Runnables;
 import com.google.zigva.lang.SinkFactory;
+import com.google.zigva.lang.ZRunnable;
+import com.google.zigva.lang.ZThread;
 import com.google.zigva.lang.ZigvaInterruptedException;
 import com.google.zigva.lang.Zystem;
 
@@ -77,6 +81,82 @@ public class SimpleCommandExecutor implements CommandExecutor {
     
     @Override
     public WaitableZivaTask execute() {
+      if (true) {
+        return execute_old();
+      } else {
+        return execute_new();
+      }
+    }
+      
+    public WaitableZivaTask execute_new() {
+      Iterator<Command> iterator = commands.iterator();
+      Source<Character> in = zystem.ioFactory().in().build();
+      while (iterator.hasNext()) {
+        Command command = iterator.next();
+        CommandResponse temp = command.go(zystem, in);
+        // TODO: swap etc
+        in = temp.out();
+        if (temp.err() != null) {
+          
+          
+          
+          PassiveSinkToString errMonitor = new PassiveSinkToString();
+          @SuppressWarnings("unchecked")
+          SinkFactory<Character> forkedErrFactory =
+            new ForkingSinkFactory<Character>(
+                threadFactory, 
+                zystem.ioFactory().err(), 
+                errMonitor.asSinkFactory());
+
+          
+          
+          // TODO: return this as well!
+          ZRunnable bar = Runnables.fromRunnable(
+              forkedErrFactory.build(temp.err()));
+          ZThread foo = threadFactory.newDaemonThread(
+              bar).ztart();
+        }
+      }
+      final ZRunnable t = Runnables.fromRunnable(
+          zystem.ioFactory().out().build(in));
+      threadFactory.newDaemonThread(
+          t).ztart();
+     
+      return new WaitableZivaTask() {
+      
+        @Override
+        public boolean waitFor(long timeout) {
+          return t.waitFor(timeout);
+        }
+      
+        @Override
+        public void waitFor() {
+          waitFor(0);
+        }
+      
+//        @Override
+//        public boolean isFinished() {
+//          return t.isFinished();
+//        }
+      
+        @Override
+        public String getName() {
+          return "NAME";
+        }
+      
+        @Override
+        public void run() throws RuntimeException {
+          t.run();
+        }
+      
+        @Override
+        public void kill() {
+          throw new UnsupportedOperationException();
+        }
+      };
+    }
+    
+    public WaitableZivaTask execute_old() {
       PassiveSinkToString errMonitor = new PassiveSinkToString();
       @SuppressWarnings("unchecked")
       SinkFactory<Character> forkedErrFactory =

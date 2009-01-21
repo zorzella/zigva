@@ -27,6 +27,7 @@ import com.google.zigva.guice.Providers;
 import com.google.zigva.guice.ZigvaModule;
 import com.google.zigva.guice.ZystemSelfBuilder;
 import com.google.zigva.java.RootZystemProvider;
+import com.google.zigva.lang.ConvenienceWaitable;
 import com.google.zigva.lang.Waitable;
 import com.google.zigva.lang.Zystem;
 import com.google.zigva.sh.OS;
@@ -43,7 +44,7 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
     
     public void run() {
       Command echoFoo = os.command("echo", "foo");
-      Waitable process = 
+      ConvenienceWaitable process = 
         commandExecutorBuilder.create().command(echoFoo).execute();
       process.waitFor();
     }
@@ -76,7 +77,7 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
       Zystem modifiedZystem = zystem.withOut(out.asSinkFactory());
       Command echoFoo = os.command("echo", "foo");
       
-      Waitable process =
+      ConvenienceWaitable process =
         commandExecutorBuilder
           .with(modifiedZystem).create()
           .command(echoFoo).execute();

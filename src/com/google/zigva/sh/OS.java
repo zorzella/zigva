@@ -22,23 +22,25 @@ import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.io.OutputStreamPassiveSink;
 import com.google.zigva.java.JavaProcessStarter;
-
-import com.sun.xml.internal.bind.v2.TODO;
+import com.google.zigva.lang.Waitables;
 
 public class OS {
   
   private final ZigvaThreadFactory zigvaThreadFactory;
   private final OutputStreamPassiveSink.Builder outputStreamPassiveSinkBuilder;
   private final JavaProcessStarter javaProcessStarter;
+  private final Waitables waitables;
 
   @Inject
   public OS ( 
       ZigvaThreadFactory zigvaThreadFactory, 
       OutputStreamPassiveSink.Builder outputStreamPassiveSinkBuilder, 
-      JavaProcessStarter javaProcessStarter) {
+      JavaProcessStarter javaProcessStarter, 
+      Waitables waitables) {
     this.zigvaThreadFactory = zigvaThreadFactory;
     this.outputStreamPassiveSinkBuilder = outputStreamPassiveSinkBuilder;
     this.javaProcessStarter = javaProcessStarter;
+    this.waitables = waitables;
   }
   
   public Command command(Iterable<String> command) {
@@ -46,7 +48,8 @@ public class OS {
         zigvaThreadFactory, 
         outputStreamPassiveSinkBuilder, 
         javaProcessStarter, 
-        Lists.newArrayList(command));
+        Lists.newArrayList(command), 
+        waitables);
   }
 
   public Command command(String... command) {
@@ -54,7 +57,8 @@ public class OS {
         zigvaThreadFactory, 
         outputStreamPassiveSinkBuilder, 
         javaProcessStarter, 
-        Lists.newArrayList(command));
+        Lists.newArrayList(command), 
+        waitables);
   }
   
   /**
@@ -62,7 +66,7 @@ public class OS {
    * that this command will leverage some shell interpreter to execute 
    * {@code command}, whereas {@link #command(String...)} executes a command
    * through the OS. The specific shell that will be used by this command
-   * depends on what {@link TODO} is bound to.
+   * depends on what {@link #TODO} is bound to.
    * 
    * <p>E.g. in Linux/bash, you may call 
    * {@code buildShell("ls *.java 2>&1 | wc -1 && echo foo")}; note that the 
@@ -86,6 +90,7 @@ public class OS {
         outputStreamPassiveSinkBuilder, 
         javaProcessStarter, 
         // TODO @Inject this!
-        Lists.newArrayList("/bin/bash", "-c", command));
+        Lists.newArrayList("/bin/bash", "-c", command), 
+        waitables);
   }
 }

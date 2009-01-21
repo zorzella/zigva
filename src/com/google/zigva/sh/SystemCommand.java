@@ -28,7 +28,10 @@ import com.google.zigva.java.JavaProcessStarter;
 import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
 import com.google.zigva.lang.IoFactory;
-import com.google.zigva.lang.OutErr;
+import com.google.zigva.lang.CommandResponse;
+import com.google.zigva.lang.NaiveWaitable;
+import com.google.zigva.lang.Waitable;
+import com.google.zigva.lang.Waitables;
 import com.google.zigva.lang.ZThread;
 import com.google.zigva.lang.ZigvaInterruptedException;
 import com.google.zigva.lang.Zystem;
@@ -43,16 +46,19 @@ class SystemCommand implements Command {
   private final OutputStreamPassiveSink.Builder outputStreamPassiveSinkBuilder;
   private final JavaProcessStarter javaProcessStarter;
   private final List<String> command;
+  private final Waitables waitables;
 
   SystemCommand(
       ZigvaThreadFactory zigvaThreadFactory, 
       OutputStreamPassiveSink.Builder outputStreamPassiveSinkBuilder,
       JavaProcessStarter javaProcessStarter,
-      List<String> command) {
+      List<String> command, 
+      Waitables waitables) {
     this.command = command;
     this.zigvaThreadFactory = zigvaThreadFactory;
     this.outputStreamPassiveSinkBuilder = outputStreamPassiveSinkBuilder;
     this.javaProcessStarter = javaProcessStarter;
+    this.waitables = waitables;
   }
 
   @Override
@@ -81,7 +87,8 @@ class SystemCommand implements Command {
         Zystem zystem, 
         List<String> command,
         ZigvaThreadFactory zigvaThreadFactory,
-        OutputStreamPassiveSink.Builder outputStreamPassiveSinkBuilder, JavaProcessStarter javaProcessStarter) {
+        OutputStreamPassiveSink.Builder outputStreamPassiveSinkBuilder, 
+        JavaProcessStarter javaProcessStarter) {
       this.zystem = zystem;
       this.command = command;
       this.zigvaThreadFactory = zigvaThreadFactory;
@@ -102,7 +109,7 @@ class SystemCommand implements Command {
 
     @Override
     public void run() {
-      process = startProcess();
+      process = startProcess(createAndStartJavaProcess());
       process.waitFor();
       if (process.exitValue() != 0) {
         throw new RuntimeException(String.format(
@@ -111,7 +118,7 @@ class SystemCommand implements Command {
       }
     }
 
-    private ProcessBuilder createJavaProcessBuilder() {
+    private Process createAndStartJavaProcess() {
       ProcessBuilder processBuilder = new ProcessBuilder();
       
       // Stupid ProcessBuilder needs us to get its default env and monkey with it
@@ -121,16 +128,12 @@ class SystemCommand implements Command {
       
       processBuilder.directory(zystem.getCurrentDir().toFile());
       processBuilder.command(command);
-      if (ioFactory.redirectErrToOut()) {
-        processBuilder.redirectErrorStream(true);
-      }
-      return processBuilder;
+      processBuilder.redirectErrorStream(false);
+      Process process = javaProcessStarter.start(processBuilder);
+      return process;
     }
   
-    private JavaProcess startProcess() throws RuntimeException {
-      ProcessBuilder processBuilder = createJavaProcessBuilder();
-      
-      Process process = javaProcessStarter.start(processBuilder);
+    private JavaProcess startProcess(Process process) {
   
       ReaderSource outSource = 
         new ReaderSource.Builder(new ZigvaThreadFactory())
@@ -141,16 +144,13 @@ class SystemCommand implements Command {
             ioFactory.out().build(outSource))
               .ztart();
 
-      Thread processStdErrThread = null;
-      if (!ioFactory.redirectErrToOut()) {
-        ReaderSource errSource = 
-          new ReaderSource.Builder(new ZigvaThreadFactory())
-            .create(Readers.buffered(process.getErrorStream()));
-        processStdErrThread = 
-          zigvaThreadFactory.newDaemonThread(
-              ioFactory.err().build(errSource))
-              .ztart();
-      }
+      ReaderSource errSource = 
+        new ReaderSource.Builder(new ZigvaThreadFactory())
+      .create(Readers.buffered(process.getErrorStream()));
+      Thread processStdErrThread = 
+        zigvaThreadFactory.newDaemonThread(
+            ioFactory.err().build(errSource))
+            .ztart();
 
       OutputStreamPassiveSink stdInPassiveSink = 
         outputStreamPassiveSinkBuilder.create(process.getOutputStream());
@@ -230,7 +230,70 @@ class SystemCommand implements Command {
   }
 
   @Override
-  public OutErr go(Source<Character> in) {
-    return null;
+  public CommandResponse go(Zystem zystem, Source<Character> in) {
+    JavaProcessZivaTask temp = 
+      new JavaProcessZivaTask(
+        zystem, 
+        command, 
+        zigvaThreadFactory, 
+        outputStreamPassiveSinkBuilder, 
+        javaProcessStarter);
+    final Process process = temp.createAndStartJavaProcess();
+ 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    ReaderSource outSource = 
+      new ReaderSource.Builder(new ZigvaThreadFactory())
+        .create(Readers.buffered(process.getInputStream()));
+
+//    Thread processStdOutThread = 
+//      zigvaThreadFactory.newDaemonThread(
+//          ioFactory.out().build(outSource))
+//            .ztart();
+
+    ReaderSource errSource = 
+      new ReaderSource.Builder(new ZigvaThreadFactory())
+    .create(Readers.buffered(process.getErrorStream()));
+    
+//    Thread processStdErrThread = 
+//      zigvaThreadFactory.newDaemonThread(
+//          ioFactory.err().build(errSource))
+//          .ztart();
+
+    OutputStreamPassiveSink stdInPassiveSink = 
+      outputStreamPassiveSinkBuilder.create(process.getOutputStream());
+
+    ZThread processStdInThread = 
+      zigvaThreadFactory.newDaemonThread(
+        new SimpleSink<Character>(in, stdInPassiveSink))
+          .ztart();
+
+//    JavaProcess result = new JavaProcess(
+//        process, 
+//        processStdInThread, 
+//        processStdOutThread, 
+//        processStdErrThread);
+
+    
+    Waitable waitable = waitables.from(new NaiveWaitable() {
+      @Override
+      public void waitFor() {
+        try {
+          process.waitFor();
+        } catch (InterruptedException e) {
+          throw new ZigvaInterruptedException(e);
+        }
+      }
+    });
+    
+    return CommandResponse.forOutErr(outSource, errSource, waitable);
   }
 }
