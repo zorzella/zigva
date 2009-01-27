@@ -3,7 +3,8 @@ package com.google.zigva.io;
 
 import com.google.common.collect.Lists;
 import com.google.zigva.collections.CircularBuffer;
-import com.google.zigva.guice.ZigvaThreadFactory;
+import com.google.zigva.exec.ThreadRunner;
+import com.google.zigva.lang.ConvenienceWaitable;
 import com.google.zigva.lang.SinkFactory;
 import com.google.zigva.lang.ZigvaInterruptedException;
 
@@ -14,13 +15,13 @@ import java.util.List;
 
 public class ForkingSinkFactory<T> implements SinkFactory<T> {
 
-  private final ZigvaThreadFactory zigvaThreadFactory;
+  private final ThreadRunner threadRunner;
   private final SinkFactory<T>[] sinkFactories;
 
   public ForkingSinkFactory(
-      ZigvaThreadFactory zigvaThreadFactory, 
+      ThreadRunner threadRunner,
       SinkFactory<T>... sinkFactories) {
-    this.zigvaThreadFactory = zigvaThreadFactory;
+    this.threadRunner = threadRunner;
     this.sinkFactories = sinkFactories;
   }
   
@@ -60,17 +61,14 @@ public class ForkingSinkFactory<T> implements SinkFactory<T> {
     @Override
     public void run() {
       try {
-        Collection<Thread> threads = new ArrayList<Thread>(sinks.size());
+        Collection<ConvenienceWaitable> waitables = 
+          new ArrayList<ConvenienceWaitable>(sinks.size());
+        
         for (Sink sink : sinks) {
-          threads.add(zigvaThreadFactory.newDaemonThread(sink).ztart());
+          waitables.add(threadRunner.schedule(sink));
         }
-        //TODO: this is naive, and assumes threads are not reused!
-        for (Thread t : threads) {
-          try {
-            t.join();
-          } catch (InterruptedException e) {
-            throw new ZigvaInterruptedException(e);
-          }
+        for (ConvenienceWaitable waitable : waitables) {
+          waitable.waitFor();
         }
       } finally {
         source.close();

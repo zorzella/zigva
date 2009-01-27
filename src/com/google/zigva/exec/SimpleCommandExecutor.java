@@ -6,7 +6,6 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.zigva.collections.CircularBuffer;
 import com.google.zigva.guice.ZigvaThreadFactory;
-import com.google.zigva.guice.ZystemSelfBuilder;
 import com.google.zigva.io.DataNotReadyException;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
@@ -18,12 +17,10 @@ import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.CommandResponse;
 import com.google.zigva.lang.ConvenienceWaitable;
-import com.google.zigva.lang.ExceptionCollection;
 import com.google.zigva.lang.Runnables;
 import com.google.zigva.lang.SinkFactory;
 import com.google.zigva.lang.Waitables;
 import com.google.zigva.lang.ZRunnable;
-import com.google.zigva.lang.ZThread;
 import com.google.zigva.lang.ZigvaInterruptedException;
 import com.google.zigva.lang.Zystem;
 import com.google.zigva.lang.Waitables.Pair;
@@ -33,29 +30,21 @@ import java.util.List;
 
 public class SimpleCommandExecutor implements CommandExecutor {
 
-  private final ZigvaThreadFactory threadFactory;
   private final Zystem zystem;
-  private final CommandExecutor.Builder cmdExecutorBuilder;
   private final ThreadRunner threadRunner;
 
 //TODO: make this an ImmutableSelfBuilder?
     @Inject
   public SimpleCommandExecutor(
       Zystem zystem,
-      ZigvaThreadFactory threadFactory,
-      CommandExecutor.Builder cmdExecutorBuilder, 
       ThreadRunner threadRunner) {
     this.zystem = zystem;
-    this.threadFactory = threadFactory;
-    this.cmdExecutorBuilder = cmdExecutorBuilder;
     this.threadRunner = threadRunner;
   }
   
   @Override
   public PreparedCommand command(Command command) {
     SimplePreparedCommand pc = new SimplePreparedCommand(
-        threadFactory,
-        cmdExecutorBuilder, 
         zystem, 
         command, 
         threadRunner);
@@ -64,20 +53,15 @@ public class SimpleCommandExecutor implements CommandExecutor {
 
   static class SimplePreparedCommand implements PreparedCommand {
 
-    private final ZigvaThreadFactory threadFactory;
-    private final CommandExecutor.Builder cmdExecutorBuilder;
     private final Zystem zystem;
     private final List<Command> commands;
     private final ThreadRunner threadRunner;
 
     public SimplePreparedCommand(
-        ZigvaThreadFactory threadFactory,
-        CommandExecutor.Builder cmdExecutorBuilder,
         Zystem zystem, 
-        Command command, ThreadRunner threadRunner) {
+        Command command, 
+        ThreadRunner threadRunner) {
       Preconditions.checkNotNull(command);
-      this.threadFactory = threadFactory;
-      this.cmdExecutorBuilder = cmdExecutorBuilder;
       this.zystem = zystem;
       //TODO: make it immutable?
       this.commands = Lists.newArrayList(command);
@@ -91,14 +75,6 @@ public class SimpleCommandExecutor implements CommandExecutor {
     
     @Override
     public WaitableZivaTask execute() {
-      if (false) {
-        return execute_old();
-      } else {
-        return execute_new();
-      }
-    }
-      
-    public WaitableZivaTask execute_new() {
       Iterator<Command> iterator = commands.iterator();
       Source<Character> nextIn = zystem.ioFactory().in().build();
       
@@ -126,7 +102,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
           @SuppressWarnings("unchecked")
           SinkFactory<Character> forkedErrFactory =
             new ForkingSinkFactory<Character>(
-                threadFactory, 
+                threadRunner, 
                 zystem.ioFactory().err(), 
                 errMonitor.asSinkFactory());
 
@@ -192,48 +168,6 @@ public class SimpleCommandExecutor implements CommandExecutor {
       };
     }
     
-    public WaitableZivaTask execute_old() {
-      PassiveSinkToString errMonitor = new PassiveSinkToString();
-      @SuppressWarnings("unchecked")
-      SinkFactory<Character> forkedErrFactory =
-        new ForkingSinkFactory<Character>(
-            threadFactory, 
-            zystem.ioFactory().err(), 
-            errMonitor.asSinkFactory());
-      Zystem localZystem = new ZystemSelfBuilder(zystem).withErr(forkedErrFactory);
-      
-      Source<Character> nextIn = localZystem.ioFactory().in().build();
-      SinkFactory<Character> nextOut;
-      
-      List<ZigvaTask> allTasksToBeExecuted = Lists.newArrayList();
-      
-      Iterator<? extends Command> iterator = commands.iterator();
-      while (iterator.hasNext()) {
-        Command command = iterator.next();
-        ZigvaPipe zivaPipe = new ZigvaPipe();
-        if (iterator.hasNext()) {
-          zivaPipe = new ZigvaPipe();
-          nextOut = zivaPipe.in();
-        } else {
-          nextOut = localZystem.ioFactory().out();
-        }
-        ZystemSelfBuilder tempZystem = 
-          new ZystemSelfBuilder(localZystem)
-            .withIn(nextIn)
-            .withOut(nextOut);
-        CommandExecutor.Builder temp = cmdExecutorBuilder.with(tempZystem);
-        allTasksToBeExecuted.add(new SyncZivaTask(command.buildTask(tempZystem)));
-        if (iterator.hasNext()) {
-          nextIn = zivaPipe.out();
-        }
-      }
-      WaitableZivaTask result = new SyncZivaTask(new CompoundZivaTask(
-          threadFactory, errMonitor, allTasksToBeExecuted));
-      
-      threadFactory.newDaemonThread(result).start();
-      return result;
-    }
-
     @Override
     public PreparedCommand pipe(Command command) {
       commands.add(command);
@@ -353,14 +287,11 @@ public class SimpleCommandExecutor implements CommandExecutor {
     }
     
     public CommandExecutor create() {
-      return new SimpleCommandExecutor(zystem, threadFactory, this, threadRunner);
+      return new SimpleCommandExecutor(zystem, threadRunner);
     }
     
     public Builder with(Zystem zystem) {
       return new Builder(zystem, threadFactory, threadRunner);
     }
-    
   }
-
-  
 }

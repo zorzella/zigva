@@ -25,14 +25,11 @@ import com.google.zigva.ZigvaEnvs;
 import com.google.zigva.exec.Cat;
 import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.exec.WaitableZivaTask;
-import com.google.zigva.exec.ZigvaTask;
-import com.google.zigva.exec.CommandExecutor.Builder;
 import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.guice.ZystemSelfBuilder;
-import com.google.zigva.lang.ConvenienceWaitable;
 import com.google.zigva.lang.CommandResponse;
+import com.google.zigva.lang.ConvenienceWaitable;
 import com.google.zigva.lang.SinkFactory;
-import com.google.zigva.lang.Waitable;
 import com.google.zigva.lang.Zystem;
 import com.google.zigva.sh.OS;
 
@@ -279,26 +276,6 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     }
 
     @Override
-    public ZigvaTask buildTask(
-        final Zystem zystem) {
-      return new StubZigvaTask() {
-
-        @Override
-        public void run() throws RuntimeException {
-          Command echoFoo = os.command("echo", "-n", "foo");
-          Command cat = os.command("cat");
-          Command grepFoo = os.command("grep", "foo");
-          cmdExecutorBuilder.create()
-            .command(echoFoo)
-            .pipe(cat)
-            .pipe(grepFoo)
-            .execute()
-            .waitFor();
-        }
-      };
-    }
-
-    @Override
     public CommandResponse go(Zystem zystem, Source<Character> in) {
 
       final List<Source<Character>> temp = Lists.newArrayList();
@@ -347,18 +324,6 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
   }
 
   private static final class MyCommand implements Command {
-
-    @Override
-    public ZigvaTask buildTask(
-        final Zystem zystem) {
-      return new StubZigvaTask() {
-        @Override
-        public void run() {
-          zystem.ioFactory().out().build(new CharacterSource("z")).run();
-        }
-      };
-    }
-
     @Override
     public CommandResponse go(Zystem zystem, Source<Character> in) {
       in.close();

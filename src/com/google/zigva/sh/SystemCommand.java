@@ -61,17 +61,6 @@ class SystemCommand implements Command {
     this.waitables = waitables;
   }
 
-  @Override
-  public ZigvaTask buildTask(
-      Zystem zystem) {
-    return new JavaProcessZivaTask(
-        zystem, 
-        command, 
-        zigvaThreadFactory, 
-        outputStreamPassiveSinkBuilder, 
-        javaProcessStarter);
-  }
-  
   private static final class JavaProcessZivaTask implements ZigvaTask {
 
     private final Zystem zystem;

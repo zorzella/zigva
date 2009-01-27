@@ -18,44 +18,10 @@ package com.google.zigva.exec;
 
 import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.io.Source;
-import com.google.zigva.lang.IoFactory;
-import com.google.zigva.lang.NamedRunnable;
 import com.google.zigva.lang.CommandResponse;
 import com.google.zigva.lang.Zystem;
 
 public class Cat implements Command {
-
-  private final class MyZivaTask implements ZigvaTask, NamedRunnable {
-    
-    private final KillableCollector toKill = new KillableCollector();
-    private final IoFactory ioFactory;
-
-    private MyZivaTask(Zystem zystem) {
-      this.ioFactory = zystem.ioFactory();
-    }
-    
-    @Override
-    public void kill() {
-      toKill.killable().kill();
-    }
-
-    @Override
-    public void run() {
-      Source<Character> in = ioFactory.in().build();
-      toKill.add(ioFactory.out().build(in)).run();
-    }
-
-    @Override
-    public String getName() {
-      return "Cat";
-    }
-  }
-
-  @Override
-  public ZigvaTask buildTask(final Zystem zystem) {
-    ZigvaTask result = new SyncZivaTask(new MyZivaTask(zystem));
-    return result;
-  }
 
   @Override
   public CommandResponse go(Zystem zystem, Source<Character> in) {

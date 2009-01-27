@@ -1,6 +1,7 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
 package com.google.zigva.io;
 
+import com.google.zigva.exec.SimpleThreadRunner;
 import com.google.zigva.guice.ZigvaThreadFactory;
 
 import junit.framework.TestCase;
@@ -16,7 +17,7 @@ public class ForkingSinkTest extends TestCase {
     
     @SuppressWarnings("unchecked")
     Sink sink = new ForkingSinkFactory<Character>(
-        new ZigvaThreadFactory(),
+        new SimpleThreadRunner(new ZigvaThreadFactory()),
         sink1.asSinkFactory(), 
         sink2.asSinkFactory()).build(source);
     
