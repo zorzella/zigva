@@ -287,8 +287,8 @@ class SystemCommand implements Command {
       @Override
       public void waitFor() {
         try {
-          process.waitFor();
-          if (process.exitValue() != 0) {
+          int exitValue = process.waitFor();
+          if (exitValue != 0) {
             throw new RuntimeException(String.format(
                 "Process exited with status '%d'.", 
                 process.exitValue()));
@@ -297,8 +297,14 @@ class SystemCommand implements Command {
           throw new ZigvaInterruptedException(e);
         }
       }
+      
+      @Override
+      public String toString() {
+        return String.format(
+            "Waitable for running system process: [%s]", SystemCommand.this.toString());
+      }
     });
     
-    return CommandResponse.forOutErr(outSource, errSource, waitable);
+    return CommandResponse.forOutErr(this, outSource, errSource, waitable);
   }
 }

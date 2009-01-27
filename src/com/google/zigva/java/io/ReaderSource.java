@@ -43,6 +43,7 @@ public class ReaderSource implements Source<Character> {
   private final CircularBuffer<Integer> queue;
   private final int closeTimeout;
   private final Object lock;
+  private final Reader in;
 
   private boolean isClosed;
   private Integer nextDataPoint;
@@ -115,6 +116,7 @@ public class ReaderSource implements Source<Character> {
    */
   private ReaderSource(ZigvaThreadFactory threadFactory, 
       final Reader in, int capacity, int closeTimeout, Object lock) {
+    this.in = in;
     this.closeTimeout = closeTimeout;
     this.lock = lock;
     this.queue = new CircularBuffer<Integer>(capacity, lock);
@@ -240,5 +242,11 @@ public class ReaderSource implements Source<Character> {
     if (isClosed) {
       throw new DataSourceClosedException();
     }
+  }
+  
+  @Override
+  public String toString() {
+    return String.format(
+        "ReaderSource for [%s]", in);
   }
 }

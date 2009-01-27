@@ -17,8 +17,11 @@ import com.google.zigva.io.SimpleSink;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.CommandResponse;
+import com.google.zigva.lang.ConvenienceWaitable;
 import com.google.zigva.lang.Runnables;
 import com.google.zigva.lang.SinkFactory;
+import com.google.zigva.lang.Waitable;
+import com.google.zigva.lang.Waitables;
 import com.google.zigva.lang.ZRunnable;
 import com.google.zigva.lang.ZThread;
 import com.google.zigva.lang.ZigvaInterruptedException;
@@ -91,9 +94,14 @@ public class SimpleCommandExecutor implements CommandExecutor {
     public WaitableZivaTask execute_new() {
       Iterator<Command> iterator = commands.iterator();
       Source<Character> in = zystem.ioFactory().in().build();
+      
+      final List<ConvenienceWaitable> waitableList = Lists.newArrayList();
+      
       while (iterator.hasNext()) {
         Command command = iterator.next();
         CommandResponse temp = command.go(zystem, in);
+        waitableList.add(temp);
+        
         // TODO: swap etc
         in = temp.out();
         if (temp.err() != null) {
@@ -119,14 +127,15 @@ public class SimpleCommandExecutor implements CommandExecutor {
       }
       final ZRunnable t = Runnables.fromRunnable(
           zystem.ioFactory().out().build(in));
-      threadFactory.newDaemonThread(
-          t).ztart();
+      waitableList.add(t);
+      final ConvenienceWaitable toWait = Waitables.from(waitableList);
+      threadFactory.newDaemonThread(t).ztart();
      
       return new WaitableZivaTask() {
       
         @Override
         public boolean waitFor(long timeout) {
-          return t.waitFor(timeout);
+          return toWait.waitFor(timeout);
         }
       
         @Override

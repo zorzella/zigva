@@ -59,6 +59,16 @@ public class Runnables {
           }
         }
       }
+
+      @Override
+      public String getName() {
+        return delegate.toString();
+      }
+      
+      @Override
+      public String toString() {
+        return delegate.toString();
+      }
     };
   }
 }
