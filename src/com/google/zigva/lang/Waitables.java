@@ -1,10 +1,12 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
 package com.google.zigva.lang;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.zigva.guice.ZigvaThreadFactory;
 
+import java.util.List;
 import java.util.Set;
 
 
@@ -47,6 +49,7 @@ public class Waitables {
     
     final Set<ZRunnable> runnables = Sets.newHashSet();
     final Set<ConvenienceWaitable> finished = Sets.newHashSet();
+    final List<RuntimeException> exceptions = Lists.newArrayList();
     
     for (final ConvenienceWaitable waitable : waitables) {
       runnables.add(
@@ -56,6 +59,8 @@ public class Waitables {
             public void run() {
               try {
                 waitable.waitFor();
+              } catch (RuntimeException e) {
+                exceptions.add(e);
               } finally {
                 synchronized(finished) {
                   finished.add(waitable);
@@ -95,6 +100,9 @@ public class Waitables {
               throw new ZigvaInterruptedException(e);
             }
           }
+          if (exceptions.size() > 0) {
+            throw ExceptionCollection.create(exceptions);
+          }
           return finished.size() == runnables.size();
         }
         
@@ -124,6 +132,9 @@ public class Waitables {
             } catch (InterruptedException e) {
               throw new ZigvaInterruptedException(e);
             }
+          }
+          if (exceptions.size() > 0) {
+            throw ExceptionCollection.create(exceptions);
           }
         }
         //        for (ConvenienceWaitable waitable: waitables) {

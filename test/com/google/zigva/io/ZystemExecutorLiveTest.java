@@ -63,6 +63,10 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     asserter.assertThreadCount();
   }
   
+  public void testFoo() throws Exception {
+    doTestExistingCommandErr();
+  }
+  
   public void testEnv() throws Exception {
     
     PassiveSinkToString out = new PassiveSinkToString();
@@ -207,7 +211,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     assertEquals(expected, out.toString());
   }
 
-  public void testExistingCommandErr() throws Exception {
+  public void doTestExistingCommandErr() throws Exception {
     PassiveSinkToString out = new PassiveSinkToString();
     
     Command lsIDontExist = os.command("ls", "/idontexist");

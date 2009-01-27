@@ -20,7 +20,6 @@ import com.google.zigva.lang.CommandResponse;
 import com.google.zigva.lang.ConvenienceWaitable;
 import com.google.zigva.lang.Runnables;
 import com.google.zigva.lang.SinkFactory;
-import com.google.zigva.lang.Waitable;
 import com.google.zigva.lang.Waitables;
 import com.google.zigva.lang.ZRunnable;
 import com.google.zigva.lang.ZThread;
@@ -35,16 +34,19 @@ public class SimpleCommandExecutor implements CommandExecutor {
   private final ZigvaThreadFactory threadFactory;
   private final Zystem zystem;
   private final CommandExecutor.Builder cmdExecutorBuilder;
+  private final ThreadRunner threadRunner;
 
 //TODO: make this an ImmutableSelfBuilder?
     @Inject
   public SimpleCommandExecutor(
       Zystem zystem,
       ZigvaThreadFactory threadFactory,
-      CommandExecutor.Builder cmdExecutorBuilder) {
+      CommandExecutor.Builder cmdExecutorBuilder, 
+      ThreadRunner threadRunner) {
     this.zystem = zystem;
     this.threadFactory = threadFactory;
     this.cmdExecutorBuilder = cmdExecutorBuilder;
+    this.threadRunner = threadRunner;
   }
   
   @Override
@@ -53,7 +55,8 @@ public class SimpleCommandExecutor implements CommandExecutor {
         threadFactory,
         cmdExecutorBuilder, 
         zystem, 
-        command);
+        command, 
+        threadRunner);
     return pc;
   }
 
@@ -63,18 +66,20 @@ public class SimpleCommandExecutor implements CommandExecutor {
     private final CommandExecutor.Builder cmdExecutorBuilder;
     private final Zystem zystem;
     private final List<Command> commands;
+    private final ThreadRunner threadRunner;
 
     public SimplePreparedCommand(
         ZigvaThreadFactory threadFactory,
         CommandExecutor.Builder cmdExecutorBuilder,
         Zystem zystem, 
-        Command command) {
+        Command command, ThreadRunner threadRunner) {
       Preconditions.checkNotNull(command);
       this.threadFactory = threadFactory;
       this.cmdExecutorBuilder = cmdExecutorBuilder;
       this.zystem = zystem;
       //TODO: make it immutable?
       this.commands = Lists.newArrayList(command);
+      this.threadRunner = threadRunner;
     }
 
     @Override
@@ -125,11 +130,12 @@ public class SimpleCommandExecutor implements CommandExecutor {
               bar).ztart();
         }
       }
-      final ZRunnable t = Runnables.fromRunnable(
+      final ZRunnable runnableCommand = Runnables.fromRunnable(
           zystem.ioFactory().out().build(in));
-      waitableList.add(t);
+      waitableList.add(runnableCommand);
       final ConvenienceWaitable toWait = Waitables.from(waitableList);
-      threadFactory.newDaemonThread(t).ztart();
+      threadRunner.schedule(runnableCommand);
+//      threadFactory.newDaemonThread(runnableCommand).ztart();
      
       return new WaitableZivaTask() {
       
@@ -143,11 +149,6 @@ public class SimpleCommandExecutor implements CommandExecutor {
           waitFor(0);
         }
       
-//        @Override
-//        public boolean isFinished() {
-//          return t.isFinished();
-//        }
-      
         @Override
         public String getName() {
           return "NAME";
@@ -155,7 +156,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
       
         @Override
         public void run() throws RuntimeException {
-          t.run();
+          throw new UnsupportedOperationException();
         }
       
         @Override
@@ -313,21 +314,24 @@ public class SimpleCommandExecutor implements CommandExecutor {
     
     private final Zystem zystem;
     private final ZigvaThreadFactory threadFactory;
+    private final ThreadRunner threadRunner;
 
     @Inject
     Builder(
         Zystem zystem, 
-        ZigvaThreadFactory threadFactory) {
+        ZigvaThreadFactory threadFactory, 
+        ThreadRunner threadRunner) {
       this.zystem = zystem;
       this.threadFactory = threadFactory;
+      this.threadRunner = threadRunner;
     }
     
     public CommandExecutor create() {
-      return new SimpleCommandExecutor(zystem, threadFactory, this);
+      return new SimpleCommandExecutor(zystem, threadFactory, this, threadRunner);
     }
     
     public Builder with(Zystem zystem) {
-      return new Builder(zystem, threadFactory);
+      return new Builder(zystem, threadFactory, threadRunner);
     }
     
   }

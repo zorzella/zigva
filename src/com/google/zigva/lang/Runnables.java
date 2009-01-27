@@ -3,18 +3,13 @@ package com.google.zigva.lang;
 
 public class Runnables {
 
-  public static ZRunnable fromRunnable(final Runnable delegate) {
+  public static ZRunnable fromRunnable(final Runnable runnable) {
 
     return new ZRunnable() {
 
       private boolean isDone;
       private Object lock = new StringBuffer("LOCK");
       private RuntimeException exception;
-
-//      @Override
-//      public boolean isFinished() {
-//        return isDone;
-//      }
 
       @Override
       public void waitFor() {
@@ -48,7 +43,7 @@ public class Runnables {
       @Override
       public void run() {
         try {
-          delegate.run();
+          runnable.run();
         } catch (RuntimeException e) {
           exception = e;
           throw e;
@@ -62,12 +57,12 @@ public class Runnables {
 
       @Override
       public String getName() {
-        return delegate.toString();
+        return runnable.toString();
       }
       
       @Override
       public String toString() {
-        return delegate.toString();
+        return runnable.toString();
       }
     };
   }
