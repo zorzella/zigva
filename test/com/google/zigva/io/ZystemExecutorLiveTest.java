@@ -342,7 +342,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
       
       
       
-      return CommandResponse.forOut(temp.get(0));
+      return CommandResponse.forOut(this, temp.get(0));
     }
   }
 
@@ -362,7 +362,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     @Override
     public CommandResponse go(Zystem zystem, Source<Character> in) {
       in.close();
-      return CommandResponse.forOut(new CharacterSource("z"));
+      return CommandResponse.forOut(this, new CharacterSource("z"));
     }
   }
 }

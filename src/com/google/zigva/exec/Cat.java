@@ -59,6 +59,6 @@ public class Cat implements Command {
 
   @Override
   public CommandResponse go(Zystem zystem, Source<Character> in) {
-    return CommandResponse.forOut(in);
+    return CommandResponse.forOut(this, in);
   }
 }
