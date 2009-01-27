@@ -18,6 +18,7 @@ import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.CommandResponse;
 import com.google.zigva.lang.ConvenienceWaitable;
+import com.google.zigva.lang.ExceptionCollection;
 import com.google.zigva.lang.Runnables;
 import com.google.zigva.lang.SinkFactory;
 import com.google.zigva.lang.Waitables;
@@ -25,6 +26,7 @@ import com.google.zigva.lang.ZRunnable;
 import com.google.zigva.lang.ZThread;
 import com.google.zigva.lang.ZigvaInterruptedException;
 import com.google.zigva.lang.Zystem;
+import com.google.zigva.lang.Waitables.Pair;
 
 import java.util.Iterator;
 import java.util.List;
@@ -89,7 +91,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
     
     @Override
     public WaitableZivaTask execute() {
-      if (true) {
+      if (false) {
         return execute_old();
       } else {
         return execute_new();
@@ -98,22 +100,29 @@ public class SimpleCommandExecutor implements CommandExecutor {
       
     public WaitableZivaTask execute_new() {
       Iterator<Command> iterator = commands.iterator();
-      Source<Character> in = zystem.ioFactory().in().build();
+      Source<Character> nextIn = zystem.ioFactory().in().build();
       
-      final List<ConvenienceWaitable> waitableList = Lists.newArrayList();
+      final List<Waitables.Pair> waitableList = Lists.newArrayList();
       
+
       while (iterator.hasNext()) {
+
+
         Command command = iterator.next();
-        CommandResponse temp = command.go(zystem, in);
-        waitableList.add(temp);
+        CommandResponse commandResponse = command.go(zystem, nextIn);
         
         // TODO: swap etc
-        in = temp.out();
-        if (temp.err() != null) {
+        nextIn = commandResponse.out();
+        
+        Waitables.ExceptionModifier exceptionModifier = 
+          Waitables.IDENTITY_EXCEPTION_MODIFIER;
+        
+        if (commandResponse.err() != null) {
           
           
           
-          PassiveSinkToString errMonitor = new PassiveSinkToString();
+          
+          final PassiveSinkToString errMonitor = new PassiveSinkToString();
           @SuppressWarnings("unchecked")
           SinkFactory<Character> forkedErrFactory =
             new ForkingSinkFactory<Character>(
@@ -123,19 +132,36 @@ public class SimpleCommandExecutor implements CommandExecutor {
 
           
           
-          // TODO: return this as well!
-          ZRunnable bar = Runnables.fromRunnable(
-              forkedErrFactory.build(temp.err()));
-          ZThread foo = threadFactory.newDaemonThread(
-              bar).ztart();
+          
+          final ZRunnable errDrainer = threadRunner.schedule(
+              forkedErrFactory.build(commandResponse.err()));
+          waitableList.add(new Waitables.Pair(errDrainer, Waitables.IDENTITY_EXCEPTION_MODIFIER));
+          
+          exceptionModifier = new Waitables.ExceptionModifier() {
+          
+            @Override
+            public RuntimeException modify(RuntimeException exception) {
+              
+              errDrainer.waitFor();
+              return new RuntimeException(String.format(
+                  "stderr of command was:\n" +
+                  "******************************************\n" +
+                  "%s \n" +
+                  "******************************************", errMonitor.toString()), 
+                  exception);
+            }
+          };
         }
+
+        Pair temp = new Waitables.Pair(commandResponse, exceptionModifier);
+        
+        waitableList.add(temp);
       }
       final ZRunnable runnableCommand = Runnables.fromRunnable(
-          zystem.ioFactory().out().build(in));
-      waitableList.add(runnableCommand);
+          zystem.ioFactory().out().build(nextIn));
+      waitableList.add(new Waitables.Pair(runnableCommand, Waitables.IDENTITY_EXCEPTION_MODIFIER));
       final ConvenienceWaitable toWait = Waitables.from(waitableList);
       threadRunner.schedule(runnableCommand);
-//      threadFactory.newDaemonThread(runnableCommand).ztart();
      
       return new WaitableZivaTask() {
       

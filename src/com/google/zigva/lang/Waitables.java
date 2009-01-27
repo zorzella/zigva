@@ -42,8 +42,11 @@ public class Waitables {
     };
   }
   
-  // TODO MULTIPLEX EXCEPTIONS!
-  public static ConvenienceWaitable from(final Iterable<ConvenienceWaitable> waitables) {
+//  public static ConvenienceWaitable fromWaitables(final Iterable<ConvenienceWaitable> waitables) {
+//    
+//  }
+  
+  public static ConvenienceWaitable from(final Iterable<Pair> waitables) {
     
     ZigvaThreadFactory ztf = new ZigvaThreadFactory();
     
@@ -51,19 +54,19 @@ public class Waitables {
     final Set<ConvenienceWaitable> finished = Sets.newHashSet();
     final List<RuntimeException> exceptions = Lists.newArrayList();
     
-    for (final ConvenienceWaitable waitable : waitables) {
+    for (final Pair waitable : waitables) {
       runnables.add(
           Runnables.fromRunnable(new Runnable() {
 
             @Override
             public void run() {
               try {
-                waitable.waitFor();
+                waitable.waitable.waitFor();
               } catch (RuntimeException e) {
-                exceptions.add(e);
+                exceptions.add(waitable.exceptionModifier.modify(e));
               } finally {
                 synchronized(finished) {
-                  finished.add(waitable);
+                  finished.add(waitable.waitable);
                   finished.notify();
                 }
               }
@@ -179,5 +182,33 @@ public class Waitables {
         return waitable.toString();
       }
     };
+  }
+  
+  public interface ExceptionModifier {
+    
+    RuntimeException modify(RuntimeException exception);
+    
+  }
+  
+  public static final ExceptionModifier IDENTITY_EXCEPTION_MODIFIER = 
+      new ExceptionModifier() {
+  
+    @Override
+    public RuntimeException modify(RuntimeException exception) {
+      return exception;
+    }
+  };
+
+  public static class Pair {
+
+    public final ConvenienceWaitable waitable;
+    public final ExceptionModifier exceptionModifier;
+
+    public Pair(
+        ConvenienceWaitable waitable, 
+        ExceptionModifier exceptionModifier) {
+      this.waitable = waitable;
+      this.exceptionModifier = exceptionModifier;
+    }
   }
 }
