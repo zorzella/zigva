@@ -82,7 +82,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     ConvenienceWaitable process = commandExecutorBuilder.with(localZystem).create()
       .command(printenv).execute();
     process.waitFor();
-    assertEquals(expected, out.toString().trim());
+    assertEquals(expected, out.asString().trim());
   }
 
   
@@ -100,7 +100,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     ConvenienceWaitable process = commandExecutorBuilder.with(localZystem).create()
       .command(cat).execute();
     process.waitFor();
-    assertEquals(expected, out.toString().trim());
+    assertEquals(expected, out.asString().trim());
   }
 
   public void testNonShell() throws Exception {
@@ -112,7 +112,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     WaitableZivaTask task = commandExecutorBuilder.with(localZystem).create()
       .command(myCommand).execute();
     task.waitFor();
-    assertEquals("z", actual.toString());
+    assertEquals("z", actual.asString());
   }
   
   
@@ -162,7 +162,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
         .pipe(grepFoo)
         .execute();
     process.waitFor();
-    assertEquals(expected, out.toString().trim());
+    assertEquals(expected, out.asString().trim());
   }
 
   // $ echo foo | cat | Cat | cat | grep foo
@@ -188,7 +188,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
         .pipe(grepFoo)
         .execute();
     process.waitFor();
-    assertEquals(expected, out.toString().trim());
+    assertEquals(expected, out.asString().trim());
   }
 
   // ls | cat > bar.txt
@@ -205,7 +205,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     commandExecutorBuilder.with(localZystem).create()
       .command(echoDashNFoo)
       .execute().waitFor();
-    assertEquals(expected, out.toString());
+    assertEquals(expected, out.asString());
   }
 
   public void doTestExistingCommandErr() throws Exception {
@@ -257,7 +257,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
       .execute()
       .waitFor();
     // TODO jthomas why "\n"?
-    assertEquals("foo\n", out.toString());
+    assertEquals("foo\n", out.asString());
   }
   
   /**

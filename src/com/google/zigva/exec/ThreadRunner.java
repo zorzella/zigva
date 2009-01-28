@@ -5,6 +5,7 @@ import com.google.zigva.lang.ZRunnable;
 
 public interface ThreadRunner {
 
-  ZRunnable schedule(Runnable e);
+  ZRunnable schedule(Runnable runnable);
   
+  <T> ClosureResult<T> schedule(Closure<T> closure);
 }

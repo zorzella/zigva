@@ -33,8 +33,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
   private final Zystem zystem;
   private final ThreadRunner threadRunner;
 
-//TODO: make this an ImmutableSelfBuilder?
-    @Inject
+  @Inject
   public SimpleCommandExecutor(
       Zystem zystem,
       ThreadRunner threadRunner) {
@@ -123,7 +122,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
                   "stderr of command was:\n" +
                   "******************************************\n" +
                   "%s \n" +
-                  "******************************************", errMonitor.toString()), 
+                  "******************************************", errMonitor.asString()), 
                   exception);
             }
           };

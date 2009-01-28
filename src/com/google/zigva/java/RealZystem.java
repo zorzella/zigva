@@ -93,6 +93,7 @@ public class RealZystem implements Zystem {
   }
   
   public CommandExecutor executor() {
-    return null;
+//    return new SimpleCommandExecutor(this, );
+    throw new UnsupportedOperationException();
   }
 }

@@ -229,48 +229,20 @@ class SystemCommand implements Command {
         javaProcessStarter);
     final Process process = temp.createAndStartJavaProcess();
  
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     ReaderSource outSource = 
       new ReaderSource.Builder(new ZigvaThreadFactory())
         .create(Readers.buffered(process.getInputStream()));
-
-//    Thread processStdOutThread = 
-//      zigvaThreadFactory.newDaemonThread(
-//          ioFactory.out().build(outSource))
-//            .ztart();
 
     ReaderSource errSource = 
       new ReaderSource.Builder(new ZigvaThreadFactory())
     .create(Readers.buffered(process.getErrorStream()));
     
-//    Thread processStdErrThread = 
-//      zigvaThreadFactory.newDaemonThread(
-//          ioFactory.err().build(errSource))
-//          .ztart();
-
     OutputStreamPassiveSink stdInPassiveSink = 
       outputStreamPassiveSinkBuilder.create(process.getOutputStream());
 
-    ZThread processStdInThread = 
-      zigvaThreadFactory.newDaemonThread(
-        new SimpleSink<Character>(in, stdInPassiveSink))
-          .ztart();
-
-//    JavaProcess result = new JavaProcess(
-//        process, 
-//        processStdInThread, 
-//        processStdOutThread, 
-//        processStdErrThread);
-
+    zigvaThreadFactory.newDaemonThread(
+      new SimpleSink<Character>(in, stdInPassiveSink))
+        .ztart();
     
     final Waitable waitable = waitables.from(new NaiveWaitable() {
       @Override

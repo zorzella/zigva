@@ -23,7 +23,7 @@ public class ForkingSinkTest extends TestCase {
     
     sink.run();
     
-    assertEquals(expected, sink1.toString());
-    assertEquals(expected, sink2.toString());
+    assertEquals(expected, sink1.asString());
+    assertEquals(expected, sink2.asString());
   }
 }

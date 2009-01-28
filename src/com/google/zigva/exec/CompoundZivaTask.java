@@ -84,7 +84,7 @@ class CompoundZivaTask implements ZigvaTask {
           "stderr of command was:\n" +
           "******************************************\n" +
           "%s \n" +
-          "******************************************", errMonitor.toString()), 
+          "******************************************", errMonitor.asString()), 
           ExceptionCollection.create(exceptions));
     }
   }

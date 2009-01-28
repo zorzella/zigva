@@ -47,7 +47,7 @@ public class ZigvaModule extends AbstractModule {
     install(new JavaModule());
 //    ZystemScopeHelper zystemScopeHelper = new ZystemScopeHelper(rootZystem);
     bind(FileRepository.class).to(RealFileRepository.class);
-    bind(Zystem.class).toProvider(zystemProvider).in(Scopes.SINGLETON);
+    bind(Zystem.class).toProvider(zystemProvider);
     bind(JavaProcessStarter.class).to(RealJavaProcessStarter.class);
 //    bind(ZystemScopeHelper.class).toInstance(zystemScopeHelper);
     bind(CommandExecutor.Builder.class).to(SimpleCommandExecutor.Builder.class);

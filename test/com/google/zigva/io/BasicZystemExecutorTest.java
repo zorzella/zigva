@@ -28,7 +28,6 @@ import com.google.zigva.guice.ZigvaModule;
 import com.google.zigva.guice.ZystemSelfBuilder;
 import com.google.zigva.java.RootZystemProvider;
 import com.google.zigva.lang.ConvenienceWaitable;
-import com.google.zigva.lang.Waitable;
 import com.google.zigva.lang.Zystem;
 import com.google.zigva.sh.OS;
 
@@ -59,7 +58,7 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
     Injector injector = Guice.createInjector(new ZigvaModule(rootZystem));
     EchoFoo task = injector.getInstance(EchoFoo.class);
     task.run();
-    assertEquals("foo", out.toString().trim());
+    assertEquals("foo", out.asString().trim());
   }
   
   private static final class MyApp {
@@ -82,7 +81,7 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
           .with(modifiedZystem).create()
           .command(echoFoo).execute();
       process.waitFor();
-      return out.toString();
+      return out.asString();
     }
   }
 

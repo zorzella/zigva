@@ -41,6 +41,10 @@ public class PassiveSinkToString implements PassiveSink<Character> {
     return data.toString();
   }
 
+  public String asString() {
+    return data.toString();
+  }
+
   @Override
   public void flush() {
   }

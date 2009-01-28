@@ -54,7 +54,7 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
       .command(cat)
       .execute()
       .waitFor();
-    assertEquals("foo", passive.toString());
+    assertEquals("foo", passive.asString());
   }
 
   public void testPipe() {
@@ -72,7 +72,7 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
       .pipe(cat)
       .execute()
       .waitFor();
-    assertEquals("foo", passive.toString());
+    assertEquals("foo", passive.asString());
   }
 
   public void testMultipePipes() {
@@ -96,6 +96,6 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
       .pipe(cat)
       .execute()
       .waitFor();
-    assertEquals("foo", passive.toString());
+    assertEquals("foo", passive.asString());
   }
 }
