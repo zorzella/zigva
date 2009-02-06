@@ -36,7 +36,7 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
   private static final class EchoFoo implements Runnable {
     
     @Inject
-    private CommandExecutor.Builder commandExecutorBuilder;
+    private CommandExecutor commandExecutor;
     
     @Inject
     private OS os;
@@ -44,7 +44,7 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
     public void run() {
       Command echoFoo = os.command("echo", "foo");
       ConvenienceWaitable process = 
-        commandExecutorBuilder.create().command(echoFoo).execute();
+        commandExecutor.command(echoFoo).execute();
       process.waitFor();
     }
   }
@@ -69,7 +69,7 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
     private OS os;
 
     @Inject
-    private CommandExecutor.Builder commandExecutorBuilder;
+    private CommandExecutor commandExecutor;
     
     public String go() {
       PassiveSinkToString out = new PassiveSinkToString();
@@ -77,8 +77,8 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
       Command echoFoo = os.command("echo", "foo");
       
       ConvenienceWaitable process =
-        commandExecutorBuilder
-          .with(modifiedZystem).create()
+        commandExecutor
+        .with(modifiedZystem)
           .command(echoFoo).execute();
       process.waitFor();
       return out.asString();

@@ -20,17 +20,16 @@ import com.google.inject.Provider;
 import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.io.AppendablePassiveSink;
 import com.google.zigva.io.FilePath;
-import com.google.zigva.io.Sink;
 import com.google.zigva.io.RealFileSpec;
 import com.google.zigva.io.SimpleSink;
-import com.google.zigva.io.PassiveSink;
+import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
 import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
 import com.google.zigva.java.io.Writers;
-import com.google.zigva.lang.SourceFactory;
 import com.google.zigva.lang.IoFactory;
 import com.google.zigva.lang.SinkFactory;
+import com.google.zigva.lang.SourceFactory;
 import com.google.zigva.lang.UserInfo;
 import com.google.zigva.lang.Zystem;
 
@@ -107,7 +106,8 @@ public final class RootZystemProvider implements Provider<Zystem> {
     new AppendablePassiveSink.Builder(ROOT_THREAD_FACTORY).withCombo( 
         100, 500, ERR_LOCK).create(Writers.buffered(FileDescriptor.out));
   
-  //TODO: package private constructor?
+  //TODO: package/private constructor?
+  public RootZystemProvider() {}
   
   public Zystem get() {
     return new RealZystem(

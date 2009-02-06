@@ -103,7 +103,6 @@ public class AppendablePassiveSink implements PassiveSink<Character> {
    * 
    * There should be tests for each.
    */
-  //TODO: make private
   private AppendablePassiveSink(
       final ZigvaThreadFactory threadFactory,
       final Appendable out, int capacity, int closeTimeout, Object lock) {

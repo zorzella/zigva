@@ -18,7 +18,6 @@ package com.google.zigva.sh;
 
 import com.google.common.base.Join;
 import com.google.zigva.exec.Killable;
-import com.google.zigva.exec.ZigvaTask;
 import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.io.OutputStreamPassiveSink;
@@ -27,12 +26,10 @@ import com.google.zigva.io.Source;
 import com.google.zigva.java.JavaProcessStarter;
 import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
-import com.google.zigva.lang.IoFactory;
 import com.google.zigva.lang.CommandResponse;
 import com.google.zigva.lang.NaiveWaitable;
 import com.google.zigva.lang.Waitable;
 import com.google.zigva.lang.Waitables;
-import com.google.zigva.lang.ZThread;
 import com.google.zigva.lang.ZigvaInterruptedException;
 import com.google.zigva.lang.Zystem;
 
@@ -61,18 +58,19 @@ class SystemCommand implements Command {
     this.waitables = waitables;
   }
 
-  private static final class JavaProcessZivaTask implements ZigvaTask {
+  //TODO: do away with this class
+  private static final class Helper {
 
     private final Zystem zystem;
     private final List<String> command;
-    private final ZigvaThreadFactory zigvaThreadFactory;
-    private final OutputStreamPassiveSink.Builder outputStreamPassiveSinkBuilder;
-    private final IoFactory ioFactory;
+//    private final ZigvaThreadFactory zigvaThreadFactory;
+//    private final OutputStreamPassiveSink.Builder outputStreamPassiveSinkBuilder;
+//    private final IoFactory ioFactory;
     private final JavaProcessStarter javaProcessStarter;
 
     private JavaProcess process;
     
-    public JavaProcessZivaTask(
+    public Helper(
         Zystem zystem, 
         List<String> command,
         ZigvaThreadFactory zigvaThreadFactory,
@@ -80,32 +78,29 @@ class SystemCommand implements Command {
         JavaProcessStarter javaProcessStarter) {
       this.zystem = zystem;
       this.command = command;
-      this.zigvaThreadFactory = zigvaThreadFactory;
-      this.outputStreamPassiveSinkBuilder = outputStreamPassiveSinkBuilder;
-      this.ioFactory = zystem.ioFactory();
+//      this.zigvaThreadFactory = zigvaThreadFactory;
+//      this.outputStreamPassiveSinkBuilder = outputStreamPassiveSinkBuilder;
+//      this.ioFactory = zystem.ioFactory();
       this.javaProcessStarter = javaProcessStarter;
     }
 
-    @Override
     public void kill() {
       process.kill();
     }
 
-    @Override
     public String getName() {
       return "JavaProcess";
     }
 
-    @Override
-    public void run() {
-      process = startProcess(createAndStartJavaProcess());
-      process.waitFor();
-      if (process.exitValue() != 0) {
-        throw new RuntimeException(String.format(
-            "Process '%s' exited with status '%d'.", 
-            getName(), process.exitValue()));
-      }
-    }
+//    public void run() {
+//      process = startProcess(createAndStartJavaProcess());
+//      process.waitFor();
+//      if (process.exitValue() != 0) {
+//        throw new RuntimeException(String.format(
+//            "Process '%s' exited with status '%d'.", 
+//            getName(), process.exitValue()));
+//      }
+//    }
 
     private Process createAndStartJavaProcess() {
       ProcessBuilder processBuilder = new ProcessBuilder();
@@ -122,40 +117,40 @@ class SystemCommand implements Command {
       return process;
     }
   
-    private JavaProcess startProcess(Process process) {
-  
-      ReaderSource outSource = 
-        new ReaderSource.Builder(new ZigvaThreadFactory())
-      .create(Readers.buffered(process.getInputStream()));
-
-      Thread processStdOutThread = 
-        zigvaThreadFactory.newDaemonThread(
-            ioFactory.out().build(outSource))
-              .ztart();
-
-      ReaderSource errSource = 
-        new ReaderSource.Builder(new ZigvaThreadFactory())
-      .create(Readers.buffered(process.getErrorStream()));
-      Thread processStdErrThread = 
-        zigvaThreadFactory.newDaemonThread(
-            ioFactory.err().build(errSource))
-            .ztart();
-
-      OutputStreamPassiveSink stdInPassiveSink = 
-        outputStreamPassiveSinkBuilder.create(process.getOutputStream());
-
-      ZThread processStdInThread = 
-        zigvaThreadFactory.newDaemonThread(
-          new SimpleSink<Character>(ioFactory.in().build(), stdInPassiveSink))
-            .ztart();
-
-      JavaProcess result = new JavaProcess(
-          process, 
-          processStdInThread, 
-          processStdOutThread, 
-          processStdErrThread);
-      return result;
-    }
+//    private JavaProcess startProcess(Process process) {
+//  
+//      ReaderSource outSource = 
+//        new ReaderSource.Builder(new ZigvaThreadFactory())
+//      .create(Readers.buffered(process.getInputStream()));
+//
+//      Thread processStdOutThread = 
+//        zigvaThreadFactory.newDaemonThread(
+//            ioFactory.out().build(outSource))
+//              .ztart();
+//
+//      ReaderSource errSource = 
+//        new ReaderSource.Builder(new ZigvaThreadFactory())
+//      .create(Readers.buffered(process.getErrorStream()));
+//      Thread processStdErrThread = 
+//        zigvaThreadFactory.newDaemonThread(
+//            ioFactory.err().build(errSource))
+//            .ztart();
+//
+//      OutputStreamPassiveSink stdInPassiveSink = 
+//        outputStreamPassiveSinkBuilder.create(process.getOutputStream());
+//
+//      ZThread processStdInThread = 
+//        zigvaThreadFactory.newDaemonThread(
+//          new SimpleSink<Character>(ioFactory.in().build(), stdInPassiveSink))
+//            .ztart();
+//
+//      JavaProcess result = new JavaProcess(
+//          process, 
+//          processStdInThread, 
+//          processStdOutThread, 
+//          processStdErrThread);
+//      return result;
+//    }
   }
   
   @Override
@@ -220,14 +215,14 @@ class SystemCommand implements Command {
 
   @Override
   public CommandResponse go(Zystem zystem, Source<Character> in) {
-    JavaProcessZivaTask temp = 
-      new JavaProcessZivaTask(
+    Helper helper = 
+      new Helper(
         zystem, 
         command, 
         zigvaThreadFactory, 
         outputStreamPassiveSinkBuilder, 
         javaProcessStarter);
-    final Process process = temp.createAndStartJavaProcess();
+    final Process process = helper.createAndStartJavaProcess();
  
     ReaderSource outSource = 
       new ReaderSource.Builder(new ZigvaThreadFactory())

@@ -34,7 +34,7 @@ import com.google.zigva.lang.Zystem;
 public class CatLiveTest extends GuiceBerryJunit3TestCase {
 
   @Inject
-  private CommandExecutor.Builder commandExecutorBuilder;
+  private CommandExecutor commandExecutor;
   
   @Inject 
   private ZystemSelfBuilder zystem;
@@ -50,7 +50,7 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
         .withIn(source)
         .withOut(sink);
 
-    commandExecutorBuilder.with(modifiedZystem).create()
+    commandExecutor.with(modifiedZystem)
       .command(cat)
       .execute()
       .waitFor();
@@ -67,7 +67,7 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
       zystem
         .withIn(source)
         .withOut(sink);
-    commandExecutorBuilder.with(modifiedZystem).create()
+    commandExecutor.with(modifiedZystem)
       .command(cat)
       .pipe(cat)
       .execute()
@@ -84,7 +84,7 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
     Zystem modifiedZystem = zystem
       .withIn(source)
       .withOut(sink);
-    commandExecutorBuilder.with(modifiedZystem).create()
+    commandExecutor.with(modifiedZystem)
       .command(cat)
       .pipe(cat)
       .pipe(cat)

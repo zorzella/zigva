@@ -18,19 +18,10 @@ package com.google.zigva.exec;
 
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.CommandResponse;
-import com.google.zigva.lang.Immutable;
 import com.google.zigva.lang.Zystem;
 
 public interface CommandExecutor {
 
-  @Immutable
-  public interface Builder {
-    
-    public CommandExecutor create();
-    
-    public Builder with(Zystem zystem);
-  }
-  
   public interface Command {
     CommandResponse go(Zystem zystem, Source<Character> in);
   }
@@ -43,4 +34,6 @@ public interface CommandExecutor {
   }
 
   PreparedCommand command(Command command);
+  
+  CommandExecutor with(Zystem zystem);
 }

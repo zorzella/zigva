@@ -58,4 +58,6 @@ public class PassiveSinkToString implements PassiveSink<Character> {
       }
     };
   }
+  
+  //TODO: think -- should equals to its content return true?
 }

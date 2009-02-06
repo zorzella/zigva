@@ -2,10 +2,12 @@
 package com.google.zigva.exec;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.zigva.collections.CircularBuffer;
-import com.google.zigva.guice.ZigvaThreadFactory;
+import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.io.DataNotReadyException;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
@@ -50,23 +52,37 @@ public class SimpleCommandExecutor implements CommandExecutor {
     return pc;
   }
 
+  @Override
+  public CommandExecutor with(Zystem zystem) {
+    return new SimpleCommandExecutor(zystem, threadRunner);
+  }
+
   static class SimplePreparedCommand implements PreparedCommand {
 
     private final Zystem zystem;
-    private final List<Command> commands;
+    private final ImmutableList<Command> commands;
     private final ThreadRunner threadRunner;
 
-    public SimplePreparedCommand(
+    private SimplePreparedCommand(
         Zystem zystem, 
         Command command, 
         ThreadRunner threadRunner) {
       Preconditions.checkNotNull(command);
       this.zystem = zystem;
-      //TODO: make it immutable?
-      this.commands = Lists.newArrayList(command);
+      this.commands = ImmutableList.of(command);
       this.threadRunner = threadRunner;
     }
 
+    private SimplePreparedCommand(
+        Zystem zystem, 
+        ImmutableList<Command> commands, 
+        ThreadRunner threadRunner) {
+      Preconditions.checkNotNull(commands);
+      this.zystem = zystem;
+      this.commands = commands;
+      this.threadRunner = threadRunner;
+    }
+    
     @Override
     public String toString() {
       return String.format("[%s:%s]", zystem.toString(), commands.toString());
@@ -169,8 +185,11 @@ public class SimpleCommandExecutor implements CommandExecutor {
     
     @Override
     public PreparedCommand pipe(Command command) {
-      commands.add(command);
-      return this;
+      ImmutableList<Command> newCommandList = 
+        ImmutableList.copyOf(Iterables.concat(commands, Lists.newArrayList(command)));
+      SimplePreparedCommand result = 
+        new SimplePreparedCommand(zystem, newCommandList, threadRunner);
+      return result;
     }
   }
   
@@ -265,32 +284,6 @@ public class SimpleCommandExecutor implements CommandExecutor {
     
     public Source<Character> out() {
       return reader;
-    }
-  }
-  
-  
- public static final class Builder implements CommandExecutor.Builder {
-    
-    private final Zystem zystem;
-    private final ZigvaThreadFactory threadFactory;
-    private final ThreadRunner threadRunner;
-
-    @Inject
-    Builder(
-        Zystem zystem, 
-        ZigvaThreadFactory threadFactory, 
-        ThreadRunner threadRunner) {
-      this.zystem = zystem;
-      this.threadFactory = threadFactory;
-      this.threadRunner = threadRunner;
-    }
-    
-    public CommandExecutor create() {
-      return new SimpleCommandExecutor(zystem, threadRunner);
-    }
-    
-    public Builder with(Zystem zystem) {
-      return new Builder(zystem, threadFactory, threadRunner);
     }
   }
 }

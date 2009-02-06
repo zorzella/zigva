@@ -93,7 +93,6 @@ public class OutputStreamPassiveSink implements PassiveSink<Character> {
    * 
    * There should be tests for each.
    */
-  //TODO: make private
   private OutputStreamPassiveSink(
       final ZigvaThreadFactory threadFactory,
       final OutputStream out, int capacity, int closeTimeout, Object lock) {

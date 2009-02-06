@@ -50,8 +50,8 @@ public class ZigvaModule extends AbstractModule {
     bind(Zystem.class).toProvider(zystemProvider);
     bind(JavaProcessStarter.class).to(RealJavaProcessStarter.class);
 //    bind(ZystemScopeHelper.class).toInstance(zystemScopeHelper);
-    bind(CommandExecutor.Builder.class).to(SimpleCommandExecutor.Builder.class);
     bind(ThreadRunner.class).to(SimpleThreadRunner.class).in(Scopes.SINGLETON);
+    bind(CommandExecutor.class).to(SimpleCommandExecutor.class);
   }
   
   public static final class ZystemProvider implements Provider<Zystem> {

@@ -18,7 +18,7 @@ package com.google.zigva.exec;
 
 import com.google.zigva.lang.NamedRunnable;
 
-//TODO: think about the name
+//TODO: this class is a dud -- kill it
 public interface ZigvaTask extends NamedRunnable, Killable {
 
   void kill();
