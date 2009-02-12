@@ -16,7 +16,7 @@
 
 package com.google.zigva.io;
 
-import com.google.zigva.guice.ZigvaThreadFactory;
+import com.google.zigva.lang.ZigvaThreadFactory;
 
 import junit.framework.TestCase;
 

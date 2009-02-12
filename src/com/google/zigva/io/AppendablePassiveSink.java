@@ -18,9 +18,9 @@ package com.google.zigva.io;
 
 import com.google.inject.Inject;
 import com.google.zigva.collections.CircularBuffer;
-import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.lang.NamedRunnable;
 import com.google.zigva.lang.ZigvaInterruptedException;
+import com.google.zigva.lang.ZigvaThreadFactory;
 
 import java.io.Closeable;
 import java.io.Flushable;

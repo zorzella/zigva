@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.zigva.guice;
+package com.google.zigva.lang.impl;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;

@@ -17,7 +17,6 @@
 package com.google.zigva.java;
 
 import com.google.inject.Provider;
-import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.io.AppendablePassiveSink;
 import com.google.zigva.io.FilePath;
 import com.google.zigva.io.RealFileSpec;
@@ -31,6 +30,7 @@ import com.google.zigva.lang.IoFactory;
 import com.google.zigva.lang.SinkFactory;
 import com.google.zigva.lang.SourceFactory;
 import com.google.zigva.lang.UserInfo;
+import com.google.zigva.lang.ZigvaThreadFactory;
 import com.google.zigva.lang.Zystem;
 
 import java.io.File;

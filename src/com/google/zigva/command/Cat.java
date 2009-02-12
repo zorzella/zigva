@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package com.google.zigva.exec;
+package com.google.zigva.command;
 
-public interface Killable {
+import com.google.zigva.exec.CommandExecutor;
+import com.google.zigva.exec.CommandExecutor.Command;
+import com.google.zigva.io.Source;
+import com.google.zigva.lang.CommandResponse;
+import com.google.zigva.lang.Zystem;
 
-  public static class FailedToKillException extends RuntimeException {
+public class Cat implements Command {
 
-    public FailedToKillException(Throwable e) {
-      super(e);
-    }
+  @Override
+  public CommandResponse go(Zystem zystem, Source<Character> in) {
+    return CommandResponse.forOut(this, in);
   }
-  
-  /**
-   * @throws FailedToKillException if
-   */
-  void kill();
-  
 }

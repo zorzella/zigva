@@ -16,10 +16,10 @@
 
 package com.google.zigva.io;
 
+import com.google.zigva.handicap.Static;
 import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
 import com.google.zigva.lang.RegexReplacement;
-import com.google.zigva.sh.Static;
 
 import java.io.BufferedOutputStream;
 import java.io.File;

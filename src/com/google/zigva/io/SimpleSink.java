@@ -1,7 +1,7 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
 package com.google.zigva.io;
 
-import com.google.zigva.exec.KillableCollector;
+import com.google.zigva.util.KillableCollector;
 
 public class SimpleSink<T> implements Sink {
 

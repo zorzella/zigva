@@ -19,10 +19,10 @@ package com.google.zigva.sh;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.zigva.exec.CommandExecutor.Command;
-import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.io.OutputStreamPassiveSink;
 import com.google.zigva.java.JavaProcessStarter;
 import com.google.zigva.lang.Waitables;
+import com.google.zigva.lang.ZigvaThreadFactory;
 
 public class OS {
   

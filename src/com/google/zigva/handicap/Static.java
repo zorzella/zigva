@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-package com.google.zigva.sh;
+package com.google.zigva.handicap;
 
-public class InputProvider {
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.zigva.guice.ZigvaModule;
 
+public class Static {
+
+  public static final Injector injector = Guice.createInjector(
+      new ZigvaModule ());
+  
 }

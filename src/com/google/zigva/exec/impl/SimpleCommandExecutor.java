@@ -1,5 +1,5 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
-package com.google.zigva.exec;
+package com.google.zigva.exec.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -7,7 +7,10 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.zigva.collections.CircularBuffer;
+import com.google.zigva.exec.CommandExecutor;
+import com.google.zigva.exec.ThreadRunner;
 import com.google.zigva.exec.CommandExecutor.Command;
+import com.google.zigva.exec.CommandExecutor.PreparedCommand;
 import com.google.zigva.io.DataNotReadyException;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;

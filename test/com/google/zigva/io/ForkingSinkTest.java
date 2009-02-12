@@ -1,8 +1,8 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
 package com.google.zigva.io;
 
-import com.google.zigva.exec.SimpleThreadRunner;
-import com.google.zigva.guice.ZigvaThreadFactory;
+import com.google.zigva.exec.impl.SimpleThreadRunner;
+import com.google.zigva.lang.ZigvaThreadFactory;
 
 import junit.framework.TestCase;
 

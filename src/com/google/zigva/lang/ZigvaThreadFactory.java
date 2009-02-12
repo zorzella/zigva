@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-package com.google.zigva.exec;
+package com.google.zigva.lang;
 
-import com.google.zigva.exec.CommandExecutor.Command;
-import com.google.zigva.io.Source;
-import com.google.zigva.lang.CommandResponse;
-import com.google.zigva.lang.Zystem;
 
-public class Cat implements Command {
+import java.util.concurrent.ThreadFactory;
+
+public class ZigvaThreadFactory implements ThreadFactory {
 
   @Override
-  public CommandResponse go(Zystem zystem, Source<Character> in) {
-    return CommandResponse.forOut(this, in);
+  public ZThread newThread(Runnable r) {
+    return new ZThread(r);
+  }
+
+  public ZThread newDaemonThread(Runnable r) {
+    ZThread result = new ZThread(r);
+    result.setDaemon(true);
+    return result;
   }
 }

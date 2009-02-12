@@ -17,6 +17,7 @@
 package com.google.zigva.guice;
 
 import com.google.inject.AbstractModule;
+import com.google.zigva.lang.ZigvaThreadFactory;
 
 import java.util.concurrent.ThreadFactory;
 

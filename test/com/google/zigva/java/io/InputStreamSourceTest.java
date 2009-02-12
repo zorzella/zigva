@@ -17,13 +17,13 @@
 package com.google.zigva.java.io;
 
 import com.google.common.collect.Lists;
-import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.FailedToCloseException;
 import com.google.zigva.io.Source;
 import com.google.zigva.io.ThreadCountAsserter;
 import com.google.zigva.lang.ZigvaInterruptedException;
+import com.google.zigva.lang.ZigvaThreadFactory;
 
 import junit.framework.TestCase;
 

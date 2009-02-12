@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.google.zigva.exec;
+package com.google.zigva.util;
 
 import com.google.common.collect.Lists;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.PassiveSink;
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.ExceptionCollection;
+import com.google.zigva.lang.Killable;
 
 import java.util.List;
 

@@ -18,7 +18,6 @@ package com.google.zigva.java.io;
 
 import com.google.inject.Inject;
 import com.google.zigva.collections.CircularBuffer;
-import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.io.DataNotReadyException;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
@@ -26,6 +25,7 @@ import com.google.zigva.io.FailedToCloseException;
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.NamedRunnable;
 import com.google.zigva.lang.ZigvaInterruptedException;
+import com.google.zigva.lang.ZigvaThreadFactory;
 
 import java.io.IOException;
 import java.io.Reader;

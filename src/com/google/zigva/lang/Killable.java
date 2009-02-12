@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package com.google.zigva.sh;
+package com.google.zigva.lang;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.zigva.guice.ZigvaModule;
+public interface Killable {
 
-public class Static {
+  public static class FailedToKillException extends RuntimeException {
 
-  public static final Injector injector = Guice.createInjector(
-      new ZigvaModule ());
+    public FailedToKillException(Throwable e) {
+      super(e);
+    }
+  }
+  
+  /**
+   * @throws FailedToKillException if
+   */
+  void kill();
   
 }

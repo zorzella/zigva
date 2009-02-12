@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.lang;
+package com.google.zigva.lang;
 
 import com.google.zigva.io.FilePath;
 import com.google.zigva.lang.IoFactory;

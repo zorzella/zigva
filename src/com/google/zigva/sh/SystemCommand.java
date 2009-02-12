@@ -17,9 +17,7 @@
 package com.google.zigva.sh;
 
 import com.google.common.base.Join;
-import com.google.zigva.exec.Killable;
 import com.google.zigva.exec.CommandExecutor.Command;
-import com.google.zigva.guice.ZigvaThreadFactory;
 import com.google.zigva.io.OutputStreamPassiveSink;
 import com.google.zigva.io.SimpleSink;
 import com.google.zigva.io.Source;
@@ -27,10 +25,12 @@ import com.google.zigva.java.JavaProcessStarter;
 import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
 import com.google.zigva.lang.CommandResponse;
+import com.google.zigva.lang.Killable;
 import com.google.zigva.lang.NaiveWaitable;
 import com.google.zigva.lang.Waitable;
 import com.google.zigva.lang.Waitables;
 import com.google.zigva.lang.ZigvaInterruptedException;
+import com.google.zigva.lang.ZigvaThreadFactory;
 import com.google.zigva.lang.Zystem;
 
 import java.io.IOException;

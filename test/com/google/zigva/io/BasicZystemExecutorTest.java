@@ -25,10 +25,10 @@ import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.guice.Providers;
 import com.google.zigva.guice.ZigvaModule;
-import com.google.zigva.guice.ZystemSelfBuilder;
 import com.google.zigva.java.RootZystemProvider;
 import com.google.zigva.lang.ConvenienceWaitable;
 import com.google.zigva.lang.Zystem;
+import com.google.zigva.lang.impl.ZystemSelfBuilder;
 import com.google.zigva.sh.OS;
 
 public class BasicZystemExecutorTest extends TearDownTestCase {

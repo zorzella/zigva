@@ -1,10 +1,13 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
-package com.google.zigva.exec;
+package com.google.zigva.exec.impl;
 
 import com.google.inject.Inject;
-import com.google.zigva.guice.ZigvaThreadFactory;
+import com.google.zigva.exec.ThreadRunner;
+import com.google.zigva.lang.Closure;
+import com.google.zigva.lang.ClosureResult;
 import com.google.zigva.lang.Runnables;
 import com.google.zigva.lang.ZRunnable;
+import com.google.zigva.lang.ZigvaThreadFactory;
 
 public class SimpleThreadRunner implements ThreadRunner {
 

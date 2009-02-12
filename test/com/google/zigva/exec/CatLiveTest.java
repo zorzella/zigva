@@ -22,13 +22,14 @@ import com.google.inject.Injector;
 import com.google.inject.testing.guiceberry.GuiceBerryEnv;
 import com.google.inject.testing.guiceberry.junit3.GuiceBerryJunit3TestCase;
 import com.google.zigva.ZigvaEnvs;
+import com.google.zigva.command.Cat;
 import com.google.zigva.guice.ZigvaModule;
-import com.google.zigva.guice.ZystemSelfBuilder;
 import com.google.zigva.io.CharacterSource;
 import com.google.zigva.io.PassiveSinkToString;
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.SinkFactory;
 import com.google.zigva.lang.Zystem;
+import com.google.zigva.lang.impl.ZystemSelfBuilder;
 
 @GuiceBerryEnv(ZigvaEnvs.REGULAR)
 public class CatLiveTest extends GuiceBerryJunit3TestCase {
