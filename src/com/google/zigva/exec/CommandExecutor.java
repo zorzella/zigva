@@ -18,6 +18,7 @@ package com.google.zigva.exec;
 
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.CommandResponse;
+import com.google.zigva.lang.ConvenienceWaitable;
 import com.google.zigva.lang.Zystem;
 
 public interface CommandExecutor {
@@ -28,7 +29,7 @@ public interface CommandExecutor {
   
   public interface PreparedCommand {
 
-    WaitableZivaTask execute();
+    ConvenienceWaitable execute();
 
     PreparedCommand pipe(Command command);
   }

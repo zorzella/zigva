@@ -25,7 +25,6 @@ import com.google.zigva.ZigvaEnvs;
 import com.google.zigva.exec.Cat;
 import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.exec.Echo;
-import com.google.zigva.exec.WaitableZivaTask;
 import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.guice.ZystemSelfBuilder;
 import com.google.zigva.java.io.ReaderSource;
@@ -120,8 +119,11 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
     Zystem localZystem = 
       zystem
         .withOut(actual.asSinkFactory());
-    WaitableZivaTask task = commandExecutor.with(localZystem)
-      .command(myCommand).execute();
+    ConvenienceWaitable task = 
+      commandExecutor
+        .with(localZystem)
+        .command(myCommand)
+        .execute();
     task.waitFor();
     assertEquals("z", actual.asString());
   }

@@ -89,7 +89,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
     }
     
     @Override
-    public WaitableZivaTask execute() {
+    public ConvenienceWaitable execute() {
       Iterator<Command> iterator = commands.iterator();
       Source<Character> nextIn = zystem.ioFactory().in().build();
       
@@ -154,7 +154,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
       final ConvenienceWaitable toWait = Waitables.from(waitableList);
       threadRunner.schedule(runnableCommand);
      
-      return new WaitableZivaTask() {
+      return new ConvenienceWaitable() {
       
         @Override
         public boolean waitFor(long timeout) {
@@ -164,21 +164,6 @@ public class SimpleCommandExecutor implements CommandExecutor {
         @Override
         public void waitFor() {
           waitFor(0);
-        }
-      
-        @Override
-        public String getName() {
-          return "NAME";
-        }
-      
-        @Override
-        public void run() throws RuntimeException {
-          throw new UnsupportedOperationException();
-        }
-      
-        @Override
-        public void kill() {
-          throw new UnsupportedOperationException();
         }
       };
     }
