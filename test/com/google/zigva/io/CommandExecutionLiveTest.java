@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 @GuiceBerryEnv(ZigvaEnvs.REGULAR)
-public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
+public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
 
   @Inject
   private ZystemSelfBuilder zystem;
@@ -86,8 +86,11 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
         .withEnv(fooBarBazIsZ)
         .withOut(out.asSinkFactory());
     
-    ConvenienceWaitable process = commandExecutor.with(localZystem)
-      .command(printenv).execute();
+    ConvenienceWaitable process = 
+      commandExecutor
+        .with(localZystem)
+        .command(printenv)
+        .execute();
     process.waitFor();
     assertEquals(expected, out.asString().trim());
   }
@@ -290,12 +293,13 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
       .command(new MyComplexCommand(os, commandExecutor))
       .execute()
       .waitFor();
-    // TODO jthomas why "\n"?
     assertEquals("foo\n", out.asString());
   }
   
   /**
-   * This class internally calls echo -n foo | cat | grep foo
+   * This class internally calls {@code echo -n foo | cat | grep foo}.
+   * 
+   * <p>Note that "grep" adds a newline at the end, even if "echo -n" does not print one
    */
   private static final class MyComplexCommand implements Command {
 
@@ -345,12 +349,7 @@ public class ZystemExecutorLiveTest extends GuiceBerryJunit3TestCase {
         .pipe(cat)
         .pipe(grepFoo)
         .execute()
-        .waitFor()
-        ;
-
-      
-      
-      
+        .waitFor();
       
       return CommandResponse.forOut(this, temp.get(0));
     }
