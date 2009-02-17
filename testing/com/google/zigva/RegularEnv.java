@@ -17,7 +17,6 @@
 package com.google.zigva;
 
 import com.google.inject.AbstractModule;
-
 import com.google.inject.testing.guiceberry.NoOpTestScopeListener;
 import com.google.inject.testing.guiceberry.TestScopeListener;
 import com.google.zigva.guice.ZigvaModule;

@@ -16,9 +16,6 @@
 
 package com.google.zigva.io;
 
-import com.google.zigva.io.LazyCreateFileAppendable;
-import com.google.zigva.io.ZFile;
-
 import junit.framework.TestCase;
 
 import java.io.File;

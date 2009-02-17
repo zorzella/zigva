@@ -16,7 +16,6 @@
 
 package com.google.zigva.command;
 
-import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.CommandResponse;

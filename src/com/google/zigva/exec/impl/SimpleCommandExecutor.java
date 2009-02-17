@@ -9,8 +9,6 @@ import com.google.inject.Inject;
 import com.google.zigva.collections.CircularBuffer;
 import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.exec.ThreadRunner;
-import com.google.zigva.exec.CommandExecutor.Command;
-import com.google.zigva.exec.CommandExecutor.PreparedCommand;
 import com.google.zigva.io.DataNotReadyException;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;

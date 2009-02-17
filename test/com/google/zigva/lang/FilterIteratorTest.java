@@ -17,10 +17,8 @@
 package com.google.zigva.lang;
 
 import com.google.zigva.collections.FilterIterator;
-import com.google.zigva.lang.Lambda;
 
 import junit.framework.TestCase;
-
 
 import java.util.Arrays;
 import java.util.HashSet;

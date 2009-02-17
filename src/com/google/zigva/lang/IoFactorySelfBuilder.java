@@ -1,9 +1,9 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
 package com.google.zigva.lang;
 
-import com.google.zigva.io.Sink;
-import com.google.zigva.io.SimpleSink;
 import com.google.zigva.io.PassiveSink;
+import com.google.zigva.io.SimpleSink;
+import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
 
 @Immutable

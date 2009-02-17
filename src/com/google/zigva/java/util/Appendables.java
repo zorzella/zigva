@@ -16,10 +16,10 @@
 
 package com.google.zigva.java.util;
 
+import com.google.zigva.io.PassiveSink;
+
 import java.util.Formatter;
 import java.util.Locale;
-
-import com.google.zigva.io.PassiveSink;
 
 public class Appendables {
   

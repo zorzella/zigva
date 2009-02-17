@@ -16,7 +16,6 @@
 
 package com.google.zigva.io;
 
-import java.io.IOException;
 
 public class NullAppendable implements Appendable{
 

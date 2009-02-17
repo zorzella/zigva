@@ -1,7 +1,6 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
 package com.google.zigva.command;
 
-import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.io.CharacterSource;
 import com.google.zigva.io.Source;

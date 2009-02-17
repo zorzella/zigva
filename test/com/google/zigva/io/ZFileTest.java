@@ -16,12 +16,10 @@
 
 package com.google.zigva.io;
 
-import com.google.zigva.io.ZFile;
 import com.google.zigva.io.ZFile.FileCreationFailurePolicy;
 import com.google.zigva.lang.RegexReplacement;
 
 import junit.framework.TestCase;
-
 
 import java.io.File;
 import java.util.Date;
