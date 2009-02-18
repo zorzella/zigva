@@ -5,8 +5,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 
 public class Waitables {
@@ -45,13 +48,16 @@ public class Waitables {
 //    
 //  }
   
-  public static ConvenienceWaitable from(final Iterable<Pair> waitables) {
+  public static ConvenienceWaitable from(final Collection<Pair> waitables) {
     
     ZigvaThreadFactory ztf = new ZigvaThreadFactory();
     
     final Set<ZRunnable> runnables = Sets.newHashSet();
     final Set<ConvenienceWaitable> finished = Sets.newHashSet();
     final List<RuntimeException> exceptions = Lists.newArrayList();
+    
+    final CountDownLatch noOfThreadNotYetFinished = 
+      new CountDownLatch(waitables.size());
     
     for (final Pair waitable : waitables) {
       runnables.add(
@@ -64,10 +70,11 @@ public class Waitables {
               } catch (RuntimeException e) {
                 exceptions.add(waitable.exceptionModifier.modify(e));
               } finally {
-                synchronized(finished) {
-                  finished.add(waitable.waitable);
-                  finished.notify();
-                }
+//                synchronized(finished) {
+//                  finished.add(waitable.waitable);
+//                  finished.notify();
+//                }
+                noOfThreadNotYetFinished.countDown();
               }
             }
 
@@ -81,6 +88,7 @@ public class Waitables {
     for (ZRunnable r : runnables) {
       ztf.newDaemonThread(r).ztart();
     }
+    final int noOfRunnables = runnables.size();
     
     return new ConvenienceWaitable() {
     
@@ -94,19 +102,31 @@ public class Waitables {
         if (timeoutInMillis < 0) {
           throw new IllegalArgumentException();
         }
-        synchronized(finished) {
-          if (finished.size() != runnables.size()) {
-            try {
-              finished.wait(timeoutInMillis);
-            } catch (InterruptedException e) {
-              throw new ZigvaInterruptedException(e);
-            }
-          }
+        
+        //synchronized(finished) {
+//          if (finished.size() != noOfRunnables) {
+//            try {
+//              finished.wait(timeoutInMillis);
+//            } catch (InterruptedException e) {
+//              throw new ZigvaInterruptedException(e);
+//            }
+//          }
+        boolean result;
+        try {
+          result = noOfThreadNotYetFinished.await(timeoutInMillis, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+          throw new ZigvaInterruptedException(e);
+        }
           if (exceptions.size() > 0) {
             throw ExceptionCollection.create(exceptions);
           }
-          return finished.size() == runnables.size();
-        }
+//          int fSize = finished.size();
+//          boolean result = fSize == noOfRunnables;
+//          if (!result) {
+//            System.out.println(fSize + "x" + noOfRunnables);
+//          }
+          return result;
+//        }
         
         
 //        //TODO
@@ -127,14 +147,16 @@ public class Waitables {
     
       @Override
       public void waitFor() {
-        synchronized(finished) {
-          while (finished.size() != runnables.size()) {
+        
+//        synchronized(finished) {
+//          while (finished.size() != runnables.size()) {
             try {
-              finished.wait();
+              noOfThreadNotYetFinished.await();
+//              finished.wait();
             } catch (InterruptedException e) {
               throw new ZigvaInterruptedException(e);
             }
-          }
+//          }
           if (exceptions.size() > 0) {
             throw ExceptionCollection.create(exceptions);
           }
@@ -142,7 +164,7 @@ public class Waitables {
         //        for (ConvenienceWaitable waitable: waitables) {
         //          waitable.waitFor();
         //        }
-      }
+//      }
     };
   }
   
