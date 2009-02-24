@@ -56,16 +56,16 @@ public class ReaderSourceTest extends TestCase {
     assertEquals("znjt", result.toString());
   }
 
-  private ReaderSource getReaderSource(Reader is) {
-    return new ReaderSource.Builder(new ZigvaThreadFactory()).create(is);
+  private Source<Character> getReaderSource(Reader is) {
+    return new SourceOfCharFromReader(new ZigvaThreadFactory()).create(is);
   }
 
-  private ReaderSource getReaderSource(Reader is, int capacity) {
-    return new ReaderSource.Builder(new ZigvaThreadFactory()).withCapacity(capacity).create(is);
+  private Source<Character> getReaderSource(Reader is, int capacity) {
+    return new SourceOfCharFromReader(new ZigvaThreadFactory()).withCapacity(capacity).create(is);
   }
 
-  private ReaderSource getReaderSource(Reader is, int capacity, int closeTimeout) {
-    return new ReaderSource.Builder(new ZigvaThreadFactory())
+  private Source<Character> getReaderSource(Reader is, int capacity, int closeTimeout) {
+    return new SourceOfCharFromReader(new ZigvaThreadFactory())
       .withCapacity(capacity)
       .withCloseTimeout(closeTimeout)
       .create(is);

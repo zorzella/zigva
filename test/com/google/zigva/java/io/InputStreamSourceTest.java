@@ -136,13 +136,13 @@ public class InputStreamSourceTest extends TestCase {
     }
   }
 
-  private static InputStreamSource getInputStreamSource(InputStream is) {
-    return new InputStreamSource.Builder(new ZigvaThreadFactory())
+  private static Source<Integer> getInputStreamSource(InputStream is) {
+    return new SourceOfIntFromInputStream(new ZigvaThreadFactory())
       .create(is);
   }
 
-  private static InputStreamSource getInputStreamSource(InputStream is, int capacity) {
-    return new InputStreamSource.Builder(new ZigvaThreadFactory())
+  private static Source<Integer> getInputStreamSource(InputStream is, int capacity) {
+    return new SourceOfIntFromInputStream(new ZigvaThreadFactory())
       .withCapacity(capacity).create(is);
   }
   

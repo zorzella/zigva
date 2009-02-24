@@ -22,8 +22,8 @@ import com.google.zigva.io.OutputStreamPassiveSink;
 import com.google.zigva.io.SimpleSink;
 import com.google.zigva.io.Source;
 import com.google.zigva.java.JavaProcessStarter;
-import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
+import com.google.zigva.java.io.SourceOfCharFromReader;
 import com.google.zigva.lang.CommandResponse;
 import com.google.zigva.lang.Killable;
 import com.google.zigva.lang.NaiveWaitable;
@@ -63,9 +63,6 @@ class SystemCommand implements Command {
 
     private final Zystem zystem;
     private final List<String> command;
-//    private final ZigvaThreadFactory zigvaThreadFactory;
-//    private final OutputStreamPassiveSink.Builder outputStreamPassiveSinkBuilder;
-//    private final IoFactory ioFactory;
     private final JavaProcessStarter javaProcessStarter;
 
     private JavaProcess process;
@@ -78,9 +75,6 @@ class SystemCommand implements Command {
         JavaProcessStarter javaProcessStarter) {
       this.zystem = zystem;
       this.command = command;
-//      this.zigvaThreadFactory = zigvaThreadFactory;
-//      this.outputStreamPassiveSinkBuilder = outputStreamPassiveSinkBuilder;
-//      this.ioFactory = zystem.ioFactory();
       this.javaProcessStarter = javaProcessStarter;
     }
 
@@ -91,16 +85,6 @@ class SystemCommand implements Command {
     public String getName() {
       return "JavaProcess";
     }
-
-//    public void run() {
-//      process = startProcess(createAndStartJavaProcess());
-//      process.waitFor();
-//      if (process.exitValue() != 0) {
-//        throw new RuntimeException(String.format(
-//            "Process '%s' exited with status '%d'.", 
-//            getName(), process.exitValue()));
-//      }
-//    }
 
     private Process createAndStartJavaProcess() {
       ProcessBuilder processBuilder = new ProcessBuilder();
@@ -116,41 +100,6 @@ class SystemCommand implements Command {
       Process process = javaProcessStarter.start(processBuilder);
       return process;
     }
-  
-//    private JavaProcess startProcess(Process process) {
-//  
-//      ReaderSource outSource = 
-//        new ReaderSource.Builder(new ZigvaThreadFactory())
-//      .create(Readers.buffered(process.getInputStream()));
-//
-//      Thread processStdOutThread = 
-//        zigvaThreadFactory.newDaemonThread(
-//            ioFactory.out().build(outSource))
-//              .ztart();
-//
-//      ReaderSource errSource = 
-//        new ReaderSource.Builder(new ZigvaThreadFactory())
-//      .create(Readers.buffered(process.getErrorStream()));
-//      Thread processStdErrThread = 
-//        zigvaThreadFactory.newDaemonThread(
-//            ioFactory.err().build(errSource))
-//            .ztart();
-//
-//      OutputStreamPassiveSink stdInPassiveSink = 
-//        outputStreamPassiveSinkBuilder.create(process.getOutputStream());
-//
-//      ZThread processStdInThread = 
-//        zigvaThreadFactory.newDaemonThread(
-//          new SimpleSink<Character>(ioFactory.in().build(), stdInPassiveSink))
-//            .ztart();
-//
-//      JavaProcess result = new JavaProcess(
-//          process, 
-//          processStdInThread, 
-//          processStdOutThread, 
-//          processStdErrThread);
-//      return result;
-//    }
   }
   
   @Override
@@ -224,12 +173,12 @@ class SystemCommand implements Command {
         javaProcessStarter);
     final Process process = helper.createAndStartJavaProcess();
  
-    ReaderSource outSource = 
-      new ReaderSource.Builder(new ZigvaThreadFactory())
+    Source<Character> outSource = 
+      new SourceOfCharFromReader(new ZigvaThreadFactory())
         .create(Readers.buffered(process.getInputStream()));
 
-    ReaderSource errSource = 
-      new ReaderSource.Builder(new ZigvaThreadFactory())
+    Source<Character> errSource = 
+      new SourceOfCharFromReader(new ZigvaThreadFactory())
     .create(Readers.buffered(process.getErrorStream()));
     
     OutputStreamPassiveSink stdInPassiveSink = 

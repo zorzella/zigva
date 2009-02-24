@@ -23,8 +23,8 @@ import com.google.zigva.io.RealFileSpec;
 import com.google.zigva.io.SimpleSink;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
-import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
+import com.google.zigva.java.io.SourceOfCharFromReader;
 import com.google.zigva.java.io.Writers;
 import com.google.zigva.lang.IoFactory;
 import com.google.zigva.lang.SinkFactory;
@@ -94,8 +94,8 @@ public final class RootZystemProvider implements Provider<Zystem> {
   private static final Object OUT_LOCK = new StringBuilder("System out lock");
   private static final Object ERR_LOCK = new StringBuilder("System err lock");
 
-  private static final ReaderSource IN_READER_SOURCE = 
-    new ReaderSource.Builder(ROOT_THREAD_FACTORY).withCombo(100, 500, IN_LOCK)
+  private static final Source<Character> IN_READER_SOURCE = 
+    new SourceOfCharFromReader(ROOT_THREAD_FACTORY).withCombo(100, 500, IN_LOCK)
       .create(Readers.buffered(FileDescriptor.in));
 
   private static final AppendablePassiveSink OUT_WRITER_SINK = 

@@ -17,8 +17,8 @@
 package com.google.zigva.io;
 
 import com.google.zigva.handicap.Static;
-import com.google.zigva.java.io.ReaderSource;
 import com.google.zigva.java.io.Readers;
+import com.google.zigva.java.io.SourceOfCharFromReader;
 import com.google.zigva.lang.RegexReplacement;
 
 import java.io.BufferedOutputStream;
@@ -134,7 +134,7 @@ public class ZFile {
     try {
       in = new FileInputStream(toRead);
       StringBuilder builder = new StringBuilder();
-      Source<Character> s = Static.injector.getInstance(ReaderSource.Builder.class)
+      Source<Character> s = Static.injector.getInstance(SourceOfCharFromReader.class)
         .create(Readers.buffered(in));
       while (!s.isEndOfStream()) {
         builder.append(s.read());

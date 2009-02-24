@@ -17,11 +17,14 @@
 package com.google.zigva.java.io;
 
 import com.google.common.base.Preconditions;
+import com.google.zigva.io.FilePath;
 import com.google.zigva.lang.ZigvaInterruptedException;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -43,11 +46,27 @@ public class Readers {
     return new InputStreamReader(in);
   }
 
+  public static Reader from(FilePath in) {
+    return from(new File(in.getCanonicalPath()));
+  }
+
   public static Reader from(FileInputStream in) {
     Reader result = 
       new InputStreamReader(
           Channels.newInputStream(
               in.getChannel()));
+    return result;
+  }
+
+  public static Reader from(File in) {
+    Reader result;
+    try {
+      result = new InputStreamReader(
+          Channels.newInputStream(
+              new FileInputStream(in).getChannel()));
+    } catch (FileNotFoundException e) {
+      throw new RuntimeException(e);
+    }
     return result;
   }
 

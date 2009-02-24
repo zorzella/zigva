@@ -26,7 +26,8 @@ import com.google.zigva.command.Cat;
 import com.google.zigva.command.Echo;
 import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.exec.CommandExecutor.Command;
-import com.google.zigva.java.io.ReaderSource;
+import com.google.zigva.java.io.SourceOfCharFromFile;
+import com.google.zigva.java.io.SourceOfCharFromReader;
 import com.google.zigva.lang.CommandResponse;
 import com.google.zigva.lang.ConvenienceWaitable;
 import com.google.zigva.lang.SinkFactory;
@@ -53,7 +54,10 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
   private OS os;
   
   @Inject
-  private ReaderSource.Builder readerSourceBuilder;
+  private SourceOfCharFromReader readerSourceBuilder;
+
+  @Inject
+  private SourceOfCharFromFile fileSourceBuilder;
   
   @Override
   protected void setUp() throws Exception {
@@ -222,8 +226,7 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
       .execute()
       .waitFor();
     
-    // TODO: make a FileSource
-    ReaderSource in = readerSourceBuilder.create(new FileReader(barFile));
+    Source<Character> in = fileSourceBuilder.create(barFile);
     
     PassiveSinkToString contents = new PassiveSinkToString();
     new SimpleSink<Character>(in, contents).run();

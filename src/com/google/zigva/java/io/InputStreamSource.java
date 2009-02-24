@@ -17,7 +17,6 @@
 
 package com.google.zigva.java.io;
 
-import com.google.inject.Inject;
 import com.google.zigva.collections.CircularBuffer;
 import com.google.zigva.io.DataNotReadyException;
 import com.google.zigva.io.DataSourceClosedException;
@@ -37,7 +36,7 @@ import java.io.InputStream;
  * @author Luiz-Otavio Zorzella
  * @author John Thomas
  */
-public class InputStreamSource implements Source<Integer> {
+class InputStreamSource implements Source<Integer> {
 
   private final Thread producer;
   private final CircularBuffer<Integer> queue;
@@ -46,59 +45,6 @@ public class InputStreamSource implements Source<Integer> {
 
   private boolean isClosed;
   private Integer nextDataPoint;
-
-  public static final class Builder {
-    
-    private static final int DEFAULT_CAPACITY = 100;
-    private static final int DEFAULT_CLOSE_TIMEOUT = 500;
-    
-    private final ZigvaThreadFactory threadFactory;
-    private final int capacity;
-    private final int closeTimeout;
-    private final Object lock;
-    
-    public Builder(
-        ZigvaThreadFactory threadFactory,
-        int capacity, 
-        int closeTimeout, 
-        Object lock
-        ) {
-      super();
-      this.capacity = capacity;
-      this.closeTimeout = closeTimeout;
-      this.lock = lock;
-      this.threadFactory = threadFactory;
-    }
-
-    @Inject
-    public Builder(ZigvaThreadFactory threadFactory) {
-      this(threadFactory, DEFAULT_CAPACITY, DEFAULT_CLOSE_TIMEOUT, 
-          new StringBuilder("LOCK"));
-    }
-    
-    public InputStreamSource create(InputStream in) {
-      if (in == null) {
-        throw new NullPointerException();
-      }
-      return new InputStreamSource(threadFactory, in, capacity, closeTimeout, lock);
-    }
-    
-    public Builder withCapacity(int capacity) {
-      return new Builder(threadFactory, capacity, closeTimeout, lock);
-    }
-
-    public Builder withCloseTimeout(int closeTimeout) {
-      return new Builder(threadFactory, capacity, closeTimeout, lock);
-    }
-
-    public Builder withLock(Object lock) {
-      return new Builder(threadFactory, capacity, closeTimeout, lock);
-    }
-    
-    public Builder withCombo(int capacity, int closeTimeout, Object lock) {
-      return new Builder(threadFactory, capacity, closeTimeout, lock);
-    }
-  }
 
   /*
    * There are 2 possible ways for the Producer to end:
