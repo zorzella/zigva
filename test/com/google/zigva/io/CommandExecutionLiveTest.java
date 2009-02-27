@@ -16,6 +16,11 @@
 
 package com.google.zigva.io;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.util.List;
+import java.util.Map;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
@@ -27,19 +32,12 @@ import com.google.zigva.command.Echo;
 import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.java.io.SourceOfCharFromFile;
-import com.google.zigva.java.io.SourceOfCharFromReader;
 import com.google.zigva.lang.CommandResponse;
 import com.google.zigva.lang.ConvenienceWaitable;
 import com.google.zigva.lang.SinkFactory;
 import com.google.zigva.lang.Zystem;
 import com.google.zigva.lang.impl.ZystemSelfBuilder;
 import com.google.zigva.sh.OS;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.util.List;
-import java.util.Map;
 
 @GuiceBerryEnv(ZigvaEnvs.REGULAR)
 public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
@@ -53,9 +51,6 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
   @Inject
   private OS os;
   
-  @Inject
-  private SourceOfCharFromReader readerSourceBuilder;
-
   @Inject
   private SourceOfCharFromFile fileSourceBuilder;
   
