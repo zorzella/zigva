@@ -12,14 +12,14 @@ public class ForkingSinkTest extends TestCase {
     String expected = "foo bar baz";
     Source<Character> source = new CharacterSource(expected);
 
-    SinkToString sink1 = new SinkToString();
-    SinkToString sink2 = new SinkToString();
+    PumpToString sink1 = new PumpToString();
+    PumpToString sink2 = new PumpToString();
     
     @SuppressWarnings("unchecked")
     Pump sink = new ForkingSinkFactory<Character>(
         new SimpleThreadRunner(new ZigvaThreadFactory()),
-        sink1.asPumpFactory(), 
-        sink2.asPumpFactory()).getPumpFor(source);
+        sink1,
+        sink2).getPumpFor(source);
     
     sink.run();
     

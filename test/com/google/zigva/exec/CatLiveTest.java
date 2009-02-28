@@ -25,9 +25,8 @@ import com.google.zigva.ZigvaEnvs;
 import com.google.zigva.command.Cat;
 import com.google.zigva.guice.ZigvaModule;
 import com.google.zigva.io.CharacterSource;
-import com.google.zigva.io.SinkToString;
+import com.google.zigva.io.PumpToString;
 import com.google.zigva.io.Source;
-import com.google.zigva.lang.PumpFactory;
 import com.google.zigva.lang.Zystem;
 import com.google.zigva.lang.impl.ZystemSelfBuilder;
 
@@ -43,48 +42,45 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
   public void testSunnycase() {
     Injector injector = Guice.createInjector(new ZigvaModule());
     Cat cat = new Cat();
-    SinkToString passive = new SinkToString();
-    PumpFactory<Character> sink = passive.asPumpFactory();
+    PumpToString out = new PumpToString();
     Source<Character> source = new CharacterSource("foo");
     Zystem modifiedZystem = 
       zystem
         .withIn(source)
-        .withOut(sink);
+        .withOut(out);
 
     commandExecutor.with(modifiedZystem)
       .command(cat)
       .execute()
       .waitFor();
-    assertEquals("foo", passive.asString());
+    assertEquals("foo", out.asString());
   }
 
   public void testPipe() {
     Injector injector = Guice.createInjector(new ZigvaModule());
     Cat cat = new Cat();
-    SinkToString passive = new SinkToString();
-    PumpFactory<Character> sink = passive.asPumpFactory();
+    PumpToString out = new PumpToString();
     Source<Character> source = new CharacterSource("foo");
     Zystem modifiedZystem = 
       zystem
         .withIn(source)
-        .withOut(sink);
+        .withOut(out);
     commandExecutor.with(modifiedZystem)
       .command(cat)
       .pipe(cat)
       .execute()
       .waitFor();
-    assertEquals("foo", passive.asString());
+    assertEquals("foo", out.asString());
   }
 
   public void testMultipePipes() {
     Injector injector = Guice.createInjector(new ZigvaModule());
     Cat cat = new Cat();
-    SinkToString passive = new SinkToString();
-    PumpFactory<Character> sink = passive.asPumpFactory();
+    PumpToString out = new PumpToString();
     Source<Character> source = new CharacterSource("foo");
     Zystem modifiedZystem = zystem
       .withIn(source)
-      .withOut(sink);
+      .withOut(out);
     commandExecutor.with(modifiedZystem)
       .command(cat)
       .pipe(cat)
@@ -97,6 +93,6 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
       .pipe(cat)
       .execute()
       .waitFor();
-    assertEquals("foo", passive.asString());
+    assertEquals("foo", out.asString());
   }
 }
