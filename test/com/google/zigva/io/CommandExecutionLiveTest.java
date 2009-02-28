@@ -70,6 +70,7 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
     doTestExistingCommandErr();
   }
   
+  // $ FOOBARBAZ=z printenv FOOBARBAZ
   public void testEnv() throws Exception {
     
     PumpToString out = new PumpToString();
@@ -94,10 +95,10 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
     assertEquals(expected, out.asString().trim());
   }
 
-  
+  // This is like executing "cat" and typing "zigva rules"
   public void testIn() throws Exception {
     PumpToString out = new PumpToString();
-    String expected = "ziva rules";
+    String expected = "zigva rules";
     
     Command cat = os.command("cat");
 
@@ -205,7 +206,7 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
     assertEquals(expected, out.asString().trim());
   }
 
-  // echo foo > /tmp/bar.txt
+  // $ echo foo > /tmp/bar.txt
   public void testLsPipeCatWriteToFile() throws Exception {
     // TODO: make a FilePassiveSink
     File barFile = File.createTempFile("bar", "txt");
@@ -228,9 +229,12 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
     assertEquals("foo", contents.asString());
   }
   
+  // TODO
   // $ ls | (cd ../bar; cat > bar.txt)
   // executor().source("foo").sink(bar).execute();
   
+
+  // $ echo -n foo
   public void testWithParams() throws Exception {
     PumpToString out = new PumpToString();
     String expected = "foo";
@@ -244,6 +248,7 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
     assertEquals(expected, out.asString());
   }
 
+  // $ ls /idontexist
   public void doTestExistingCommandErr() throws Exception {
     PumpToString out = new PumpToString();
     
@@ -264,6 +269,7 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
     }
   }
   
+  // $ /idontexist
   public void testNonExistingCommandErr() throws Exception {
     PumpToString out = new PumpToString();
     Command iDontExist = os.command("/idontexist");
