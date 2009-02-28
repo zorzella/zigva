@@ -31,6 +31,12 @@ import com.google.zigva.lang.ZigvaInterruptedException;
  *
  * </pre>
  * 
+ * <p>When a {@link Source} gets its data from some data structure that needs
+ * closing, it is canonical that it would "close" that data structure sometime
+ * after reading all the data from it and before returning from its own 
+ * {@link #close()} method. Consult the specific javadocs for more information 
+ * on this regard.
+ * 
  * @literal T the type of object returned by {@link #read()}
  * 
  * @author Luiz-Otavio Zorzella, John Thomas

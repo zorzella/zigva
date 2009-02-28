@@ -82,10 +82,15 @@ class ReaderSource implements Source<Character> {
           if (!isClosed) {
             throw e;
           }
-          // "Normal" code path -- we have either interrupted a blocked read or 
-          // put by closing this Source (cases "b" and "d" above).
+          // "Normal" code path -- we have interrupted a blocked "enq" by 
+          // closing this Source (case "d" above).
         } catch (IOException e) {
-          throw new RuntimeException(e);
+          if (!isClosed) {
+            throw new RuntimeException(e);
+          }
+          //TODO: test
+          // "Normal" code path -- we have interrupted a blocked "read" by
+          // closing this Source (case "b" above).
         } finally {
           try {
             in.close();
