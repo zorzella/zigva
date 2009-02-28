@@ -50,11 +50,11 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
   }
 
   public void testSwappedRootZystem() throws Exception {
-    PassiveSinkToString out = new PassiveSinkToString();
+    SinkToString out = new SinkToString();
     Provider<Zystem> rootZystem = 
       Providers.of(
           new ZystemSelfBuilder(new RootZystemProvider().get())
-          .withOut(out.asSinkFactory()));
+          .withOut(out.asPumpFactory()));
     Injector injector = Guice.createInjector(new ZigvaModule(rootZystem));
     EchoFoo task = injector.getInstance(EchoFoo.class);
     task.run();
@@ -72,8 +72,8 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
     private CommandExecutor commandExecutor;
     
     public String go() {
-      PassiveSinkToString out = new PassiveSinkToString();
-      Zystem modifiedZystem = zystem.withOut(out.asSinkFactory());
+      SinkToString out = new SinkToString();
+      Zystem modifiedZystem = zystem.withOut(out.asPumpFactory());
       Command echoFoo = os.command("echo", "foo");
       
       ConvenienceWaitable process =

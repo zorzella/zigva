@@ -17,7 +17,7 @@
 package com.google.zigva.java;
 
 import com.google.inject.Provider;
-import com.google.zigva.io.AppendablePassiveSink;
+import com.google.zigva.io.SinkToAppendable;
 import com.google.zigva.io.FilePath;
 import com.google.zigva.io.RealFileSpec;
 import com.google.zigva.io.PumpToSink;
@@ -57,7 +57,7 @@ public final class RootZystemProvider implements Provider<Zystem> {
     
       @Override
       public Pump getPumpFor(Source<Character> source) {
-        return new PumpToSink<Character>(source, new SpecialPassiveSinkSink<Character>(OUT_WRITER_SINK));
+        return new PumpToSink<Character>(source, new SinkToSink<Character>(OUT_WRITER_SINK));
       }
     };
 
@@ -65,7 +65,7 @@ public final class RootZystemProvider implements Provider<Zystem> {
       
       @Override
       public Pump getPumpFor(Source<Character> source) {
-        return new PumpToSink<Character>(source, new SpecialPassiveSinkSink<Character>(ERR_WRITER_SINK));
+        return new PumpToSink<Character>(source, new SinkToSink<Character>(ERR_WRITER_SINK));
       }
     };
     
@@ -98,12 +98,12 @@ public final class RootZystemProvider implements Provider<Zystem> {
     new SourceOfCharFromReader(ROOT_THREAD_FACTORY).withCombo(100, 500, IN_LOCK)
       .create(Readers.buffered(FileDescriptor.in));
 
-  private static final AppendablePassiveSink OUT_WRITER_SINK = 
-    new AppendablePassiveSink.Builder(ROOT_THREAD_FACTORY).withCombo( 
+  private static final SinkToAppendable OUT_WRITER_SINK = 
+    new SinkToAppendable.Builder(ROOT_THREAD_FACTORY).withCombo( 
         100, 500, OUT_LOCK).create(Writers.buffered(FileDescriptor.out));
 
-  private static final AppendablePassiveSink ERR_WRITER_SINK = 
-    new AppendablePassiveSink.Builder(ROOT_THREAD_FACTORY).withCombo( 
+  private static final SinkToAppendable ERR_WRITER_SINK = 
+    new SinkToAppendable.Builder(ROOT_THREAD_FACTORY).withCombo( 
         100, 500, ERR_LOCK).create(Writers.buffered(FileDescriptor.out));
   
   //TODO: package/private constructor?

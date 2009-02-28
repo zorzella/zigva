@@ -1,7 +1,7 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
 package com.google.zigva.lang;
 
-import com.google.zigva.io.AppendablePassiveSink;
+import com.google.zigva.io.SinkToAppendable;
 import com.google.zigva.io.PumpToSink;
 import com.google.zigva.io.Pump;
 import com.google.zigva.io.Source;
@@ -13,7 +13,7 @@ public class SinkFactories {
     
       @Override
       public Pump getPumpFor(Source<Character> source) {
-        return new PumpToSink<Character> (source, new AppendablePassiveSink(out));
+        return new PumpToSink<Character> (source, new SinkToAppendable(out));
       }
     };
   }

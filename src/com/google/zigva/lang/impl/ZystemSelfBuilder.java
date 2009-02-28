@@ -19,7 +19,7 @@ package com.google.zigva.lang.impl;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.zigva.io.FilePath;
-import com.google.zigva.io.PassiveSink;
+import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
 import com.google.zigva.java.RealZystem;
 import com.google.zigva.lang.IoFactory;
@@ -114,7 +114,7 @@ public final class ZystemSelfBuilder implements Zystem {
 
   private static IoFactory getForOut(
       final IoFactory ioFactory, 
-      final PassiveSink<Character> otherOut) {
+      final Sink<Character> otherOut) {
     return new IoFactorySelfBuilder(
         ioFactory.in(), 
         IoFactorySelfBuilder.out(otherOut), 
@@ -124,7 +124,7 @@ public final class ZystemSelfBuilder implements Zystem {
 
   private static IoFactory getForErr(
       final IoFactory ioFactory, 
-      final PassiveSink<Character> otherErr) {
+      final Sink<Character> otherErr) {
     return new IoFactorySelfBuilder(
         ioFactory.in(), 
         ioFactory.out(), 
@@ -157,7 +157,7 @@ public final class ZystemSelfBuilder implements Zystem {
   }
 
   @Deprecated
-  public ZystemSelfBuilder withOut(PassiveSink<Character> otherOut) {
+  public ZystemSelfBuilder withOut(Sink<Character> otherOut) {
     return new ZystemSelfBuilder(
         new RealZystem(
             getForOut(zystem.ioFactory(), otherOut), 
@@ -182,7 +182,7 @@ public final class ZystemSelfBuilder implements Zystem {
   }
   
   @Deprecated
-  public ZystemSelfBuilder withErr(PassiveSink<Character> otherErr) {
+  public ZystemSelfBuilder withErr(Sink<Character> otherErr) {
     return new ZystemSelfBuilder(
         new RealZystem(
             getForErr(zystem.ioFactory(), otherErr), 

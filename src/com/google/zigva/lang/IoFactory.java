@@ -22,6 +22,7 @@ public interface IoFactory extends IoFactoryMisc {
   
   SourceFactory<Character> in();
   
+  // TODO: rename to outFactory, and create an "out(Source)" method
   PumpFactory<Character> out();
   
   PumpFactory<Character> err();

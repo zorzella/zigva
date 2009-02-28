@@ -18,7 +18,7 @@ package com.google.zigva.sh;
 
 import com.google.common.base.Join;
 import com.google.zigva.exec.CommandExecutor.Command;
-import com.google.zigva.io.OutputStreamPassiveSink;
+import com.google.zigva.io.SinkToOutputStream;
 import com.google.zigva.io.PumpToSink;
 import com.google.zigva.io.Source;
 import com.google.zigva.java.JavaProcessStarter;
@@ -40,14 +40,14 @@ import java.util.Map;
 class SystemCommand implements Command {
   
   private final ZigvaThreadFactory zigvaThreadFactory;
-  private final OutputStreamPassiveSink.Builder outputStreamPassiveSinkBuilder;
+  private final SinkToOutputStream.Builder outputStreamPassiveSinkBuilder;
   private final JavaProcessStarter javaProcessStarter;
   private final List<String> command;
   private final Waitables waitables;
 
   SystemCommand(
       ZigvaThreadFactory zigvaThreadFactory, 
-      OutputStreamPassiveSink.Builder outputStreamPassiveSinkBuilder,
+      SinkToOutputStream.Builder outputStreamPassiveSinkBuilder,
       JavaProcessStarter javaProcessStarter,
       List<String> command, 
       Waitables waitables) {
@@ -71,7 +71,7 @@ class SystemCommand implements Command {
         Zystem zystem, 
         List<String> command,
         ZigvaThreadFactory zigvaThreadFactory,
-        OutputStreamPassiveSink.Builder outputStreamPassiveSinkBuilder, 
+        SinkToOutputStream.Builder outputStreamPassiveSinkBuilder, 
         JavaProcessStarter javaProcessStarter) {
       this.zystem = zystem;
       this.command = command;
@@ -181,7 +181,7 @@ class SystemCommand implements Command {
       new SourceOfCharFromReader(new ZigvaThreadFactory())
     .create(Readers.buffered(process.getErrorStream()));
     
-    OutputStreamPassiveSink stdInPassiveSink = 
+    SinkToOutputStream stdInPassiveSink = 
       outputStreamPassiveSinkBuilder.create(process.getOutputStream());
 
     zigvaThreadFactory.newDaemonThread(

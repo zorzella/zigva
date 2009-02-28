@@ -18,7 +18,7 @@ package com.google.zigva.io;
 
 import com.google.zigva.lang.PumpFactory;
 
-public class PassiveSinkToString implements PassiveSink<Character> {
+public class SinkToString implements Sink<Character> {
 
   private final StringBuilder data = new StringBuilder();
 
@@ -49,12 +49,12 @@ public class PassiveSinkToString implements PassiveSink<Character> {
   public void flush() {
   }
   
-  public PumpFactory<Character> asSinkFactory() {
+  public PumpFactory<Character> asPumpFactory() {
     return new PumpFactory<Character>(){
 
       @Override
       public Pump getPumpFor(Source<Character> source) {
-        return new PumpToSink<Character>(source, PassiveSinkToString.this);
+        return new PumpToSink<Character>(source, SinkToString.this);
       }
     };
   }

@@ -5,11 +5,11 @@ import com.google.zigva.util.KillableCollector;
 
 public class PumpToSink<T> implements Pump {
 
-  private final PassiveSink<T> sink;
+  private final Sink<T> sink;
   private final Source<T> source;
   private final KillableCollector toKill = new KillableCollector();
 
-  public PumpToSink(Source<T> source, PassiveSink<T> sink) {
+  public PumpToSink(Source<T> source, Sink<T> sink) {
     this.sink = sink;
     this.source = source;
   }
@@ -17,7 +17,7 @@ public class PumpToSink<T> implements Pump {
   @Override
   public void run() {
     Source<T> in = toKill.add(source);
-    PassiveSink<T> out = toKill.add(sink);
+    Sink<T> out = toKill.add(sink);
     while (!in.isEndOfStream()) {
       out.write(in.read());
     }

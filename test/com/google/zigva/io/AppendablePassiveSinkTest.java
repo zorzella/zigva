@@ -28,8 +28,8 @@ public class AppendablePassiveSinkTest extends TestCase {
     
     StringWriter out = new StringWriter();
     
-    PassiveSink<Character> sink = 
-      new AppendablePassiveSink.Builder(new ZigvaThreadFactory()).create(out);
+    Sink<Character> sink = 
+      new SinkToAppendable.Builder(new ZigvaThreadFactory()).create(out);
     
     String expected = "foo";
     
@@ -45,7 +45,7 @@ public class AppendablePassiveSinkTest extends TestCase {
 
   public void testAppendableNullIsNotAcceptabler() {
     try {
-      new AppendablePassiveSink.Builder(new ZigvaThreadFactory()).create(null);
+      new SinkToAppendable.Builder(new ZigvaThreadFactory()).create(null);
       fail();
     } catch (IllegalArgumentException expected) {
     }

@@ -13,8 +13,8 @@ import com.google.zigva.io.DataNotReadyException;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.ForkingSinkFactory;
-import com.google.zigva.io.PassiveSink;
-import com.google.zigva.io.PassiveSinkToString;
+import com.google.zigva.io.Sink;
+import com.google.zigva.io.SinkToString;
 import com.google.zigva.io.PumpToSink;
 import com.google.zigva.io.Pump;
 import com.google.zigva.io.Source;
@@ -114,13 +114,13 @@ public class SimpleCommandExecutor implements CommandExecutor {
           
           
           
-          final PassiveSinkToString errMonitor = new PassiveSinkToString();
+          final SinkToString errMonitor = new SinkToString();
           @SuppressWarnings("unchecked")
           PumpFactory<Character> forkedErrFactory =
             new ForkingSinkFactory<Character>(
                 threadRunner, 
                 zystem.ioFactory().err(), 
-                errMonitor.asSinkFactory());
+                errMonitor.asPumpFactory());
 
           
           
@@ -181,7 +181,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
   
   public static class ZigvaPipe {
    
-    private final class MyPassiveSink implements PassiveSink<Character> {
+    private final class MyPassiveSink implements Sink<Character> {
       @Override
       public void write(Character data) throws DataSourceClosedException {
         buffer.enq(data);
@@ -256,7 +256,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
     }
     
     private final MySource reader = new MySource();
-    private final PassiveSink<Character> sink = new MyPassiveSink();
+    private final Sink<Character> sink = new MyPassiveSink();
 
     public PumpFactory<Character> in() {
       return new PumpFactory<Character>(){

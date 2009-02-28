@@ -17,14 +17,14 @@
 package com.google.zigva.java;
 
 import com.google.zigva.io.DataSourceClosedException;
-import com.google.zigva.io.PassiveSink;
+import com.google.zigva.io.Sink;
 
-public class SpecialPassiveSinkSink<T> implements PassiveSink<T> {
+public class SinkToSink<T> implements Sink<T> {
 
-  private final PassiveSink<T> sink;
+  private final Sink<T> sink;
 //  private final Object lock;
   
-  public SpecialPassiveSinkSink(PassiveSink<T> sink) { //, Object lock) {
+  public SinkToSink(Sink<T> sink) { //, Object lock) {
     this.sink = sink;
 //    this.lock = lock;
   }

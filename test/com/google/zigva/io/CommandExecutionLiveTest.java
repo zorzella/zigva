@@ -72,7 +72,7 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
   
   public void testEnv() throws Exception {
     
-    PassiveSinkToString out = new PassiveSinkToString();
+    SinkToString out = new SinkToString();
     Map<String,String> fooBarBazIsZ = Maps.newHashMap();
     String expected = "z";
     String envName = "FOOBARBAZ";
@@ -83,7 +83,7 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
     Zystem localZystem = 
       zystem
         .withEnv(fooBarBazIsZ)
-        .withOut(out.asSinkFactory());
+        .withOut(out.asPumpFactory());
     
     ConvenienceWaitable process = 
       commandExecutor
@@ -96,7 +96,7 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
 
   
   public void testIn() throws Exception {
-    PassiveSinkToString out = new PassiveSinkToString();
+    SinkToString out = new SinkToString();
     String expected = "ziva rules";
     
     Command cat = os.command("cat");
@@ -104,7 +104,7 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
     Zystem localZystem =
       zystem
         .withIn(new CharacterSource(expected))
-        .withOut(out.asSinkFactory());
+        .withOut(out.asPumpFactory());
     
     ConvenienceWaitable process = 
       commandExecutor
@@ -117,10 +117,10 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
 
   public void testNonShell() throws Exception {
     MyCommand myCommand = new MyCommand();
-    PassiveSinkToString actual = new PassiveSinkToString();
+    SinkToString actual = new SinkToString();
     Zystem localZystem = 
       zystem
-        .withOut(actual.asSinkFactory());
+        .withOut(actual.asPumpFactory());
     ConvenienceWaitable task = 
       commandExecutor
         .with(localZystem)
@@ -133,7 +133,7 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
   
   // $ echo foo | cat
   public void testPipe() throws Exception {
-    PassiveSinkToString out = new PassiveSinkToString();
+    SinkToString out = new SinkToString();
     
     String expected = "foo";
     Command echoFoo = os.command("echo", expected);
@@ -141,7 +141,7 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
 
     Zystem localZystem = 
       zystem
-        .withOut(out.asSinkFactory());
+        .withOut(out.asPumpFactory());
     
     ConvenienceWaitable process = 
       commandExecutor
@@ -155,7 +155,7 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
 
   // $ echo foo | cat | cat | cat | grep foo
   public void testMultiplePipes() throws Exception {
-    PassiveSinkToString out = new PassiveSinkToString();
+    SinkToString out = new SinkToString();
 
     String expected = "foo";
     Command cat = os.command("cat");
@@ -164,7 +164,7 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
     
     Zystem localZystem = 
       zystem
-        .withOut(out.asSinkFactory());
+        .withOut(out.asPumpFactory());
 
     ConvenienceWaitable process = 
       commandExecutor
@@ -181,7 +181,7 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
 
   // $ echo foo | cat | Cat | cat | grep foo
   public void testMixOsAndJava() throws Exception {
-    PassiveSinkToString out = new PassiveSinkToString();
+    SinkToString out = new SinkToString();
     
     String expected = "foo";
     Command cat = os.command("cat");
@@ -190,7 +190,7 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
 
     Zystem localZystem = 
       zystem
-        .withOut(out.asSinkFactory());
+        .withOut(out.asPumpFactory());
 
     ConvenienceWaitable process = 
       commandExecutor
@@ -209,8 +209,8 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
   public void testLsPipeCatWriteToFile() throws Exception {
     // TODO: make a FilePassiveSink
     File barFile = File.createTempFile("bar", "txt");
-    AppendablePassiveSink out = 
-      new AppendablePassiveSink(new FileWriter(barFile));
+    SinkToAppendable out = 
+      new SinkToAppendable(new FileWriter(barFile));
     Command ls = new Echo("foo");
     Zystem localZystem =
       zystem.withOut(out);
@@ -223,7 +223,7 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
     
     Source<Character> in = fileSourceBuilder.create(barFile);
     
-    PassiveSinkToString contents = new PassiveSinkToString();
+    SinkToString contents = new SinkToString();
     new PumpToSink<Character>(in, contents).run();
     assertEquals("foo", contents.asString());
   }
@@ -232,12 +232,12 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
   // executor().source("foo").sink(bar).execute();
   
   public void testWithParams() throws Exception {
-    PassiveSinkToString out = new PassiveSinkToString();
+    SinkToString out = new SinkToString();
     String expected = "foo";
     Command echoDashNFoo = os.command("echo", "-n", expected);
 
     Zystem localZystem = zystem
-      .withOut(out.asSinkFactory());
+      .withOut(out.asPumpFactory());
     commandExecutor.with(localZystem)
       .command(echoDashNFoo)
       .execute().waitFor();
@@ -245,12 +245,12 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
   }
 
   public void doTestExistingCommandErr() throws Exception {
-    PassiveSinkToString out = new PassiveSinkToString();
+    SinkToString out = new SinkToString();
     
     Command lsIDontExist = os.command("ls", "/idontexist");
 
     Zystem localZystem = zystem
-      .withOut(out.asSinkFactory());
+      .withOut(out.asPumpFactory());
     try {
       commandExecutor.with(localZystem)
         .command(lsIDontExist)
@@ -265,11 +265,11 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
   }
   
   public void testNonExistingCommandErr() throws Exception {
-    PassiveSinkToString out = new PassiveSinkToString();
+    SinkToString out = new SinkToString();
     Command iDontExist = os.command("/idontexist");
 
     Zystem localZystem = zystem
-      .withOut(out.asSinkFactory());
+      .withOut(out.asPumpFactory());
     try {
       commandExecutor.with(localZystem)
         .command(iDontExist)
@@ -281,9 +281,9 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
   }
 
   public void testComplexCommand() throws Exception {
-    PassiveSinkToString out = new PassiveSinkToString();
+    SinkToString out = new SinkToString();
     Zystem localZystem = zystem
-      .withOut(out.asSinkFactory());
+      .withOut(out.asPumpFactory());
     commandExecutor = commandExecutor
       .with(localZystem);
     

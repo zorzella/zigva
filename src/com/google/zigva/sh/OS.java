@@ -19,7 +19,7 @@ package com.google.zigva.sh;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.zigva.exec.CommandExecutor.Command;
-import com.google.zigva.io.OutputStreamPassiveSink;
+import com.google.zigva.io.SinkToOutputStream;
 import com.google.zigva.java.JavaProcessStarter;
 import com.google.zigva.lang.Waitables;
 import com.google.zigva.lang.ZigvaThreadFactory;
@@ -27,14 +27,14 @@ import com.google.zigva.lang.ZigvaThreadFactory;
 public class OS {
   
   private final ZigvaThreadFactory zigvaThreadFactory;
-  private final OutputStreamPassiveSink.Builder outputStreamPassiveSinkBuilder;
+  private final SinkToOutputStream.Builder outputStreamPassiveSinkBuilder;
   private final JavaProcessStarter javaProcessStarter;
   private final Waitables waitables;
 
   @Inject
   public OS ( 
       ZigvaThreadFactory zigvaThreadFactory, 
-      OutputStreamPassiveSink.Builder outputStreamPassiveSinkBuilder, 
+      SinkToOutputStream.Builder outputStreamPassiveSinkBuilder, 
       JavaProcessStarter javaProcessStarter, 
       Waitables waitables) {
     this.zigvaThreadFactory = zigvaThreadFactory;
