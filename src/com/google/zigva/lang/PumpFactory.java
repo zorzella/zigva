@@ -3,11 +3,11 @@
 
 package com.google.zigva.lang;
 
-import com.google.zigva.io.Sink;
+import com.google.zigva.io.Pump;
 import com.google.zigva.io.Source;
 
-public interface SinkFactory<T> {
+public interface PumpFactory<T> {
   
-  Sink build(Source<T> source);
+  Pump getPumpFor(Source<T> source);
   
 }

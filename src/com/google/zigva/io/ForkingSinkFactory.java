@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.zigva.collections.CircularBuffer;
 import com.google.zigva.exec.ThreadRunner;
 import com.google.zigva.lang.ConvenienceWaitable;
-import com.google.zigva.lang.SinkFactory;
+import com.google.zigva.lang.PumpFactory;
 import com.google.zigva.lang.ZigvaInterruptedException;
 
 import java.util.ArrayList;
@@ -13,47 +13,47 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-public class ForkingSinkFactory<T> implements SinkFactory<T> {
+public class ForkingSinkFactory<T> implements PumpFactory<T> {
 
   private final ThreadRunner threadRunner;
-  private final SinkFactory<T>[] sinkFactories;
+  private final PumpFactory<T>[] sinkFactories;
 
   public ForkingSinkFactory(
       ThreadRunner threadRunner,
-      SinkFactory<T>... sinkFactories) {
+      PumpFactory<T>... sinkFactories) {
     this.threadRunner = threadRunner;
     this.sinkFactories = sinkFactories;
   }
   
   @Override
-  public Sink build(final Source<T> source) {
+  public Pump getPumpFor(final Source<T> source) {
 
     Collection<Source<T>> sources = 
       MultiplexedSource.sources(source, sinkFactories.length);
     Iterator<Source<T>> sourcesIt = sources.iterator();
     
-    final List<Sink> sinks = new ArrayList<Sink>(sinkFactories.length);
+    final List<Pump> sinks = new ArrayList<Pump>(sinkFactories.length);
     
-    for (SinkFactory<T> sinkFactory : sinkFactories) {
-      sinks.add(sinkFactory.build(sourcesIt.next()));
+    for (PumpFactory<T> sinkFactory : sinkFactories) {
+      sinks.add(sinkFactory.getPumpFor(sourcesIt.next()));
     }
     
     return new ASink(sinkFactories, sinks, source);
   }
   
-  private final class ASink implements Sink {
+  private final class ASink implements Pump {
     
-    private final List<Sink> sinks;
+    private final List<Pump> sinks;
     private final Source<T> source;
 
-    private ASink(SinkFactory<T>[] factories, List<Sink> sinks, Source<T> source) {
+    private ASink(PumpFactory<T>[] factories, List<Pump> sinks, Source<T> source) {
       this.sinks = sinks;
       this.source = source;
     }
 
     @Override
     public void kill() {
-      for (Sink sink : sinks) {
+      for (Pump sink : sinks) {
         sink.kill();
       }
     }
@@ -64,7 +64,7 @@ public class ForkingSinkFactory<T> implements SinkFactory<T> {
         Collection<ConvenienceWaitable> waitables = 
           new ArrayList<ConvenienceWaitable>(sinks.size());
         
-        for (Sink sink : sinks) {
+        for (Pump sink : sinks) {
           waitables.add(threadRunner.schedule(sink));
         }
         for (ConvenienceWaitable waitable : waitables) {

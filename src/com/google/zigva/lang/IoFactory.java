@@ -22,8 +22,8 @@ public interface IoFactory extends IoFactoryMisc {
   
   SourceFactory<Character> in();
   
-  SinkFactory<Character> out();
+  PumpFactory<Character> out();
   
-  SinkFactory<Character> err();
+  PumpFactory<Character> err();
   
 }

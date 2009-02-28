@@ -27,7 +27,7 @@ import com.google.zigva.guice.ZigvaModule;
 import com.google.zigva.io.CharacterSource;
 import com.google.zigva.io.PassiveSinkToString;
 import com.google.zigva.io.Source;
-import com.google.zigva.lang.SinkFactory;
+import com.google.zigva.lang.PumpFactory;
 import com.google.zigva.lang.Zystem;
 import com.google.zigva.lang.impl.ZystemSelfBuilder;
 
@@ -44,7 +44,7 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
     Injector injector = Guice.createInjector(new ZigvaModule());
     Cat cat = new Cat();
     PassiveSinkToString passive = new PassiveSinkToString();
-    SinkFactory<Character> sink = passive.asSinkFactory();
+    PumpFactory<Character> sink = passive.asSinkFactory();
     Source<Character> source = new CharacterSource("foo");
     Zystem modifiedZystem = 
       zystem
@@ -62,7 +62,7 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
     Injector injector = Guice.createInjector(new ZigvaModule());
     Cat cat = new Cat();
     PassiveSinkToString passive = new PassiveSinkToString();
-    SinkFactory<Character> sink = passive.asSinkFactory();
+    PumpFactory<Character> sink = passive.asSinkFactory();
     Source<Character> source = new CharacterSource("foo");
     Zystem modifiedZystem = 
       zystem
@@ -80,7 +80,7 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
     Injector injector = Guice.createInjector(new ZigvaModule());
     Cat cat = new Cat();
     PassiveSinkToString passive = new PassiveSinkToString();
-    SinkFactory<Character> sink = passive.asSinkFactory();
+    PumpFactory<Character> sink = passive.asSinkFactory();
     Source<Character> source = new CharacterSource("foo");
     Zystem modifiedZystem = zystem
       .withIn(source)

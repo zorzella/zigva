@@ -34,7 +34,7 @@ import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.java.io.SourceOfCharFromFile;
 import com.google.zigva.lang.CommandResponse;
 import com.google.zigva.lang.ConvenienceWaitable;
-import com.google.zigva.lang.SinkFactory;
+import com.google.zigva.lang.PumpFactory;
 import com.google.zigva.lang.Zystem;
 import com.google.zigva.lang.impl.ZystemSelfBuilder;
 import com.google.zigva.sh.OS;
@@ -224,7 +224,7 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
     Source<Character> in = fileSourceBuilder.create(barFile);
     
     PassiveSinkToString contents = new PassiveSinkToString();
-    new SimpleSink<Character>(in, contents).run();
+    new PumpToSink<Character>(in, contents).run();
     assertEquals("foo", contents.asString());
   }
   
@@ -316,12 +316,12 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
 
       final List<Source<Character>> temp = Lists.newArrayList();
       
-      SinkFactory<Character> foo = new SinkFactory<Character> () {
+      PumpFactory<Character> foo = new PumpFactory<Character> () {
       
         @Override
-        public Sink build(Source<Character> source) {
+        public Pump getPumpFor(Source<Character> source) {
           temp.add(source);
-          return new Sink() {
+          return new Pump() {
           
             @Override
             public void kill() {

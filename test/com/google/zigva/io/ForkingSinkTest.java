@@ -16,10 +16,10 @@ public class ForkingSinkTest extends TestCase {
     PassiveSinkToString sink2 = new PassiveSinkToString();
     
     @SuppressWarnings("unchecked")
-    Sink sink = new ForkingSinkFactory<Character>(
+    Pump sink = new ForkingSinkFactory<Character>(
         new SimpleThreadRunner(new ZigvaThreadFactory()),
         sink1.asSinkFactory(), 
-        sink2.asSinkFactory()).build(source);
+        sink2.asSinkFactory()).getPumpFor(source);
     
     sink.run();
     

@@ -4,5 +4,5 @@ package com.google.zigva.io;
 import com.google.zigva.lang.Killable;
 
 // extends WaitableRunnable?
-public interface Sink extends Runnable, Killable {
+public interface Pump extends Runnable, Killable {
 }

@@ -15,13 +15,13 @@ import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.ForkingSinkFactory;
 import com.google.zigva.io.PassiveSink;
 import com.google.zigva.io.PassiveSinkToString;
-import com.google.zigva.io.SimpleSink;
-import com.google.zigva.io.Sink;
+import com.google.zigva.io.PumpToSink;
+import com.google.zigva.io.Pump;
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.CommandResponse;
 import com.google.zigva.lang.ConvenienceWaitable;
 import com.google.zigva.lang.Runnables;
-import com.google.zigva.lang.SinkFactory;
+import com.google.zigva.lang.PumpFactory;
 import com.google.zigva.lang.Waitables;
 import com.google.zigva.lang.ZRunnable;
 import com.google.zigva.lang.ZigvaInterruptedException;
@@ -116,7 +116,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
           
           final PassiveSinkToString errMonitor = new PassiveSinkToString();
           @SuppressWarnings("unchecked")
-          SinkFactory<Character> forkedErrFactory =
+          PumpFactory<Character> forkedErrFactory =
             new ForkingSinkFactory<Character>(
                 threadRunner, 
                 zystem.ioFactory().err(), 
@@ -126,7 +126,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
           
           
           final ZRunnable errDrainer = threadRunner.schedule(
-              forkedErrFactory.build(commandResponse.err()));
+              forkedErrFactory.getPumpFor(commandResponse.err()));
           waitableList.add(new Waitables.Pair(errDrainer, Waitables.IDENTITY_EXCEPTION_MODIFIER));
           
           exceptionModifier = new Waitables.ExceptionModifier() {
@@ -150,7 +150,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
         waitableList.add(temp);
       }
       final ZRunnable runnableCommand = Runnables.fromRunnable(
-          zystem.ioFactory().out().build(nextIn));
+          zystem.ioFactory().out().getPumpFor(nextIn));
       waitableList.add(new Waitables.Pair(runnableCommand, Waitables.IDENTITY_EXCEPTION_MODIFIER));
       final ConvenienceWaitable toWait = Waitables.from(waitableList);
       threadRunner.schedule(runnableCommand);
@@ -258,12 +258,12 @@ public class SimpleCommandExecutor implements CommandExecutor {
     private final MySource reader = new MySource();
     private final PassiveSink<Character> sink = new MyPassiveSink();
 
-    public SinkFactory<Character> in() {
-      return new SinkFactory<Character>(){
+    public PumpFactory<Character> in() {
+      return new PumpFactory<Character>(){
       
         @Override
-        public Sink build(Source<Character> source) {
-          return new SimpleSink<Character>(source, sink);
+        public Pump getPumpFor(Source<Character> source) {
+          return new PumpToSink<Character>(source, sink);
         }
       };
     }

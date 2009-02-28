@@ -25,7 +25,7 @@ import com.google.zigva.java.RealZystem;
 import com.google.zigva.lang.IoFactory;
 import com.google.zigva.lang.IoFactorySelfBuilder;
 import com.google.zigva.lang.Propertiez;
-import com.google.zigva.lang.SinkFactory;
+import com.google.zigva.lang.PumpFactory;
 import com.google.zigva.lang.UserInfo;
 import com.google.zigva.lang.Zystem;
 
@@ -142,7 +142,7 @@ public final class ZystemSelfBuilder implements Zystem {
             zystem.env()));
   }
 
-  public ZystemSelfBuilder withOut(SinkFactory<Character> otherOut) {
+  public ZystemSelfBuilder withOut(PumpFactory<Character> otherOut) {
     return new ZystemSelfBuilder(
         new RealZystem(
             new IoFactorySelfBuilder(
@@ -167,7 +167,7 @@ public final class ZystemSelfBuilder implements Zystem {
             zystem.env()));
   }
 
-  public ZystemSelfBuilder withErr(SinkFactory<Character> otherErr) {
+  public ZystemSelfBuilder withErr(PumpFactory<Character> otherErr) {
     return new ZystemSelfBuilder(
         new RealZystem(
             new IoFactorySelfBuilder(

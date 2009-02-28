@@ -19,7 +19,7 @@ package com.google.zigva.sh;
 import com.google.common.base.Join;
 import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.io.OutputStreamPassiveSink;
-import com.google.zigva.io.SimpleSink;
+import com.google.zigva.io.PumpToSink;
 import com.google.zigva.io.Source;
 import com.google.zigva.java.JavaProcessStarter;
 import com.google.zigva.java.io.Readers;
@@ -185,7 +185,7 @@ class SystemCommand implements Command {
       outputStreamPassiveSinkBuilder.create(process.getOutputStream());
 
     zigvaThreadFactory.newDaemonThread(
-      new SimpleSink<Character>(in, stdInPassiveSink))
+      new PumpToSink<Character>(in, stdInPassiveSink))
         .ztart();
     
     final Waitable waitable = waitables.from(new NaiveWaitable() {

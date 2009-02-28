@@ -2,16 +2,16 @@
 package com.google.zigva.lang;
 
 import com.google.zigva.io.PassiveSink;
-import com.google.zigva.io.SimpleSink;
-import com.google.zigva.io.Sink;
+import com.google.zigva.io.PumpToSink;
+import com.google.zigva.io.Pump;
 import com.google.zigva.io.Source;
 
 @Immutable
 public class IoFactorySelfBuilder implements IoFactory {
 
   private final SourceFactory<Character> inFactory; 
-  private final SinkFactory<Character> outFactory; 
-  private final SinkFactory<Character> errFactory;
+  private final PumpFactory<Character> outFactory; 
+  private final PumpFactory<Character> errFactory;
   private final IoFactoryMisc misc;
 
   public IoFactorySelfBuilder(IoFactory ioFactory, IoFactoryMisc misc) {
@@ -20,8 +20,8 @@ public class IoFactorySelfBuilder implements IoFactory {
   
   public IoFactorySelfBuilder(
       SourceFactory<Character> inFactory, 
-      SinkFactory<Character> outFactory, 
-      SinkFactory<Character> errFactory, IoFactoryMisc misc) {
+      PumpFactory<Character> outFactory, 
+      PumpFactory<Character> errFactory, IoFactoryMisc misc) {
     this.inFactory = inFactory;
     this.outFactory = outFactory;
     this.errFactory = errFactory;
@@ -40,22 +40,22 @@ public class IoFactorySelfBuilder implements IoFactory {
     return new IoFactorySelfBuilder(this.in(), this.out(), err(err), misc);
   }
 
-  public static SinkFactory<Character> err(final PassiveSink<Character> err) {
-    return new SinkFactory<Character>() {
+  public static PumpFactory<Character> err(final PassiveSink<Character> err) {
+    return new PumpFactory<Character>() {
     
       @Override
-      public Sink build(Source<Character> source) {
-        return new SimpleSink<Character>(source, err);
+      public Pump getPumpFor(Source<Character> source) {
+        return new PumpToSink<Character>(source, err);
       }
     };
   }
 
-  public static SinkFactory<Character> out(final PassiveSink<Character> out) {
-    return new SinkFactory<Character>() {
+  public static PumpFactory<Character> out(final PassiveSink<Character> out) {
+    return new PumpFactory<Character>() {
     
       @Override
-      public Sink build(Source<Character> source) {
-        return new SimpleSink<Character>(source, out);
+      public Pump getPumpFor(Source<Character> source) {
+        return new PumpToSink<Character>(source, out);
       }
     };
   }
@@ -80,12 +80,12 @@ public class IoFactorySelfBuilder implements IoFactory {
   }
 
   @Override
-  public SinkFactory<Character> out() {
+  public PumpFactory<Character> out() {
     return outFactory;
   }
 
   @Override
-  public SinkFactory<Character> err() {
+  public PumpFactory<Character> err() {
     return errFactory;
   }
 }
