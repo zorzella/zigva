@@ -135,7 +135,8 @@ public class SimpleCommandExecutor implements CommandExecutor {
             public RuntimeException modify(RuntimeException exception) {
               
               errDrainer.waitFor();
-              return new RuntimeException(String.format(
+              // TODO: document this exception type
+              return new CommandReturnedErrorCodeException(String.format(
                   "stderr of command was:\n" +
                   "******************************************\n" +
                   "%s \n" +

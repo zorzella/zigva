@@ -5,6 +5,22 @@
   <property environment="env"/>
   <property file="build.properties"/>
 
+  <path id="project.class.path">
+    <pathelement location="${build.dir}/classes"/>
+    <pathelement location="${lib.dir}/google-collect-snapshot-20090211.jar"/>
+    <pathelement location="${lib.dir}/guice-1.0.jar"/>
+    <pathelement location="${lib.dir}/guice-commands-snapshot-20080305.jar"/>
+    <pathelement location="${lib.dir}/servlet-api-2.4.jar"/>
+  </path>
+
+  <path id="project.test.class.path">
+    <path refid="project.class.path"/>
+    <pathelement location="${lib.dir}/easymock.jar"/>
+    <pathelement location="${lib.dir}/guiceberry-1.2.3.jar"/>
+    <pathelement location="${lib.dir}/junit3.8.1.jar"/>
+    <pathelement location="${lib.dir}/tl4j-1.1.0.jar"/>
+  </path>
+
   <!-- can be overridden at the command line with -Dversion=
        or in IDEA, in the ant properties dialog -->
   <target name="compile" description="Compile Java source.">
@@ -12,33 +28,13 @@
     <javac srcdir="${src.dir}"
          debug="on"
          target="${target}"
-         destdir="${build.dir}/classes">
-      <classpath>
-        <pathelement location="${build.dir}/classes"/>
-        <pathelement location="${lib.dir}/google-collect-snapshot-20090211.jar"/>
-        <pathelement location="${lib.dir}/guice-1.0.jar"/>
-        <pathelement location="${lib.dir}/guice-commands-snapshot-20080305.jar"/>
-        <pathelement location="${lib.dir}/junit3.8.1.jar"/>
-        <pathelement location="${lib.dir}/servlet-api-2.4.jar"/>
-        <pathelement location="${lib.dir}/tl4j-1.1.0.jar"/>
-      </classpath>
+         destdir="${build.dir}/classes"
+         classpathref="project.class.path">
     </javac>
     <!-- copy toDir="${build.dir}/classes">
       <fileset dir="${src.dir}" excludes="**/*.java"/>
     </copy -->
   </target>
-
-  <path id="project.class.path">
-    <pathelement location="${build.dir}/classes"/>
-    <pathelement location="${lib.dir}/easymock.jar"/>
-    <pathelement location="${lib.dir}/google-collect-snapshot-20090211.jar"/>
-    <pathelement location="${lib.dir}/guice-1.0.jar"/>
-    <pathelement location="${lib.dir}/guice-commands-snapshot-20080305.jar"/>
-    <pathelement location="${lib.dir}/guiceberry-1.1.5.jar"/>
-    <pathelement location="${lib.dir}/junit3.8.1.jar"/>
-    <pathelement location="${lib.dir}/servlet-api-2.4.jar"/>
-    <pathelement location="${lib.dir}/tl4j-1.1.0.jar"/>
-  </path>
 
   <target name="testing.compile"
       depends="compile"
@@ -48,7 +44,7 @@
          debug="on"
          target="${target}"
          destdir="${build.dir}/testing"
-    	   classpathref="project.class.path"
+    	   classpathref="project.test.class.path"
     	>
     </javac>
   </target>
@@ -61,7 +57,7 @@
          debug="on"
          target="${target}"
          destdir="${build.dir}/test"
-        classpathref="project.class.path"
+        classpathref="project.test.class.path"
     	>
     	<classpath>
     		<pathelement location="${build.dir}/test"/>
@@ -80,7 +76,7 @@
   		printsummary="yes" 
   		haltonfailure="yes">
       <classpath
-      	refid="project.class.path"/>
+      	refid="project.test.class.path"/>
       <classpath>
         <pathelement location="${build.dir}/test"/>
         <pathelement location="${build.dir}/testing"/>
@@ -104,7 +100,7 @@
         classname="junit.textui.TestRunner"
         failonerror="true"
         taskname="junit"
-        classpathref="project.class.path"
+        classpathref="project.test.class.path"
   	>
       <arg value="${test.class}"/>
     </java -->
@@ -135,7 +131,7 @@
 	 </jar>
   </target>
 	
-  <target name="dist" depends="jar, jarsrc, javadoc"
+  <target name="dist" depends="test, jar, jarsrc, javadoc"
        description="Build entire distribution.">
     <copy toDir="${build.dir}/dist/zigva-${version}" file="COPYING"/>
     <copy toDir="${build.dir}/dist/zigva-${version}">
@@ -155,7 +151,7 @@
          author="true"
          protected="true"
          windowtitle="Zigva"
-    	   classpathref="project.class.path"
+    	   classpathref="project.test.class.path"
     	   >
       <sourcepath>
         <pathelement location="${src.dir}"/>
