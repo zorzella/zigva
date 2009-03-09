@@ -207,10 +207,8 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
 
   // $ echo foo > /tmp/bar.txt
   public void testLsPipeCatWriteToFile() throws Exception {
-    // TODO: make a FilePassiveSink
     File barFile = File.createTempFile("bar", "txt");
-    SinkToAppendable out = 
-      new SinkToAppendable(new FileWriter(barFile));
+    PumpFactory<Character> out = CharacterPumpFactories.forFile(barFile);
     Command ls = new Echo("foo");
     Zystem localZystem =
       zystem.withOut(out);
@@ -256,9 +254,11 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
     Zystem localZystem = zystem
       .withOut(out);
     try {
-      commandExecutor.with(localZystem)
+      commandExecutor
+        .with(localZystem)
         .command(lsIDontExist)
-        .execute().waitFor();
+        .execute()
+        .waitFor();
       fail();
     } catch (RuntimeException expected) {
       //TODO brittle UNIXism
@@ -276,9 +276,11 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
     Zystem localZystem = zystem
       .withOut(out);
     try {
-      commandExecutor.with(localZystem)
+      commandExecutor
+        .with(localZystem)
         .command(iDontExist)
-        .execute().waitFor();
+        .execute()
+        .waitFor();
       fail();
     } catch (RuntimeException expected) {
       // TODO: can we assert something about the exception?
@@ -289,10 +291,8 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
     PumpToString out = new PumpToString();
     Zystem localZystem = zystem
       .withOut(out);
-    commandExecutor = commandExecutor
-      .with(localZystem);
-    
     commandExecutor
+      .with(localZystem)
       .command(new MyComplexCommand(os, commandExecutor))
       .execute()
       .waitFor();

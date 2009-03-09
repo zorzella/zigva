@@ -2,7 +2,6 @@
 
 package com.google.zigva.io;
 
-
 public interface PumpFactory<T> {
   
   Pump getPumpFor(Source<T> source);
