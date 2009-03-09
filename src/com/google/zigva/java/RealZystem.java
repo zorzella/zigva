@@ -18,10 +18,10 @@ package com.google.zigva.java;
 
 import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.io.FilePath;
-import com.google.zigva.lang.IoFactory;
+import com.google.zigva.io.IoFactory;
 import com.google.zigva.lang.Propertiez;
 import com.google.zigva.lang.UserInfo;
-import com.google.zigva.lang.Zystem;
+import com.google.zigva.sys.Zystem;
 
 import java.net.UnknownHostException;
 import java.util.Map;

@@ -19,7 +19,7 @@ package com.google.zigva.exec;
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.CommandResponse;
 import com.google.zigva.lang.ConvenienceWaitable;
-import com.google.zigva.lang.Zystem;
+import com.google.zigva.sys.Zystem;
 
 public interface CommandExecutor {
 

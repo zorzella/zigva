@@ -17,21 +17,21 @@
 package com.google.zigva.java;
 
 import com.google.inject.Provider;
+import com.google.zigva.io.IoFactory;
+import com.google.zigva.io.PumpFactory;
 import com.google.zigva.io.SinkToAppendable;
 import com.google.zigva.io.FilePath;
 import com.google.zigva.io.RealFileSpec;
 import com.google.zigva.io.PumpToSink;
 import com.google.zigva.io.Pump;
 import com.google.zigva.io.Source;
+import com.google.zigva.io.SourceFactory;
 import com.google.zigva.java.io.Readers;
 import com.google.zigva.java.io.SourceOfCharFromReader;
 import com.google.zigva.java.io.Writers;
-import com.google.zigva.lang.IoFactory;
-import com.google.zigva.lang.PumpFactory;
-import com.google.zigva.lang.SourceFactory;
 import com.google.zigva.lang.UserInfo;
 import com.google.zigva.lang.ZigvaThreadFactory;
-import com.google.zigva.lang.Zystem;
+import com.google.zigva.sys.Zystem;
 
 import java.io.File;
 import java.io.FileDescriptor;

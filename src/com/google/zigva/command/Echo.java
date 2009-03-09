@@ -5,7 +5,7 @@ import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.io.CharacterSource;
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.CommandResponse;
-import com.google.zigva.lang.Zystem;
+import com.google.zigva.sys.Zystem;
 
 public class Echo implements Command {
 

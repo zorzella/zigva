@@ -28,7 +28,7 @@ import com.google.zigva.java.JavaProcessStarter;
 import com.google.zigva.java.RealFileRepository;
 import com.google.zigva.java.RealJavaProcessStarter;
 import com.google.zigva.java.RootZystemProvider;
-import com.google.zigva.lang.Zystem;
+import com.google.zigva.sys.Zystem;
 
 public class ZigvaModule extends AbstractModule {
 

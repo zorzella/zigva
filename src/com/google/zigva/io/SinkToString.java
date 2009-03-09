@@ -16,7 +16,6 @@
 
 package com.google.zigva.io;
 
-import com.google.zigva.lang.PumpFactory;
 
 public class SinkToString implements Sink<Character> {
 

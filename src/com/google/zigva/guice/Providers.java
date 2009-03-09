@@ -17,7 +17,7 @@
 package com.google.zigva.guice;
 
 import com.google.inject.Provider;
-import com.google.zigva.lang.Zystem;
+import com.google.zigva.sys.Zystem;
 
 //TODO: kill this class
 public class Providers {

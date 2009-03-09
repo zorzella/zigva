@@ -1,7 +1,6 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
 package com.google.zigva.io;
 
-import com.google.zigva.lang.PumpFactory;
 
 /**
  * This is a {@link PumpFactory} that builds {@link Pump}s that read from their

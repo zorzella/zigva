@@ -14,28 +14,18 @@
  * limitations under the License.
  */
 
-package com.google.zigva.lang;
+package com.google.zigva.io;
 
-import com.google.zigva.io.FilePath;
 
-import java.util.Map;
+public interface IoFactory extends IoFactoryMisc {
 
-public interface Zystem {
-
-  Propertiez properties();
+  public interface ErrorHandler {}
   
-  Map<String,String> env();
+  SourceFactory<Character> in();
   
-//  environment
+  // TODO: rename to outFactory, and create an "out(Source)" method
+  PumpFactory<Character> out();
   
-  String getHostname();
-  
-  FilePath getCurrentDir();
-  
-  FilePath getHomeDir();
-  
-  IoFactory ioFactory();
-  
-  UserInfo userInfo();
+  PumpFactory<Character> err();
   
 }

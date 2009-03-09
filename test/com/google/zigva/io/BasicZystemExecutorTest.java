@@ -27,9 +27,9 @@ import com.google.zigva.guice.Providers;
 import com.google.zigva.guice.ZigvaModule;
 import com.google.zigva.java.RootZystemProvider;
 import com.google.zigva.lang.ConvenienceWaitable;
-import com.google.zigva.lang.Zystem;
 import com.google.zigva.lang.impl.ZystemSelfBuilder;
 import com.google.zigva.sh.OS;
+import com.google.zigva.sys.Zystem;
 
 public class BasicZystemExecutorTest extends TearDownTestCase {
   

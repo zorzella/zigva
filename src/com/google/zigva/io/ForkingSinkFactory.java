@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import com.google.zigva.collections.CircularBuffer;
 import com.google.zigva.exec.ThreadRunner;
 import com.google.zigva.lang.ConvenienceWaitable;
-import com.google.zigva.lang.PumpFactory;
 import com.google.zigva.lang.ZigvaInterruptedException;
 
 import java.util.ArrayList;

@@ -27,8 +27,8 @@ import com.google.zigva.guice.ZigvaModule;
 import com.google.zigva.io.CharacterSource;
 import com.google.zigva.io.PumpToString;
 import com.google.zigva.io.Source;
-import com.google.zigva.lang.Zystem;
 import com.google.zigva.lang.impl.ZystemSelfBuilder;
+import com.google.zigva.sys.Zystem;
 
 @GuiceBerryEnv(ZigvaEnvs.REGULAR)
 public class CatLiveTest extends GuiceBerryJunit3TestCase {

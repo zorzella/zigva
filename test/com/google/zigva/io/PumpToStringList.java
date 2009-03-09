@@ -2,7 +2,6 @@
 package com.google.zigva.io;
 
 import com.google.common.collect.Lists;
-import com.google.zigva.lang.PumpFactory;
 
 import java.util.List;
 

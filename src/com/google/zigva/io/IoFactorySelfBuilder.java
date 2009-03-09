@@ -1,10 +1,7 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
-package com.google.zigva.lang;
+package com.google.zigva.io;
 
-import com.google.zigva.io.Sink;
-import com.google.zigva.io.PumpToSink;
-import com.google.zigva.io.Pump;
-import com.google.zigva.io.Source;
+import com.google.zigva.lang.Immutable;
 
 @Immutable
 public class IoFactorySelfBuilder implements IoFactory {
