@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import com.google.zigva.collections.CircularBuffer;
 import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.exec.ThreadRunner;
+import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.io.DataNotReadyException;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
@@ -58,10 +59,18 @@ public class SimpleCommandExecutor implements CommandExecutor {
     return new SimpleCommandExecutor(zystem, threadRunner);
   }
 
+  private enum PipeStrategy {
+    SIMPLE,
+    SWITCH;
+  }
+  
   static class SimplePreparedCommand implements PreparedCommand {
 
     private final Zystem zystem;
-    private final ImmutableList<Command> commands;
+    private final Iterable<Command> commands;
+    // Note there will always be one less entry here than in "commands"
+    // TODO document
+    private final Iterable<PipeStrategy> pipeStrategies;
     private final ThreadRunner threadRunner;
 
     private SimplePreparedCommand(
@@ -71,16 +80,19 @@ public class SimpleCommandExecutor implements CommandExecutor {
       Preconditions.checkNotNull(command);
       this.zystem = zystem;
       this.commands = ImmutableList.of(command);
+      this.pipeStrategies = ImmutableList.of();
       this.threadRunner = threadRunner;
     }
 
     private SimplePreparedCommand(
         Zystem zystem, 
-        ImmutableList<Command> commands, 
+        Iterable<Command> commands, 
+        Iterable<PipeStrategy> pipeStrategies,
         ThreadRunner threadRunner) {
       Preconditions.checkNotNull(commands);
       this.zystem = zystem;
       this.commands = commands;
+      this.pipeStrategies = pipeStrategies;
       this.threadRunner = threadRunner;
     }
     
@@ -91,28 +103,46 @@ public class SimpleCommandExecutor implements CommandExecutor {
     
     @Override
     public ConvenienceWaitable execute() {
-      Iterator<Command> iterator = commands.iterator();
+      Iterator<Command> commandsIterator = commands.iterator();
+      Iterator<PipeStrategy> pipeStrategiesIterator = pipeStrategies.iterator();
       Source<Character> nextIn = zystem.ioFactory().in().build();
       
       final List<Waitables.Pair> waitableList = Lists.newArrayList();
       
+      while (commandsIterator.hasNext()) {
 
-      while (iterator.hasNext()) {
-
-
-        Command command = iterator.next();
+        Command command = commandsIterator.next();
         CommandResponse commandResponse = command.go(zystem, nextIn);
-        
-        // TODO: swap etc
-        nextIn = commandResponse.out();
+
+        PipeStrategy pipeStrategy = null;
+        if (pipeStrategiesIterator.hasNext()) {
+          pipeStrategy = pipeStrategiesIterator.next();
+        }
+
+        Source<Character> err = commandResponse.err();
+        Source<Character> out = commandResponse.out();
+
+        if (pipeStrategy == null) {
+          // The very last command will have an implied "out" strategy
+          nextIn = out;
+        } else {
+          switch (pipeStrategy) {
+            case SIMPLE:
+              nextIn = out;
+              break;
+            case SWITCH:
+              nextIn = err;
+              err = out;
+              break;
+            default:
+              throw new UnsupportedOperationException();
+          } 
+        } 
         
         Waitables.ExceptionModifier exceptionModifier = 
           Waitables.IDENTITY_EXCEPTION_MODIFIER;
         
-        if (commandResponse.err() != null) {
-          
-          
-          
+        if (err != null) {
           
           final SinkToString errMonitor = new SinkToString();
           @SuppressWarnings("unchecked")
@@ -121,12 +151,9 @@ public class SimpleCommandExecutor implements CommandExecutor {
                 threadRunner, 
                 zystem.ioFactory().err(), 
                 errMonitor.asPumpFactory());
-
-          
-          
           
           final ZRunnable errDrainer = threadRunner.schedule(
-              forkedErrFactory.getPumpFor(commandResponse.err()));
+              forkedErrFactory.getPumpFor(err));
           waitableList.add(new Waitables.Pair(errDrainer, Waitables.IDENTITY_EXCEPTION_MODIFIER));
           
           exceptionModifier = new Waitables.ExceptionModifier() {
@@ -172,12 +199,30 @@ public class SimpleCommandExecutor implements CommandExecutor {
     
     @Override
     public PreparedCommand pipe(Command command) {
-      ImmutableList<Command> newCommandList = 
-        ImmutableList.copyOf(Iterables.concat(commands, Lists.newArrayList(command)));
+      return pipe(command, PipeStrategy.SIMPLE);
+    }
+      
+    @Override
+    public PreparedCommand switchPipe(Command command) {
+      return pipe(command, PipeStrategy.SWITCH);
+    }
+
+    public PreparedCommand pipe(Command command, PipeStrategy pipeStrategy) {
+      //TODO: this implementation of concat seems suboptimal to what I need. Not
+      // a big deal, but...
+      Iterable<Command> newCommandIterable = 
+        Iterables.concat(commands, Lists.newArrayList(command));
+      Iterable<PipeStrategy> newPipeStrategyIterable = 
+        Iterables.concat(pipeStrategies, Lists.newArrayList(pipeStrategy));
       SimplePreparedCommand result = 
-        new SimplePreparedCommand(zystem, newCommandList, threadRunner);
+        new SimplePreparedCommand(
+            zystem, 
+            newCommandIterable, 
+            newPipeStrategyIterable, 
+            threadRunner);
       return result;
     }
+
   }
   
   public static class ZigvaPipe {

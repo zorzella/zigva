@@ -69,11 +69,11 @@ public class CommandResponse implements ConvenienceWaitable {
   }
 
   public static CommandResponse forOutErr(
-      Command c,
+      Command command,
       Source<Character> out, 
       Source<Character> err, 
       Waitable waitable) {
-    return new CommandResponse(c, out, err, Waitables.from(waitable));
+    return new CommandResponse(command, out, err, Waitables.from(waitable));
   }
 
   public Source<Character> out() {

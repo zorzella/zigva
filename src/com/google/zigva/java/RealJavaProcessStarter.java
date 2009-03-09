@@ -27,7 +27,8 @@ public class RealJavaProcessStarter implements JavaProcessStarter {
     try {
       return processBuilder.start();
     } catch (IOException e) {
-      throw new RuntimeException(String.format(
+      // TODO: document this exception
+      throw new ProcessFailedToStartException(String.format(
           "Failed to start process '%s' in '%s' with env '%s'.", 
           Join.join(" ", processBuilder.command()), 
           processBuilder.directory().toString(),

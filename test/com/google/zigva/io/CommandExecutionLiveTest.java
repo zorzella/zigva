@@ -26,6 +26,8 @@ import com.google.zigva.command.Cat;
 import com.google.zigva.command.Echo;
 import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.exec.CommandExecutor.Command;
+import com.google.zigva.exec.impl.CommandReturnedErrorCodeException;
+import com.google.zigva.java.ProcessFailedToStartException;
 import com.google.zigva.java.io.SourceOfCharFromFile;
 import com.google.zigva.lang.CommandResponse;
 import com.google.zigva.lang.ConvenienceWaitable;
@@ -34,7 +36,6 @@ import com.google.zigva.sh.OS;
 import com.google.zigva.sys.Zystem;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.util.List;
 import java.util.Map;
 
@@ -247,12 +248,12 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
 
   // $ ls /idontexist
   public void doTestExistingCommandErr() throws Exception {
-    PumpToString out = new PumpToString();
+    PumpFactory<Character> err = new PumpToVoid<Character>();
     
     Command lsIDontExist = os.command("ls", "/idontexist");
 
     Zystem localZystem = zystem
-      .withOut(out);
+      .withErr(err);
     try {
       commandExecutor
         .with(localZystem)
@@ -260,7 +261,7 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
         .execute()
         .waitFor();
       fail();
-    } catch (RuntimeException expected) {
+    } catch (CommandReturnedErrorCodeException expected) {
       //TODO brittle UNIXism
       assertTrue(expected.getMessage(),
           expected.getMessage().contains(
@@ -270,21 +271,48 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
   
   // $ /idontexist
   public void testNonExistingCommandErr() throws Exception {
-    PumpToString out = new PumpToString();
     Command iDontExist = os.command("/idontexist");
-
-    Zystem localZystem = zystem
-      .withOut(out);
     try {
       commandExecutor
-        .with(localZystem)
         .command(iDontExist)
         .execute()
         .waitFor();
       fail();
-    } catch (RuntimeException expected) {
-      // TODO: can we assert something about the exception?
+    } catch (ProcessFailedToStartException expected) {
+      //TODO: assert regexp message
+      assertTrue(expected.getMessage().startsWith("Failed to start process"));
     }
+  }
+  
+  public void testSwitchPipe() throws Exception {
+    Command outAndErr = new Command() {
+    
+      @Override
+      public CommandResponse go(Zystem zystem, Source<Character> in) {
+        return CommandResponse.forOutErr(
+            this, 
+            new CharacterSource("out"), 
+            new CharacterSource("err"));
+      }
+    };
+    
+    PumpToString otherOut = new PumpToString();
+    PumpToString otherErr = new PumpToString();
+    Zystem localZystem = zystem
+      .withOut(otherOut)
+      .withErr(otherErr);
+    
+    Command cat = new Cat();
+    
+    commandExecutor
+      .with(localZystem)
+      .command(outAndErr)
+      .switchPipe(cat)
+      .execute()
+      .waitFor();
+    
+    assertEquals("out", otherErr.asString());
+    assertEquals("err", otherOut.asString());
   }
 
   public void testComplexCommand() throws Exception {

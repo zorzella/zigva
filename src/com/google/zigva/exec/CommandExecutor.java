@@ -32,6 +32,8 @@ public interface CommandExecutor {
     ConvenienceWaitable execute();
 
     PreparedCommand pipe(Command command);
+
+    PreparedCommand switchPipe(Command command);
   }
 
   PreparedCommand command(Command command);
