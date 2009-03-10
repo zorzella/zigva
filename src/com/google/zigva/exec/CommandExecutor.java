@@ -34,6 +34,8 @@ public interface CommandExecutor {
     PreparedCommand pipe(Command command);
 
     PreparedCommand switchPipe(Command command);
+
+    PreparedCommand mergePipe(Command command);
   }
 
   PreparedCommand command(Command command);

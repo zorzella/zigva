@@ -97,4 +97,6 @@ public interface Source<T> {
    * Returns true if this {@link Source} has been closed, false otherwise.
    */
   boolean isClosed();
+  
+  //TODO: be monitorable?
 }

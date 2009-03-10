@@ -26,6 +26,7 @@ import com.google.zigva.command.Cat;
 import com.google.zigva.command.Echo;
 import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.exec.CommandExecutor.Command;
+import com.google.zigva.exec.CommandExecutor.PreparedCommand;
 import com.google.zigva.exec.impl.CommandReturnedErrorCodeException;
 import com.google.zigva.java.ProcessFailedToStartException;
 import com.google.zigva.java.io.SourceOfCharFromFile;
@@ -284,6 +285,10 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
     }
   }
   
+  /**
+   * The {@link PreparedCommand#switchPipe(Command)} causes the output and error
+   * streams to be switched when fed to the next command in the pipeline.
+   */
   public void testSwitchPipe() throws Exception {
     Command outAndErr = new Command() {
     
@@ -308,6 +313,58 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
       .with(localZystem)
       .command(outAndErr)
       .switchPipe(cat)
+      .execute()
+      .waitFor();
+    
+    assertEquals("out", otherErr.asString());
+    assertEquals("err", otherOut.asString());
+  }
+
+  /**
+   * The {@link PreparedCommand#mergePipe(Command)} causes the output and error
+   * streams to be merged when fed to the next command in the pipeline.
+   */
+  public void SUPPRESS_testMergePipe0() throws Exception {
+    Command outAndErr = new Command() {
+    
+      @Override
+      public CommandResponse go(Zystem zystem, Source<Character> in) {
+        final CharacterSource outSource = new CharacterSource("out");
+        return CommandResponse.forOutErr(
+            this, 
+            outSource, 
+            new CharacterSource("err") {
+              @Override
+              public boolean isEndOfStream() throws DataSourceClosedException {
+                // We'll be sure to block here until "out" is all read so
+                // the merged pipe will be predictable.
+                
+                //TODO: use monitors
+                while (!outSource.isClosed()) {
+                  try {
+                    Thread.sleep(1);
+                  } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                  }
+                }
+                return super.isEndOfStream();
+              }
+            });
+      }
+    };
+    
+    PumpToString otherOut = new PumpToString();
+    PumpToString otherErr = new PumpToString();
+    Zystem localZystem = zystem
+      .withOut(otherOut)
+      .withErr(otherErr);
+    
+    Command cat = new Cat();
+    
+    commandExecutor
+      .with(localZystem)
+      .command(outAndErr)
+      .mergePipe(cat)
       .execute()
       .waitFor();
     

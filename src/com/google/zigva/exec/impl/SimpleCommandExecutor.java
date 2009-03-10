@@ -61,7 +61,8 @@ public class SimpleCommandExecutor implements CommandExecutor {
 
   private enum PipeStrategy {
     SIMPLE,
-    SWITCH;
+    SWITCH, 
+    MERGE;
   }
   
   static class SimplePreparedCommand implements PreparedCommand {
@@ -123,7 +124,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
         Source<Character> out = commandResponse.out();
 
         if (pipeStrategy == null) {
-          // The very last command will have an implied "out" strategy
+          // The very last command has an implied "SIMPLE" strategy
           nextIn = out;
         } else {
           switch (pipeStrategy) {
@@ -134,6 +135,7 @@ public class SimpleCommandExecutor implements CommandExecutor {
               nextIn = err;
               err = out;
               break;
+            case MERGE:
             default:
               throw new UnsupportedOperationException();
           } 
@@ -205,6 +207,11 @@ public class SimpleCommandExecutor implements CommandExecutor {
     @Override
     public PreparedCommand switchPipe(Command command) {
       return pipe(command, PipeStrategy.SWITCH);
+    }
+
+    @Override
+    public PreparedCommand mergePipe(Command command) {
+      return pipe(command, PipeStrategy.MERGE);
     }
 
     public PreparedCommand pipe(Command command, PipeStrategy pipeStrategy) {
