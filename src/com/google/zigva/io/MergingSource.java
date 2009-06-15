@@ -3,7 +3,7 @@ package com.google.zigva.io;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.zigva.lang.ExceptionCluster;
+import com.google.zigva.lang.ClusterException;
 import com.google.zigva.lang.ZigvaInterruptedException;
 
 import java.util.List;
@@ -37,7 +37,7 @@ public class MergingSource<T> implements Source<T> {
         }
       }
       if (exceptions.size() > 0) {
-        throw ExceptionCluster.create(exceptions);
+        throw ClusterException.create(exceptions);
       }
       isClosed = true;
     }    

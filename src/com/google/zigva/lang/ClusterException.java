@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 import java.util.Collection;
 
 /**
- * An {@link ExceptionCluster} is data structure that allows for some code to
+ * An {@link ClusterException} is data structure that allows for some code to
  * "throw multiple exceptions", or something close to it. The prototypical code
  * that calls for this class is presented below:
  * 
@@ -56,11 +56,11 @@ import java.util.Collection;
  * 
  * @author Luiz-Otavio Zorzella
  */
-public final class ExceptionCluster extends RuntimeException {
+public final class ClusterException extends RuntimeException {
 
   public final Collection<? extends Exception> exceptions;
   
-  private ExceptionCluster(Collection<? extends Exception> exceptions) {
+  private ClusterException(Collection<? extends Exception> exceptions) {
     super(String.format(
         "%d exceptions were thrown. The first exception is listed as a cause.", 
         exceptions.size()), exceptions.iterator().next());
@@ -84,7 +84,7 @@ public final class ExceptionCluster extends RuntimeException {
    *  <li>If {@code exceptions} has a single exceptions and that exceptions is
    *    <em>not</em> a {@link RuntimeException}, return a simple 
    *    {@code RuntimeException} that wraps it
-   *  <li>Otherwise, return an instance of {@link ExceptionCluster} that wraps 
+   *  <li>Otherwise, return an instance of {@link ClusterException} that wraps 
    *    the first exception in the {@code exceptions} collection.
    * </ul>
    * 
@@ -108,6 +108,6 @@ public final class ExceptionCluster extends RuntimeException {
         return new RuntimeException(temp);
       }
     }
-    return new ExceptionCluster(exceptions);
+    return new ClusterException(exceptions);
   }
 }

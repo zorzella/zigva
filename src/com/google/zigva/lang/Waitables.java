@@ -119,7 +119,7 @@ public class Waitables {
           throw new ZigvaInterruptedException(e);
         }
           if (exceptions.size() > 0) {
-            throw ExceptionCluster.create(exceptions);
+            throw ClusterException.create(exceptions);
           }
 //          int fSize = finished.size();
 //          boolean result = fSize == noOfRunnables;
@@ -160,7 +160,7 @@ public class Waitables {
 //          }
           if (exceptions.size() > 0) {
             // TODO: is this the right exception? Rename
-            throw new CommandReturnedErrorCodeException(ExceptionCluster.create(exceptions));
+            throw new CommandReturnedErrorCodeException(ClusterException.create(exceptions));
           }
         }
         //        for (ConvenienceWaitable waitable: waitables) {
