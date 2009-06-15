@@ -62,7 +62,7 @@ public class ClusterExceptionTest extends TestCase {
     list.add(new Exception("baz"));
     assertEquals(2, created.exceptions.size());
     try {
-      Collection<Exception> exceptions = created.exceptions;
+      Collection<Throwable> exceptions = created.exceptions;
       exceptions.add(new Exception("bur"));
       fail();
     } catch (UnsupportedOperationException expected) {
