@@ -6,6 +6,7 @@ import com.google.common.testing.junit3.JUnitAsserts;
 
 import junit.framework.TestCase;
 
+import java.util.Collection;
 import java.util.List;
 
 public class ClusterExceptionTest extends TestCase {
@@ -20,9 +21,9 @@ public class ClusterExceptionTest extends TestCase {
   }
 
   public void testEmpty() throws Exception {
-    List<Exception> aNull = Lists.newArrayList();
+    List<Exception> empty = Lists.newArrayList();
     try {
-      ClusterException.create(aNull);
+      ClusterException.create(empty);
       fail();
     } catch (IllegalArgumentException expected) {
     }
@@ -30,8 +31,8 @@ public class ClusterExceptionTest extends TestCase {
 
   public void testSingleRuntime() throws Exception {
     Exception fooException = new RuntimeException("foo");
-    List<Exception> aNull = Lists.newArrayList(fooException);
-    assertEquals(fooException, ClusterException.create(aNull));
+    List<Exception> list = Lists.newArrayList(fooException);
+    assertEquals(fooException, ClusterException.create(list));
   }
   
   public void testSingleChecked() throws Exception {
@@ -44,11 +45,27 @@ public class ClusterExceptionTest extends TestCase {
   public void testTwo() throws Exception {
     Exception fooException = new Exception("foo");
     Exception barException = new Exception("bar");
-    List<Exception> aNull = Lists.newArrayList(fooException, barException);
-    RuntimeException created = ClusterException.create(aNull);
+    List<Exception> list = Lists.newArrayList(fooException, barException);
+    RuntimeException created = ClusterException.create(list);
     assertTrue(created instanceof ClusterException);
     ClusterException cluster = (ClusterException)created;
     assertEquals(fooException, cluster.exceptions.iterator().next());
     assertEquals(2, cluster.exceptions.size());
+  }
+
+  public void testImmutability() throws Exception {
+    Exception fooException = new Exception("foo");
+    Exception barException = new Exception("bar");
+    List<Exception> list = Lists.newArrayList(fooException, barException);
+    ClusterException created = (ClusterException)ClusterException.create(list);
+    assertEquals(2, created.exceptions.size());
+    list.add(new Exception("baz"));
+    assertEquals(2, created.exceptions.size());
+    try {
+      Collection<Exception> exceptions = created.exceptions;
+      exceptions.add(new Exception("bur"));
+      fail();
+    } catch (UnsupportedOperationException expected) {
+    }
   }
 }

@@ -19,6 +19,7 @@ package com.google.zigva.lang;
 import com.google.common.collect.Lists;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * An {@link ClusterException} is data structure that allows for some code to
@@ -58,13 +59,13 @@ import java.util.Collection;
  */
 public final class ClusterException extends RuntimeException {
 
-  public final Collection<? extends Exception> exceptions;
+  public final Collection<Exception> exceptions;
   
   private ClusterException(Collection<? extends Exception> exceptions) {
     super(String.format(
         "%d exceptions were thrown. The first exception is listed as a cause.", 
         exceptions.size()), exceptions.iterator().next());
-    this.exceptions = exceptions;
+    this.exceptions = Collections.unmodifiableCollection(Lists.newArrayList(exceptions));
   }
 
   /**
