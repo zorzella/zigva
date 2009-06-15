@@ -17,6 +17,7 @@
 package com.google.zigva.java.io;
 
 import com.google.common.collect.Lists;
+import com.google.zigva.exec.impl.SimpleThreadRunner;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.EndOfDataException;
 import com.google.zigva.io.FailedToCloseException;
@@ -264,8 +265,9 @@ public class ReaderSourceTest extends TestCase {
     
     public void terminate() {
       done = true;
+      block = false;
       synchronized(lock) {
-        lock.notify();
+        lock.notifyAll();
       }
       Thread.yield();
     }
@@ -274,24 +276,32 @@ public class ReaderSourceTest extends TestCase {
     public int read() {
       
       while(!done) {
-        if (block) {
-          try {
-            synchronized(lock) {
-              lock.wait();
-            }
-          } catch (InterruptedException e) {
-            // We'll be nasty here, and not return from read under any 
-            // circumstance (just like a real InputStream does).
-            // the "done" allows the test to clean up after itself.
-            interruptedExceptions++;
-          }
-        } else {
+        if (!maybeBlock()) {
           try {
             return data();
           } catch (RuntimeException e) {}
-        }
-      }      
+        }      
+      }
       throw new RuntimeException("Terminated.");
+    }
+
+    private boolean maybeBlock() {
+      if (!block) {
+        return false;
+      }
+      while (block) {
+        try {
+          synchronized(lock) {
+            lock.wait();
+          }
+        } catch (InterruptedException e) {
+          // We'll be nasty here, and not return from read under any 
+          // circumstance (just like a real InputStream does).
+          // the "done" allows the test to clean up after itself.
+          interruptedExceptions++;
+        }
+      }
+      return true;
     }
     
     private List<Integer> data = Lists.newArrayList(); 
@@ -323,6 +333,7 @@ public class ReaderSourceTest extends TestCase {
 
     @Override
     public void close() throws IOException {
+      maybeBlock();
     }
 
     @Override

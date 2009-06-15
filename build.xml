@@ -69,10 +69,9 @@
   <target name="test"
       depends="test.compile"
       description="Execute JUnit tests.">
-    
     <mkdir dir="${build.dir}/junitreport"/>
 
-  	<junit 
+    <junit 
   		printsummary="yes" 
   		haltonfailure="yes">
       <classpath
@@ -81,12 +80,7 @@
         <pathelement location="${build.dir}/test"/>
         <pathelement location="${build.dir}/testing"/>
       </classpath>
-
       <formatter type="plain"/>
-
-      <!-- test name="my.test.TestCase" haltonfailure="no" outfile="result">
-        <formatter type="xml"/>
-      </test -->
 
       <batchtest fork="no" todir="${build.dir}/junitreport">
         <fileset dir="${test.dir}">
@@ -95,15 +89,6 @@
         </fileset>
       </batchtest>
     </junit>
-    
-  	<!-- java fork="true"
-        classname="junit.textui.TestRunner"
-        failonerror="true"
-        taskname="junit"
-        classpathref="project.test.class.path"
-  	>
-      <arg value="${test.class}"/>
-    </java -->
   </target>
 
   <target name="clean"
@@ -151,8 +136,8 @@
          author="true"
          protected="true"
          windowtitle="Zigva"
-    	   classpathref="project.test.class.path"
-    	   >
+        classpathref="project.test.class.path"
+      >
       <sourcepath>
         <pathelement location="${src.dir}"/>
       </sourcepath>

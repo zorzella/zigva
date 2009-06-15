@@ -7,4 +7,9 @@ public class CommandReturnedErrorCodeException extends RuntimeException {
       String message, RuntimeException cause) {
     super(message, cause);
   }
+
+  public CommandReturnedErrorCodeException(
+      RuntimeException cause) {
+    super(cause);
+  }
 }

@@ -33,6 +33,13 @@ public class RealJavaProcessStarter implements JavaProcessStarter {
           Join.join(" ", processBuilder.command()), 
           processBuilder.directory().toString(),
           processBuilder.environment()), e);
+    } catch (Exception e) {
+      // TODO: document this exception
+      throw new ProcessFailedToStartException(String.format(
+          "Failed to start process '%s' in '%s' with env '%s'.", 
+          Join.join(" ", processBuilder.command()), 
+          processBuilder.directory().toString(),
+          processBuilder.environment()), e);
     }
   }
 }

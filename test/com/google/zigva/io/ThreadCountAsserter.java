@@ -31,7 +31,7 @@ public final class ThreadCountAsserter {
   }
 
   public void assertThreadCount() throws InterruptedException {
-    long failAt = System.currentTimeMillis() + 700;
+    long failAt = System.currentTimeMillis() + 1000;
     while(true) {
       Map<Thread, StackTraceElement[]> allStackTraces = 
         Thread.getAllStackTraces();

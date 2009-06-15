@@ -20,7 +20,7 @@ import com.google.common.collect.Lists;
 import com.google.zigva.io.DataSourceClosedException;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
-import com.google.zigva.lang.ExceptionCollection;
+import com.google.zigva.lang.ExceptionCluster;
 import com.google.zigva.lang.Killable;
 
 import java.util.List;
@@ -72,7 +72,7 @@ public class Killables {
           }
         }
         if (exceptions.size() > 0) {
-          throw ExceptionCollection.create(exceptions);
+          throw ExceptionCluster.create(exceptions);
         }
       }
     };

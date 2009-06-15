@@ -4,6 +4,7 @@ package com.google.zigva.lang;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
+import com.google.zigva.exec.impl.CommandReturnedErrorCodeException;
 
 import java.util.Collection;
 import java.util.List;
@@ -118,7 +119,7 @@ public class Waitables {
           throw new ZigvaInterruptedException(e);
         }
           if (exceptions.size() > 0) {
-            throw ExceptionCollection.create(exceptions);
+            throw ExceptionCluster.create(exceptions);
           }
 //          int fSize = finished.size();
 //          boolean result = fSize == noOfRunnables;
@@ -158,7 +159,8 @@ public class Waitables {
             }
 //          }
           if (exceptions.size() > 0) {
-            throw ExceptionCollection.create(exceptions);
+            // TODO: is this the right exception? Rename
+            throw new CommandReturnedErrorCodeException(ExceptionCluster.create(exceptions));
           }
         }
         //        for (ConvenienceWaitable waitable: waitables) {
