@@ -16,7 +16,7 @@
 
 package com.google.zigva.java;
 
-import com.google.common.base.Join;
+import com.google.common.base.Joiner;
 
 import java.io.IOException;
 
@@ -30,14 +30,14 @@ public class RealJavaProcessStarter implements JavaProcessStarter {
       // TODO: document this exception
       throw new ProcessFailedToStartException(String.format(
           "Failed to start process '%s' in '%s' with env '%s'.", 
-          Join.join(" ", processBuilder.command()), 
+          Joiner.on(" ").join(processBuilder.command()), 
           processBuilder.directory().toString(),
           processBuilder.environment()), e);
     } catch (Exception e) {
       // TODO: document this exception
       throw new ProcessFailedToStartException(String.format(
           "Failed to start process '%s' in '%s' with env '%s'.", 
-          Join.join(" ", processBuilder.command()), 
+          Joiner.on(" ").join(processBuilder.command()), 
           processBuilder.directory().toString(),
           processBuilder.environment()), e);
     }

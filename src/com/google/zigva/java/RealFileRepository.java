@@ -16,7 +16,7 @@
 
 package com.google.zigva.java;
 
-import com.google.common.base.Join;
+import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.google.zigva.io.FilePath;
 import com.google.zigva.io.FileRepository;
@@ -48,20 +48,18 @@ public class RealFileRepository implements FileRepository {
   @Override
   public FilePath get(String... fileNameParts) {
     return new RealFileSpec(canonicalized(
-        new File(Join.join(File.separator, fileNameParts))));
+        new File(Joiner.on(File.separator).join(fileNameParts))));
   }
 
   @Override
   public FilePath get(File baseFile, String... fileNameParts) {
     return new RealFileSpec(canonicalized(
-        new File(baseFile, Join.join(File.separator, fileNameParts))));
+        new File(baseFile, Joiner.on(File.separator).join(fileNameParts))));
   }
 
   @Override
   public FilePath get(FilePath baseFile, String... fileNameParts) {
     return new RealFileSpec(canonicalized(
-        new File(baseFile.toFile(), Join.join(File.separator, fileNameParts))));
+        new File(baseFile.toFile(), Joiner.on(File.separator).join(fileNameParts))));
   }
-
-
 }

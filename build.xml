@@ -7,9 +7,8 @@
 
   <path id="project.class.path">
     <pathelement location="${build.dir}/classes"/>
-    <pathelement location="${lib.dir}/google-collect-snapshot-20090211.jar"/>
-    <pathelement location="${lib.dir}/guice-1.0.jar"/>
-    <pathelement location="${lib.dir}/guice-commands-snapshot-20080305.jar"/>
+    <pathelement location="${lib.dir}/google-collect-1.0-rc2.jar"/>
+    <pathelement location="${lib.dir}/guice-2.0.jar"/>
     <pathelement location="${lib.dir}/servlet-api-2.4.jar"/>
   </path>
 

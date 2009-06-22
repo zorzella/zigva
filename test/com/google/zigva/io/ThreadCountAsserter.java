@@ -16,7 +16,7 @@
 
 package com.google.zigva.io;
 
-import com.google.common.base.Join;
+import com.google.common.base.Joiner;
 
 import java.util.Map;
 
@@ -61,7 +61,7 @@ public final class ThreadCountAsserter {
     for (Thread thread: allStackTraces.keySet()) {
       System.out.println(String.format(
           "*** Thread '%s': \n %s", thread.getName(), 
-          Join.join("\n", allStackTraces.get(thread))));
+          Joiner.on("\n").join(allStackTraces.get(thread))));
     }
   }
 }

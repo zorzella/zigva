@@ -16,7 +16,7 @@
 
 package com.google.zigva.lang;
 
-import com.google.common.base.Join;
+import com.google.common.base.Joiner;
 
 public class ZThread extends Thread {
 
@@ -71,7 +71,7 @@ public class ZThread extends Thread {
     return String.format(
         "Thread %s started at:\n%s", 
         getName(),
-        Join.join("\n", threadCreationStack));
+        Joiner.on("\n").join(threadCreationStack));
   }
   
   public RuntimeException getException() {

@@ -20,6 +20,7 @@ import com.google.zigva.lang.Lambda;
 
 import java.util.Iterator;
 
+//TODO: iterable?
 public abstract class LambdaTransformingIterator<I,O> 
     implements TransformingIterator<I,O> {
 
