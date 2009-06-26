@@ -32,13 +32,13 @@ import com.google.zigva.sys.Zystem;
 
 public class ZigvaModule extends AbstractModule {
 
-  private final Provider<Zystem> zystemProvider;
+  private final Provider<? extends Zystem> zystemProvider;
 
   public ZigvaModule() {
     zystemProvider = new ZystemProvider();
   }
 
-  public ZigvaModule(Provider<Zystem> zystemProvider) {
+  public ZigvaModule(Provider<? extends Zystem> zystemProvider) {
     this.zystemProvider = zystemProvider;
   }
 

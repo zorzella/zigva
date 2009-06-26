@@ -36,10 +36,10 @@ public class Transformed {
     return list(Arrays.asList(source), function);
   }
 
-  public static <I, O> List<O> list(
-      List<? extends I> source, Lambda<I, O> function) {
-    return list(source.iterator(), function);
-  }
+//  public static <I, O> List<O> list(
+//      List<? extends I> source, Lambda<I, O> function) {
+//    return list(source.iterator(), function);
+//  }
 
   public static <I, O> List<O> list(
       Iterable<? extends I> source, final Lambda<I, O> function) {

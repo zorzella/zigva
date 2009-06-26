@@ -25,64 +25,35 @@ import com.google.zigva.io.PumpFactory;
 import com.google.zigva.io.Sink;
 import com.google.zigva.io.Source;
 import com.google.zigva.java.RealZystem;
-import com.google.zigva.lang.Propertiez;
-import com.google.zigva.lang.UserInfo;
 import com.google.zigva.sys.Zystem;
 
 import java.util.Map;
 
 //TODO: make it also implement Provider<Zystem>?
-public final class ZystemSelfBuilder implements Zystem {
+public final class ZystemSelfBuilder extends ExtendedZystem {
   
-  private final Zystem zystem;
-
   @Inject
   public ZystemSelfBuilder(Zystem zystem) {
-    this.zystem = zystem;
+    super(zystem);
   }
 
-  @Override
-  public FilePath getCurrentDir() {
-    return zystem.getCurrentDir();
-  }
-
-  @Override
-  public FilePath getHomeDir() {
-    return zystem.getHomeDir();
-  }
-
-  @Override
-  public String getHostname() {
-    return zystem.getHostname();
-  }
-
-  @Override
-  public Propertiez properties() {
-    return zystem.properties();
-  }
-
-  @Override
-  public Map<String, String> env() {
-    return zystem.env();
-  }
-  
   public ZystemSelfBuilder withCurrentDir(FilePath dir) {
     return new ZystemSelfBuilder(
         new RealZystem(
-            zystem.ioFactory(),
+            delegate.ioFactory(),
             dir, 
-            zystem.getHomeDir(), 
-            zystem.userInfo(), 
-            zystem.env()));
+            delegate.getHomeDir(), 
+            delegate.userInfo(), 
+            delegate.env()));
   }
   
   public ZystemSelfBuilder withEnv(Map<String, String> otherEnv) {
     return new ZystemSelfBuilder(
         new RealZystem(
-            zystem.ioFactory(),
-            zystem.getCurrentDir(), 
-            zystem.getHomeDir(), 
-            zystem.userInfo(), 
+            delegate.ioFactory(),
+            delegate.getCurrentDir(), 
+            delegate.getHomeDir(), 
+            delegate.userInfo(), 
             otherEnv));
   }
 
@@ -96,11 +67,6 @@ public final class ZystemSelfBuilder implements Zystem {
     };
   }
 
-  @Override
-  public IoFactory ioFactory() {
-    return zystem.ioFactory();
-  }
-  
   private static IoFactory getForIn(
       final IoFactory ioFactory, 
       final Source<Character> otherIn) {
@@ -135,70 +101,60 @@ public final class ZystemSelfBuilder implements Zystem {
   public ZystemSelfBuilder withIn(Source<Character> otherIn) {
     return new ZystemSelfBuilder(
         new RealZystem(
-            getForIn(zystem.ioFactory(), otherIn),
-            zystem.getCurrentDir(), 
-            zystem.getHomeDir(), 
-            zystem.userInfo(), 
-            zystem.env()));
+            getForIn(delegate.ioFactory(), otherIn),
+            delegate.getCurrentDir(), 
+            delegate.getHomeDir(), 
+            delegate.userInfo(), 
+            delegate.env()));
   }
 
   public ZystemSelfBuilder withOut(PumpFactory<Character> otherOut) {
     return new ZystemSelfBuilder(
         new RealZystem(
             new IoFactorySelfBuilder(
-                zystem.ioFactory().in(),
+                delegate.ioFactory().in(),
                 otherOut,
-                zystem.ioFactory().err(), 
-                zystem.ioFactory()), 
-            zystem.getCurrentDir(), 
-            zystem.getHomeDir(), 
-            zystem.userInfo(), 
-            zystem.env()));
+                delegate.ioFactory().err(), 
+                delegate.ioFactory()), 
+            delegate.getCurrentDir(), 
+            delegate.getHomeDir(), 
+            delegate.userInfo(), 
+            delegate.env()));
   }
 
   @Deprecated
   public ZystemSelfBuilder withOut(Sink<Character> otherOut) {
     return new ZystemSelfBuilder(
         new RealZystem(
-            getForOut(zystem.ioFactory(), otherOut), 
-            zystem.getCurrentDir(), 
-            zystem.getHomeDir(), 
-            zystem.userInfo(), 
-            zystem.env()));
+            getForOut(delegate.ioFactory(), otherOut), 
+            delegate.getCurrentDir(), 
+            delegate.getHomeDir(), 
+            delegate.userInfo(), 
+            delegate.env()));
   }
 
   public ZystemSelfBuilder withErr(PumpFactory<Character> otherErr) {
     return new ZystemSelfBuilder(
         new RealZystem(
             new IoFactorySelfBuilder(
-                zystem.ioFactory().in(), 
-                zystem.ioFactory().out(), 
+                delegate.ioFactory().in(), 
+                delegate.ioFactory().out(), 
                 otherErr, 
-                zystem.ioFactory()), 
-            zystem.getCurrentDir(), 
-            zystem.getHomeDir(), 
-            zystem.userInfo(), 
-            zystem.env()));
+                delegate.ioFactory()), 
+            delegate.getCurrentDir(), 
+            delegate.getHomeDir(), 
+            delegate.userInfo(), 
+            delegate.env()));
   }
   
   @Deprecated
   public ZystemSelfBuilder withErr(Sink<Character> otherErr) {
     return new ZystemSelfBuilder(
         new RealZystem(
-            getForErr(zystem.ioFactory(), otherErr), 
-            zystem.getCurrentDir(), 
-            zystem.getHomeDir(), 
-            zystem.userInfo(), 
-            zystem.env()));
-  }
-
-  @Override
-  public String toString() {
-    return zystem.toString();
-  }
-
-  @Override
-  public UserInfo userInfo() {
-    return zystem.userInfo();
+            getForErr(delegate.ioFactory(), otherErr), 
+            delegate.getCurrentDir(), 
+            delegate.getHomeDir(), 
+            delegate.userInfo(), 
+            delegate.env()));
   }
 }

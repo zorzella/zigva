@@ -62,4 +62,9 @@ public class RealFileRepository implements FileRepository {
     return new RealFileSpec(canonicalized(
         new File(baseFile.toFile(), Joiner.on(File.separator).join(fileNameParts))));
   }
+
+  @Override
+  public boolean mkdir(FilePath dir) {
+    return dir.toFile().mkdir();
+  }
 }

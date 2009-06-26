@@ -21,9 +21,9 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
+import com.google.inject.util.Providers;
 import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.exec.CommandExecutor.Command;
-import com.google.zigva.guice.Providers;
 import com.google.zigva.guice.ZigvaModule;
 import com.google.zigva.java.RootZystemProvider;
 import com.google.zigva.lang.ConvenienceWaitable;
@@ -51,7 +51,7 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
 
   public void testSwappedRootZystem() throws Exception {
     PumpToString out = new PumpToString();
-    Provider<Zystem> rootZystem = 
+    Provider<ZystemSelfBuilder> rootZystem = 
       Providers.of(
           new ZystemSelfBuilder(new RootZystemProvider().get())
           .withOut(out));

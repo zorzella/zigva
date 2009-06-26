@@ -47,4 +47,8 @@ public class StubFileRepository implements FileRepository {
     return file;
   }
 
+  @Override
+  public boolean mkdir(FilePath dir) {
+    return true;
+  }
 }

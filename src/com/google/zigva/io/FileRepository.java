@@ -28,5 +28,5 @@ public interface FileRepository {
 
   FilePath get(FilePath baseFile, String... fileNameParts);
 
-  
+  boolean mkdir(FilePath dir);
 }
