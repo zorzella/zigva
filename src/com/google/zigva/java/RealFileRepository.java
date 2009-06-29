@@ -67,4 +67,9 @@ public class RealFileRepository implements FileRepository {
   public boolean mkdir(FilePath dir) {
     return dir.toFile().mkdir();
   }
+
+  @Override
+  public boolean mkdirs(FilePath dir) {
+    return dir.toFile().mkdirs();
+  }
 }
