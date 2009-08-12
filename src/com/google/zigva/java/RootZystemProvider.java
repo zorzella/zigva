@@ -16,7 +16,9 @@
 
 package com.google.zigva.java;
 
+import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.google.inject.Singleton;
 import com.google.zigva.io.IoFactory;
 import com.google.zigva.io.PumpFactory;
 import com.google.zigva.io.SinkToAppendable;
@@ -36,6 +38,7 @@ import com.google.zigva.sys.Zystem;
 import java.io.File;
 import java.io.FileDescriptor;
 
+@Singleton
 public final class RootZystemProvider implements Provider<Zystem> {
 
 	private static final ZigvaThreadFactory ROOT_THREAD_FACTORY = new ZigvaThreadFactory();
@@ -107,6 +110,7 @@ public final class RootZystemProvider implements Provider<Zystem> {
         100, 500, ERR_LOCK).create(Writers.buffered(FileDescriptor.out));
   
   //TODO: package/private constructor?
+  @Inject
   public RootZystemProvider() {}
   
   public Zystem get() {
@@ -119,15 +123,15 @@ public final class RootZystemProvider implements Provider<Zystem> {
         );
   }
   
-  private static IoFactory buildIoFactory() {
+  private IoFactory buildIoFactory() {
     return new RootIoFactory();
   }
 
-  private static RealFileSpec getCurrentDir() {
+  private RealFileSpec getCurrentDir() {
     return new RealFileSpec(new File("."));
   }
   
-  private static FilePath getHomeDir() {
+  private FilePath getHomeDir() {
     return new RealFileSpec(new File(System.getProperty("user.home")));
   }
 }

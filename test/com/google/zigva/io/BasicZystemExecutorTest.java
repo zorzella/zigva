@@ -51,11 +51,16 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
 
   public void testSwappedRootZystem() throws Exception {
     PumpToString out = new PumpToString();
-    Provider<ZystemSelfBuilder> rootZystem = 
+    final Provider<ZystemSelfBuilder> rootZystem = 
       Providers.of(
           new ZystemSelfBuilder(new RootZystemProvider().get())
           .withOut(out));
-    Injector injector = Guice.createInjector(new ZigvaModule(rootZystem));
+    Injector injector = Guice.createInjector(new ZigvaModule() {
+      @Override
+      protected void bindRootZystem() {
+        bind(Zystem.class).toInstance(rootZystem.get());
+      }
+    });
     EchoFoo task = injector.getInstance(EchoFoo.class);
     task.run();
     assertEquals("foo", out.asString().trim());

@@ -16,9 +16,9 @@
   <path id="project.test.class.path">
     <path refid="project.class.path"/>
     <pathelement location="${lib.dir}/easymock.jar"/>
-    <pathelement location="${lib.dir}/guiceberry-1.2.3.jar"/>
+    <pathelement location="${lib.dir}/guiceberry-2.0.1.jar"/>
     <pathelement location="${lib.dir}/junit3.8.1.jar"/>
-    <pathelement location="${lib.dir}/tl4j-1.1.0.jar"/>
+    <pathelement location="${lib.dir}/tl4j-junit3-1.1.1.jar"/>
   </path>
 
   <!-- can be overridden at the command line with -Dversion=

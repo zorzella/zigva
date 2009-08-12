@@ -17,6 +17,7 @@
 package com.google.zigva.guice;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Scopes;
 import com.google.zigva.exec.CommandExecutor;
@@ -32,32 +33,30 @@ import com.google.zigva.sys.Zystem;
 
 public class ZigvaModule extends AbstractModule {
 
-  private final Provider<? extends Zystem> zystemProvider;
-
-  public ZigvaModule() {
-    zystemProvider = new ZystemProvider();
-  }
-
-  public ZigvaModule(Provider<? extends Zystem> zystemProvider) {
-    this.zystemProvider = zystemProvider;
-  }
+  public ZigvaModule() {}
 
   @Override
   protected void configure() {
     install(new JavaModule());
 //    ZystemScopeHelper zystemScopeHelper = new ZystemScopeHelper(rootZystem);
     bind(FileRepository.class).to(RealFileRepository.class);
-    bind(Zystem.class).toProvider(zystemProvider);
+//    bind(ZystemPro)
+    bindRootZystem();
     bind(JavaProcessStarter.class).to(RealJavaProcessStarter.class);
 //    bind(ZystemScopeHelper.class).toInstance(zystemScopeHelper);
     bind(ThreadRunner.class).to(SimpleThreadRunner.class).in(Scopes.SINGLETON);
     bind(CommandExecutor.class).to(SimpleCommandExecutor.class);
   }
+
+  protected void bindRootZystem() {
+    bind(Zystem.class).toProvider(ZystemProvider.class);
+  }
   
   public static final class ZystemProvider implements Provider<Zystem> {
 
-    public ZystemProvider() {
-      this(new RootZystemProvider().get());
+    @Inject
+    public ZystemProvider(RootZystemProvider rootZystemProvider) {
+      this(rootZystemProvider.get());
     }
     
     public ZystemProvider(Zystem root) {
