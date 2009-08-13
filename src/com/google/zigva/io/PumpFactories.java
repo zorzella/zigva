@@ -20,6 +20,7 @@ import com.google.inject.Inject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 public class PumpFactories {
 
@@ -40,6 +41,18 @@ public class PumpFactories {
     };
   }
 
+  public PumpFactory<Character> from(final OutputStream out) {
+    final SinkToOutputStream sink = sinkToOutputStreamBuilder.create(out);
+    return new PumpFactory<Character>() {
+    
+      @Override
+      public Pump getPumpFor(Source<Character> source) {
+        return new PumpToSink<Character> (source, 
+            sink);
+      }
+    };
+  }
+  
   public PumpFactory<Character> from(final File file) {
     return new PumpFactory<Character>() {
     
@@ -47,7 +60,7 @@ public class PumpFactories {
       public Pump getPumpFor(Source<Character> source) {
         try {
           return new PumpToSink<Character> (source, 
-              sinkToOutputStreamBuilder.create(new FileOutputStream(file)));
+              sinkToOutputStreamBuilder.create(new FileOutputStream(file, true)));
         } catch (FileNotFoundException e) {
           throw new RuntimeException(e);
         }

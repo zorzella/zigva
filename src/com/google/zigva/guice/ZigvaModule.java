@@ -20,6 +20,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Scopes;
+import com.google.inject.Singleton;
 import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.exec.ThreadRunner;
 import com.google.zigva.exec.impl.SimpleCommandExecutor;
@@ -52,6 +53,7 @@ public class ZigvaModule extends AbstractModule {
     bind(Zystem.class).toProvider(ZystemProvider.class);
   }
   
+  @Singleton
   public static final class ZystemProvider implements Provider<Zystem> {
 
     @Inject
