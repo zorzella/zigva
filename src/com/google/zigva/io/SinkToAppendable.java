@@ -180,11 +180,17 @@ public class SinkToAppendable implements Sink<Character> {
 
   @Override
   public boolean isReady() throws DataSourceClosedException {
+    if (isClosed) {
+      throw new DataSourceClosedException();
+    }
     return !this.queue.isFull();
   }
 
   @Override
   public void write(Character data) throws DataSourceClosedException {
+    if (isClosed) {
+      throw new DataSourceClosedException();
+    }
     this.queue.enq(data);
   }
 

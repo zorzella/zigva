@@ -1,6 +1,7 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
 package com.google.zigva.lang;
 
+import com.google.common.base.Preconditions;
 import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.io.Source;
 
@@ -33,11 +34,15 @@ public class CommandResponse implements ConvenienceWaitable {
       Source<Character> out, 
       Source<Character> err, 
       ConvenienceWaitable waitable) {
+    //TODO: the 'null' situation here for out/err is poorly understood...
+    Preconditions.checkNotNull(out);
     this.command = command;
     this.out = out;
     this.err = err;
     this.waitable = waitable;
   }
+  
+  //TODO: the 'null' situation here is poorly understood
   
   public static CommandResponse forOut(Command command, Source<Character> out) {
     return new CommandResponse(command, out, null, NO_WAIT);

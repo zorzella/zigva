@@ -31,7 +31,7 @@ public class ZThread extends Thread {
 
   private RuntimeException exception;
   
-  public ZThread(Runnable r) {
+  ZThread(Runnable r) {
     super(r);
     this.r = r;
   }

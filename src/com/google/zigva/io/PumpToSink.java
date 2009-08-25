@@ -1,6 +1,7 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
 package com.google.zigva.io;
 
+import com.google.common.base.Preconditions;
 import com.google.zigva.util.KillableCollector;
 
 public class PumpToSink<T> implements Pump {
@@ -10,6 +11,8 @@ public class PumpToSink<T> implements Pump {
   private final KillableCollector toKill = new KillableCollector();
 
   public PumpToSink(Source<T> source, Sink<T> sink) {
+    Preconditions.checkNotNull(source);
+    Preconditions.checkNotNull(sink);
     this.sink = sink;
     this.source = source;
   }
