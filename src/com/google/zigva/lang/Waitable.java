@@ -19,10 +19,16 @@ package com.google.zigva.lang;
 public interface Waitable {
 
   /**
-   * 
    * @return false if it returned because of the timeout; true if the 
    * {@link Waitable} actually completed. 
+   * 
+   * @throws CommandFailedException if the command failed to execute
    */
-  boolean waitFor(long timeoutInMillis);
+  boolean waitFor(long timeoutInMillis) throws CommandFailedException;
   
+  public static final class CommandFailedException extends RuntimeException {
+    public CommandFailedException(String string) {
+      super(string);
+    }
+  }
 }

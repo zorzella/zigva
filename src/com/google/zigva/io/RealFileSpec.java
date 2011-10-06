@@ -25,6 +25,7 @@ public class RealFileSpec implements FilePath {
 
   private final File backingFile;
 
+  // TODO: Why can't I create one passing a String?
   public RealFileSpec(File backingFile) {
     this.backingFile = backingFile;
   }

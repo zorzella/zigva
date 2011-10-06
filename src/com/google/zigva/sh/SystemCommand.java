@@ -194,7 +194,7 @@ class SystemCommand implements Command {
         try {
           int exitValue = process.waitFor();
           if (exitValue != 0) {
-            throw new RuntimeException(String.format(
+            throw new Waitable.CommandFailedException(String.format(
                 "Process exited with status '%d'.", 
                 process.exitValue()));
           }
