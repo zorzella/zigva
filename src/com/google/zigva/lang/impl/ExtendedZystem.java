@@ -13,9 +13,12 @@ public class ExtendedZystem extends DelegatingZystem {
     super(zystem);
   }
 
-  public void printOut(String message, Object... params) {
-    Source<Character> source = new CharacterSource(String.format(message, params));
+  public void printOut(String message) {
+    Source<Character> source = new CharacterSource(message);
     delegate.ioFactory().out().getPumpFor(source).run();
   }
-
+  
+  public void printOut(String message, Object... params) {
+    printOut(String.format(message, params));
+  }
 }
