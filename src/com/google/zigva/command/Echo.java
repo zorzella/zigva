@@ -2,7 +2,7 @@
 package com.google.zigva.command;
 
 import com.google.zigva.exec.CommandExecutor.Command;
-import com.google.zigva.io.CharacterSource;
+import com.google.zigva.io.CharSequenceSource;
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.CommandResponse;
 import com.google.zigva.sys.Zystem;
@@ -22,6 +22,6 @@ public class Echo implements Command {
   @Override
   public CommandResponse go(Zystem zystem, Source<Character> in) {
     in.close();
-    return CommandResponse.forOut(this, new CharacterSource(toBeEchoed));
+    return CommandResponse.forOut(this, new CharSequenceSource(toBeEchoed));
   }
 }

@@ -2,7 +2,7 @@
 package com.google.zigva.lang.impl;
 
 import com.google.inject.Inject;
-import com.google.zigva.io.CharacterSource;
+import com.google.zigva.io.CharSequenceSource;
 import com.google.zigva.io.Source;
 import com.google.zigva.sys.Zystem;
 
@@ -14,7 +14,7 @@ public class ExtendedZystem extends DelegatingZystem {
   }
 
   public void printOut(String message) {
-    Source<Character> source = new CharacterSource(message);
+    Source<Character> source = new CharSequenceSource(message);
     delegate.ioFactory().out().getPumpFor(source).run();
   }
   

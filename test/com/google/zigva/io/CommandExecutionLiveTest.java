@@ -105,7 +105,7 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
 
     Zystem localZystem =
       zystem
-        .withIn(new CharacterSource(expected))
+        .withIn(new CharSequenceSource(expected))
         .withOut(out);
     
     ConvenienceWaitable process = 
@@ -296,8 +296,8 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
       public CommandResponse go(Zystem zystem, Source<Character> in) {
         return CommandResponse.forOutErr(
             this, 
-            new CharacterSource("out"), 
-            new CharacterSource("err"));
+            new CharSequenceSource("out"), 
+            new CharSequenceSource("err"));
       }
     };
     
@@ -329,11 +329,11 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
     
       @Override
       public CommandResponse go(Zystem zystem, Source<Character> in) {
-        final CharacterSource outSource = new CharacterSource("out");
+        final CharSequenceSource outSource = new CharSequenceSource("out");
         return CommandResponse.forOutErr(
             this, 
             outSource, 
-            new CharacterSource("err") {
+            new CharSequenceSource("err") {
               @Override
               public boolean isEndOfStream() throws DataSourceClosedException {
                 // We'll be sure to block here until "out" is all read so
@@ -447,7 +447,7 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
     @Override
     public CommandResponse go(Zystem zystem, Source<Character> in) {
       in.close();
-      return CommandResponse.forOut(this, new CharacterSource("z"));
+      return CommandResponse.forOut(this, new CharSequenceSource("z"));
     }
   }
 }

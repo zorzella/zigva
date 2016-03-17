@@ -21,7 +21,7 @@ import junit.framework.TestCase;
 public class StringSourceTest extends TestCase {
 
   public void testFoo() {
-    CharacterSource source = new CharacterSource("foo");
+    CharSequenceSource source = new CharSequenceSource("foo");
     StringBuilder builder = new StringBuilder();
     while(!source.isEndOfStream()) {
       builder.append((char)source.read());

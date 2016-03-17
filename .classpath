@@ -5,7 +5,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/guice-2.0.jar"/>
-	<classpathentry kind="lib" path="lib/junit3.8.1.jar"/>
+	<classpathentry kind="lib" path="lib/junit4.12.0.jar"/>
 	<classpathentry kind="lib" path="lib/easymock.jar"/>
 	<classpathentry kind="lib" path="lib/guiceberry-2.0.1.jar" sourcepath="/GuiceBerry"/>
 	<classpathentry kind="lib" path="lib/google-collect-1.0-rc2.jar"/>

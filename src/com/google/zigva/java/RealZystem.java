@@ -54,7 +54,6 @@ public class RealZystem implements Zystem {
 
   @Override
   public String getHostname() {
-    String temp = null;
     try {
       return java.net.InetAddress.getLocalHost().getHostName();
     } catch (UnknownHostException e) {

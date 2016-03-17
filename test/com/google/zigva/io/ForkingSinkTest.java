@@ -10,7 +10,7 @@ public class ForkingSinkTest extends TestCase {
 
   public void testSimple() throws Exception {
     String expected = "foo bar baz";
-    Source<Character> source = new CharacterSource(expected);
+    Source<Character> source = new CharSequenceSource(expected);
 
     PumpToString sink1 = new PumpToString();
     PumpToString sink2 = new PumpToString();

@@ -24,7 +24,7 @@ import com.google.inject.testing.guiceberry.junit3.GuiceBerryJunit3TestCase;
 import com.google.zigva.ZigvaEnvs;
 import com.google.zigva.command.Cat;
 import com.google.zigva.guice.ZigvaModule;
-import com.google.zigva.io.CharacterSource;
+import com.google.zigva.io.CharSequenceSource;
 import com.google.zigva.io.PumpToString;
 import com.google.zigva.io.Source;
 import com.google.zigva.lang.impl.ZystemSelfBuilder;
@@ -43,7 +43,7 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
     Injector injector = Guice.createInjector(new ZigvaModule());
     Cat cat = new Cat();
     PumpToString out = new PumpToString();
-    Source<Character> source = new CharacterSource("foo");
+    Source<Character> source = new CharSequenceSource("foo");
     Zystem modifiedZystem = 
       zystem
         .withIn(source)
@@ -60,7 +60,7 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
     Injector injector = Guice.createInjector(new ZigvaModule());
     Cat cat = new Cat();
     PumpToString out = new PumpToString();
-    Source<Character> source = new CharacterSource("foo");
+    Source<Character> source = new CharSequenceSource("foo");
     Zystem modifiedZystem = 
       zystem
         .withIn(source)
@@ -77,7 +77,7 @@ public class CatLiveTest extends GuiceBerryJunit3TestCase {
     Injector injector = Guice.createInjector(new ZigvaModule());
     Cat cat = new Cat();
     PumpToString out = new PumpToString();
-    Source<Character> source = new CharacterSource("foo");
+    Source<Character> source = new CharSequenceSource("foo");
     Zystem modifiedZystem = zystem
       .withIn(source)
       .withOut(out);

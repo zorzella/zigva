@@ -33,7 +33,7 @@ public class OutputStreamPassiveSinkTest extends TestCase {
     
     String expected = "foo";
     
-    CharacterSource source = new CharacterSource(expected);
+    CharSequenceSource source = new CharSequenceSource(expected);
     while(!source.isEndOfStream()) {
       sink.write(source.read());
     }

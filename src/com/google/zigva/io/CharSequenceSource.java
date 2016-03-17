@@ -16,13 +16,13 @@
 
 package com.google.zigva.io;
 
-public class CharacterSource implements Source<Character> {
+public class CharSequenceSource implements Source<Character> {
 
   private final CharSequence string;
   private int pos = 0;
   private boolean isClosed;
 
-  public CharacterSource(CharSequence string) {
+  public CharSequenceSource(CharSequence string) {
     this.string = string;
   }
   
