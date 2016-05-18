@@ -4,12 +4,13 @@
 	<classpathentry kind="src" path="testing"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/guice-2.0.jar"/>
+	<classpathentry kind="lib" path="lib/guice-3.0/guice-3.0.jar"/>
 	<classpathentry kind="lib" path="lib/junit4.12.0.jar"/>
 	<classpathentry kind="lib" path="lib/easymock.jar"/>
 	<classpathentry kind="lib" path="lib/guiceberry-2.0.1.jar" sourcepath="/GuiceBerry"/>
-	<classpathentry kind="lib" path="lib/google-collect-1.0-rc2.jar"/>
+	<classpathentry kind="lib" path="lib/guava-19.0.jar"/>
 	<classpathentry kind="lib" path="lib/aopalliance.jar"/>
 	<classpathentry kind="lib" path="lib/tl4j-junit3-1.1.1.jar" sourcepath="/TestLibrariesForJava"/>
+	<classpathentry kind="lib" path="lib/guice-3.0/javax.inject.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

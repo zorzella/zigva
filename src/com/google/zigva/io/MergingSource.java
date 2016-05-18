@@ -18,7 +18,7 @@ public class MergingSource<T> implements Source<T> {
   private final List<Source<T>> eofSources = Lists.newArrayList();
 
   public MergingSource(Source<T>... sources) {
-    this.sources = ImmutableList.of(sources);
+    this.sources = ImmutableList.copyOf(sources);
   }
   
   public MergingSource(List<Source<T>> sources) {
