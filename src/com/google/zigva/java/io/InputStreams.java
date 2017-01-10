@@ -16,24 +16,45 @@
 
 package com.google.zigva.java.io;
 
+import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
 
 public class InputStreams {
 
-  public static InputStream from(FileInputStream in) {
-    InputStream result = Channels.newInputStream(
-        in.getChannel());
-    return result;
-  }
+//  public static InputStream from(FileInputStream in) {
+//    InputStream result = Channels.newInputStream(
+//        in.getChannel());
+//    return result;
+//  }
 
   public static InputStream from(FileDescriptor in) {
-    InputStream result = Channels.newInputStream(
-        new FileInputStream(in).getChannel());
-    return result;
+    FileInputStream result = new FileInputStream(in);
+    if (true) {
+      return result;
+    }
+    // TODO: why did I ever do this?
+    return Channels.newInputStream(result.getChannel());
   }
+
+  public static InputStream from(File in) {
+    FileInputStream result;
+    try {
+      result = new FileInputStream(in);
+    } catch (FileNotFoundException e) {
+      throw new RuntimeException(e);
+    }
+    if (true) {
+      return result;
+    } 
+    
+    // TODO: also below: why did I ever do this?
+    return Channels.newInputStream(result.getChannel());
+  }
+
   
 
 }

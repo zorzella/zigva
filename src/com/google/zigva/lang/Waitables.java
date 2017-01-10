@@ -160,7 +160,11 @@ public class Waitables {
 //          }
           if (exceptions.size() > 0) {
             // TODO: is this the right exception? Rename
-            throw new CommandReturnedErrorCodeException(ClusterException.create(exceptions));
+//            throw new CommandReturnedErrorCodeException(ClusterException.create(exceptions));
+            
+            // TODO: it used to return the exception above, which does not comply
+            // with the API.
+            throw new CommandFailedException(ClusterException.create(exceptions));
           }
         }
         //        for (ConvenienceWaitable waitable: waitables) {

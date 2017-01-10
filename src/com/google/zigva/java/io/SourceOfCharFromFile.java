@@ -1,6 +1,3 @@
-// Copyright 2008 Google Inc.  All Rights Reserved.
-// Copyright 2009 Google Inc. All Rights Reserved.
-
 package com.google.zigva.java.io;
 
 import com.google.inject.Inject;
@@ -44,21 +41,21 @@ public final class SourceOfCharFromFile {
     if (in == null) {
       throw new NullPointerException();
     }
-    return new ReaderSource(threadFactory, Readers.from(in), capacity, closeTimeout, lock);
+    return new ReaderSource(threadFactory, Readers.buffered(in), capacity, closeTimeout, lock);
   }
 
   public Source<Character> create(FileDescriptor in) {
     if (in == null) {
       throw new NullPointerException();
     }
-    return new ReaderSource(threadFactory, Readers.from(in), capacity, closeTimeout, lock);
+    return new ReaderSource(threadFactory, Readers.buffered(in), capacity, closeTimeout, lock);
   }
 
   public Source<Character> create(FilePath in) {
     if (in == null) {
       throw new NullPointerException();
     }
-    return new ReaderSource(threadFactory, Readers.from(in), capacity, closeTimeout, lock);
+    return new ReaderSource(threadFactory, Readers.buffered(in), capacity, closeTimeout, lock);
   }
   
   public SourceOfCharFromFile withCapacity(int capacity) {

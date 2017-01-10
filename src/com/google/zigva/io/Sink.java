@@ -34,6 +34,7 @@ import java.io.Closeable;
  */
 public interface Sink<T> extends Closeable {
 
+  // TODO: do we really need this method? If so, should it take a T?
   /**
    * Returns true if this {@link Sink} is ready to receive more data -- i.e., 
    * calling {@link #write(Object)} will not block.

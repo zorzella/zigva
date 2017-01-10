@@ -30,5 +30,9 @@ public interface Waitable {
     public CommandFailedException(String string) {
       super(string);
     }
+
+    public CommandFailedException(RuntimeException cause) {
+      super(cause);
+    }
   }
 }

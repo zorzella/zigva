@@ -60,26 +60,39 @@ public class Readers {
 
   public static Reader from(File in) {
     Reader result;
-    try {
-      result = new InputStreamReader(
-          Channels.newInputStream(
-              new FileInputStream(in).getChannel()));
-    } catch (FileNotFoundException e) {
-      throw new RuntimeException(e);
-    }
+    result = new InputStreamReader(InputStreams.from(in));
     return result;
   }
 
-  public static Reader from(FileDescriptor in) {
-    Reader result = 
-        new InputStreamReader(
-            Channels.newInputStream(
-                new FileInputStream(in).getChannel()));
-    return result;
-  }
+//  private static InputStream is(FileDescriptor in) {
+//    FileInputStream result = new FileInputStream(in);
+//    if (true) {
+//      return result;
+//    } else {
+//      // TODO: see above
+//      return Channels.newInputStream(
+//          result.getChannel());
+//    }
+//  }
   
+  public static Reader from(FileDescriptor in) {
+    return new InputStreamReader(InputStreams.from(in));
+  }
+
   public static BufferedReader buffered(InputStream in) {
     return new BufferedReader(new InputStreamReader(in));
+  }
+  
+  public static BufferedReader buffered(FilePath in) {
+    return buffered(new File(in.getCanonicalPath()));
+  }
+  
+  public static BufferedReader buffered(File in) {
+    try {
+      return buffered(new FileInputStream(in));
+    } catch (FileNotFoundException e) {
+      throw new RuntimeException(e);
+    }
   }
   
   public static BufferedReader buffered(FileInputStream in) {
@@ -92,9 +105,7 @@ public class Readers {
 
   public static BufferedReader buffered(FileDescriptor in) {
     BufferedReader result = new BufferedReader(
-        new InputStreamReader(
-            Channels.newInputStream(
-                new FileInputStream(in).getChannel())));
+        new InputStreamReader(InputStreams.from(in)));
     return result;
   }
 

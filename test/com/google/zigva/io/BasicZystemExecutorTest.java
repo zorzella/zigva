@@ -1,5 +1,4 @@
 /*
- * Copyright (C) 2008 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +40,7 @@ public class BasicZystemExecutorTest extends TearDownTestCase {
     @Inject
     private OS os;
     
+    @Override
     public void run() {
       Command echoFoo = os.command("echo", "foo");
       ConvenienceWaitable process = 
