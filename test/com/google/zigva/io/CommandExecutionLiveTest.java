@@ -27,11 +27,11 @@ import com.google.zigva.command.Echo;
 import com.google.zigva.exec.CommandExecutor;
 import com.google.zigva.exec.CommandExecutor.Command;
 import com.google.zigva.exec.CommandExecutor.PreparedCommand;
-import com.google.zigva.exec.impl.CommandReturnedErrorCodeException;
 import com.google.zigva.java.ProcessFailedToStartException;
 import com.google.zigva.java.io.SourceOfCharFromFile;
 import com.google.zigva.lang.CommandResponse;
 import com.google.zigva.lang.ConvenienceWaitable;
+import com.google.zigva.lang.Waitable.CommandFailedException;
 import com.google.zigva.lang.impl.ZystemSelfBuilder;
 import com.google.zigva.sh.OS;
 import com.google.zigva.sys.Zystem;
@@ -262,7 +262,7 @@ public class CommandExecutionLiveTest extends GuiceBerryJunit3TestCase {
         .execute()
         .waitFor();
       fail();
-    } catch (CommandReturnedErrorCodeException expected) {
+    } catch (CommandFailedException expected) {
       //TODO brittle UNIXism
       assertTrue(expected.getMessage(),
           expected.getMessage().contains(

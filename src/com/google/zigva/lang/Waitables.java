@@ -1,17 +1,15 @@
-// Copyright 2008 Google Inc.  All Rights Reserved.
 package com.google.zigva.lang;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
-import com.google.zigva.exec.impl.CommandReturnedErrorCodeException;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
 
 public class Waitables {
 
@@ -45,13 +43,12 @@ public class Waitables {
     };
   }
   
-//  public static ConvenienceWaitable fromWaitables(final Iterable<ConvenienceWaitable> waitables) {
-//    
-//  }
-  
-  public static ConvenienceWaitable from(final Collection<Pair> waitables) {
+  public static ConvenienceWaitable from(final Collection<Pair> waitabls) {
     
-    ZigvaThreadFactory ztf = new ZigvaThreadFactory();
+//    final ImmutableList<Pair> waitables = ImmutableList.copyOf(waitabls);
+    final Collection<Pair> waitables = waitabls;
+    
+    final ZigvaThreadFactory ztf = new ZigvaThreadFactory();
     
     final Set<ZRunnable> runnables = Sets.newHashSet();
     final Set<ConvenienceWaitable> finished = Sets.newHashSet();
@@ -71,10 +68,6 @@ public class Waitables {
               } catch (RuntimeException e) {
                 exceptions.add(waitable.exceptionModifier.modify(e));
               } finally {
-//                synchronized(finished) {
-//                  finished.add(waitable.waitable);
-//                  finished.notify();
-//                }
                 noOfThreadNotYetFinished.countDown();
               }
             }
@@ -92,7 +85,7 @@ public class Waitables {
     final int noOfRunnables = runnables.size();
     
     return new ConvenienceWaitable() {
-    
+
       @Override
       public boolean waitFor(long timeoutInMillis) {
         // "0" is a special case
@@ -103,74 +96,30 @@ public class Waitables {
         if (timeoutInMillis < 0) {
           throw new IllegalArgumentException();
         }
-        
-        //synchronized(finished) {
-//          if (finished.size() != noOfRunnables) {
-//            try {
-//              finished.wait(timeoutInMillis);
-//            } catch (InterruptedException e) {
-//              throw new ZigvaInterruptedException(e);
-//            }
-//          }
+
         boolean result;
         try {
           result = noOfThreadNotYetFinished.await(timeoutInMillis, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
           throw new ZigvaInterruptedException(e);
         }
-          if (exceptions.size() > 0) {
-            throw ClusterException.create(exceptions);
-          }
-//          int fSize = finished.size();
-//          boolean result = fSize == noOfRunnables;
-//          if (!result) {
-//            System.out.println(fSize + "x" + noOfRunnables);
-//          }
-          return result;
-//        }
-        
-        
-//        //TODO
-//        long now = System.currentTimeMillis();
-//        long then = now + timeoutInMillis;
-//        boolean result = true;
-//        for (Waitable waitable : waitables) {
-//          long movingTimeout = then - System.currentTimeMillis();
-//          if (movingTimeout < 1) {
-//            return result;
-//          }
-//          if (!waitable.waitFor(movingTimeout)) {
-//            result = false;
-//          }
-//        }
-//        return result;
+        if (exceptions.size() > 0) {
+          throw ClusterException.create(exceptions);
+        }
+        return result;
       }
-    
+
       @Override
       public void waitFor() {
-        
-//        synchronized(finished) {
-//          while (finished.size() != runnables.size()) {
-            try {
-              noOfThreadNotYetFinished.await();
-//              finished.wait();
-            } catch (InterruptedException e) {
-              throw new ZigvaInterruptedException(e);
-            }
-//          }
-          if (exceptions.size() > 0) {
-            // TODO: is this the right exception? Rename
-//            throw new CommandReturnedErrorCodeException(ClusterException.create(exceptions));
-            
-            // TODO: it used to return the exception above, which does not comply
-            // with the API.
-            throw new CommandFailedException(ClusterException.create(exceptions));
-          }
+        try {
+          noOfThreadNotYetFinished.await();
+        } catch (InterruptedException e) {
+          throw new ZigvaInterruptedException(e);
         }
-        //        for (ConvenienceWaitable waitable: waitables) {
-        //          waitable.waitFor();
-        //        }
-//      }
+        if (exceptions.size() > 0) {
+          throw new CommandFailedException(ClusterException.create(exceptions));
+        }
+      }
     };
   }
   

@@ -1,4 +1,3 @@
-// Copyright 2008 Google Inc.  All Rights Reserved.
 package com.google.zigva.exec.impl;
 
 import com.google.common.base.Preconditions;
