@@ -18,7 +18,8 @@
     <path refid="project.class.path"/>
     <pathelement location="${lib.dir}/easymock.jar"/>
     <pathelement location="${lib.dir}/guiceberry-2.0.1.jar"/>
-    <pathelement location="${lib.dir}/junit3.8.1.jar"/>
+    <pathelement location="${lib.dir}/hamcrest-2.1.jar"/>
+    <pathelement location="${lib.dir}/junit4.12.0.jar"/>
     <pathelement location="${lib.dir}/tl4j-junit3-1.1.1.jar"/>
   </path>
 
